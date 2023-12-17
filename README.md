@@ -17,9 +17,16 @@ Then install the dependencies with poetry:
 
 `poetry install`
 
-Next make a file at the root of this project called `.env` file to store the bot secret in. The contents of the file should look like this:
+Next make a file at the root of this project called `.env` file to store the bot secret in (instructions on how to set up a bot and get the bot secret [here](https://discordpy.readthedocs.io/en/stable/discord.html)). The contents of the file should look like this:
 
 `BOT_SECRET=SECRET-GOES-HERE`
+
+Also, make sure that the intents are enabled on the bot (or else it will be grumpy and die when it tries to run):
+
+<img src="images/here.PNG" />
+
+
+
 
 
 ## Running
