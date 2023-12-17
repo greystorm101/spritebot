@@ -1,10 +1,10 @@
-
 import discord
 from discord.ext.commands import has_permissions, MissingPermissions, Bot
 
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
+from commands.zigzag import find_old_threads
 
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
@@ -35,20 +35,7 @@ async def add(ctx, left: int, right: int):
 @bot.command(hidden=True)
 @has_permissions(manage_roles=True)
 async def oldest(ctx):
-    """Find the oldest threads with a given tag."""
-    channel= bot.get_channel(1185685268133593118) # SpritePost channel ID
-    target_tag = channel.get_tag(1185685810960420874) # "Needs Feedback" tag ID
-
-    archived_threads = channel.archived_threads(limit=100) #TODO: Only search BEFORE cached date
-
-    old_threads = []
-    
-    async for thread in archived_threads:
-        if target_tag in thread.applied_tags:
-            old_threads.append(thread.jump_url)
-    
-    await ctx.send(ctx.author)
-    await ctx.send(old_threads)
+    await find_old_threads(ctx, bot)
 
 
 @bot.group()
