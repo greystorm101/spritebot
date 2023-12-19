@@ -1,4 +1,41 @@
 {
-    "bulbasaur": 1,
-    "ivysaur": 2
-}
+    "pokemon": [
+    {
+        "id": 1,
+        "name": "bulbasaur",
+        "typos": ["bulbosaur"],
+        "display_name": "Bulbasaur"
+        
+    },
+    {
+        "id": 2,
+        "name": "ivysaur",
+        "typos": [],
+        "display_name": "Ivysaur"
+    },
+    {
+        "id": 3,
+        "name": "venosaur",
+        "typos": [],
+        "display_name": "Venosaur"
+    },
+    {
+        "id": 4,
+        "name": "charmander",
+        "typos": ["charmunder", "charmoonder"],
+        "display_name": "Charmander"
+    },
+    {
+        "id": 122,
+        "name": "mrmime",
+        "typos": ["mistermime", "mime"],
+        "display_name": "Mr. Mime"
+    },
+    {
+        "id": 130,
+        "name": "gyarados",
+        "typos": ["garados", "garydos", "gyrados"],
+        "display_name": "Gyarados"
+    }
+    ]
+}   
