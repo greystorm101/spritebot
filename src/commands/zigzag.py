@@ -95,9 +95,19 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
     except ValueError:
         pass
 
-    # Plan B: check post title for numbers
-    # Plan C: Check post title for Pokemon names
+    # Plan B: check post title for numbers. We are assuming that the numbers in the post are separated by '.' (i.e 162.187)
+    thread_title = thread.name
 
+    non_numeric_id_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !?@#$%^&*()-+="\\"/\n'
+    number_pair = thread_title.translate({ord(i): None for i in non_numeric_id_chars}).split('.')
+
+    if len(number_pair) == 2:
+        return "{}.{}".format(number_pair[0], number_pair[1])
+    
+    # Plan C: Check post title for Pokemon names. For my sanity, we're assuming it's seperated by a '/' for now (i.e Furret/Hoppip)
+
+
+    # Sad trombone noise
     return False
 
 async def _find_gallery_image(thread: Thread, pokemon_id:str, gallery_channel: TextChannel):
