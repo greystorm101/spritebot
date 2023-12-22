@@ -75,7 +75,7 @@
     {
         "id": "13",
         "name": "weedle",
-        "typos": [],
+        "typos": ["weedel"],
         "display_name": "Weedle"
     },
     {
@@ -2619,7 +2619,7 @@
     {
         "id": "437",
         "name": "sharpedo",
-        "typos": [],
+        "typos": ["sharepedo"],
         "display_name": "Sharpedo"
     },
     {
@@ -2667,7 +2667,7 @@
     {
         "id": "445",
         "name": "sliggoo",
-        "typos": [],
+        "typos": ["sligoo"],
         "display_name": "Sliggoo"
     },
     {
@@ -2751,7 +2751,7 @@
     {
         "id": "458",
         "name": "cacturne",
-        "typos": [],
+        "typos": ["cacturn"],
         "display_name": "Cacturne"
     },
     {
@@ -2769,7 +2769,7 @@
     {
         "id": "461",
         "name": "amaura",
-        "typos": [],
+        "typos": ["amora"],
         "display_name": "Amaura"
     },
     {
