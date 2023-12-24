@@ -26,7 +26,7 @@ Also, make sure that the intents are enabled on the bot (or else it will be grum
 
 Run the following command in terminal:
 
-`poetry run zigzag.py`
+`poetry run python src/bot.py`
 
 ## Troubleshooting 
 

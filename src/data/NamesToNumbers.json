@@ -861,7 +861,7 @@
     {
         "id": "144",
         "name": "articuno",
-        "typos": [],
+        "typos": ["arcticuno"],
         "display_name": "Articuno"
     },
     {
@@ -1095,13 +1095,13 @@
     {
         "id": "183",
         "name": "marill",
-        "typos": [],
+        "typos": ["maril"],
         "display_name": "Marill"
     },
     {
         "id": "184",
         "name": "azumarill",
-        "typos": [],
+        "typos": ["azumaril"],
         "display_name": "Azumarill"
     },
     {
@@ -1113,7 +1113,7 @@
     {
         "id": "186",
         "name": "politoed",
-        "typos": ["politoad"],
+        "typos": ["politoad", "politied"],
         "display_name": "Politoed"
     },
     {
@@ -1209,7 +1209,7 @@
     {
         "id": "202",
         "name": "wobbuffet",
-        "typos": ["wobuffet", "wobbufet"],
+        "typos": ["wobuffet", "wobbufet", "wobbuffett", "wobuffett", "wobbufett"],
         "display_name": "Wobbuffet"
     },
     {
@@ -1509,7 +1509,7 @@
     {
         "id": "252",
         "name": "azurill",
-        "typos": [],
+        "typos": ["azuril"],
         "display_name": "Azurill"
     },
     {
@@ -1545,7 +1545,7 @@
     {
         "id": "258",
         "name": "mimejr",
-        "typos": ["mimejunior"],
+        "typos": ["mimejunior", "jr", "junior"],
         "display_name": "Mime Jr."
     },
     {
@@ -2187,7 +2187,7 @@
     {
         "id": "365",
         "name": "litwick",
-        "typos": [],
+        "typos": ["litwic"],
         "display_name": "Litwick"
     },
     {
@@ -2469,7 +2469,7 @@
     {
         "id": "412",
         "name": "joltik",
-        "typos": [],
+        "typos": ["joltick"],
         "display_name": "Joltik"
     },
     {
@@ -2691,7 +2691,7 @@
     {
         "id": "449",
         "name": "registeel",
-        "typos": [],
+        "typos": ["registel"],
         "display_name": "Registeel"
     },
     {
@@ -2807,6 +2807,12 @@
         "name": "meloettapirouette",
         "typos": ["meloettap", "meloettapiroette", "pirouette"],
         "display_name": "Meloetta Pirouette"
+    },
+    {
+        "id": "469",
+        "name": "bruxish",
+        "typos": ["broxish"],
+        "display_name": "Bruxish"
     }
     ]
 }   

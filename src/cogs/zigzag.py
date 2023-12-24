@@ -1,6 +1,5 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 import io
-import json
 import time
 
 from discord.ext.commands import Bot, Cog, Context, command, has_role
@@ -30,17 +29,19 @@ class ZigZag(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @command(name="tagids")
-    async def tagids(self, ctx: Context):
-        """Debug command to get tag ids for the thannel"""
+    # @command(name="tagids")
+    @has_role("Admin")
+    async def tagids(self):
+        """Debug command to get tag ids for the channel"""
         spritework_channel= self.bot.get_channel(SPRITEWORK_CHANNEL_ID)
         print(spritework_channel.available_tags)
 
 
-    @command(name="oldest", pass_context=True)
+    @command(name="oldest", pass_context=True,
+             help ="Finds old threads with needs feedback tag",
+             brief = "Finds old threads")
     async def oldest(self, ctx: Context):
         """Find the oldest threads with a given tag."""
-
         # Fill cache with channels and tags
         if sprite_channels == {}:
             sprite_channels["spritework"] = self.bot.get_channel(SPRITEWORK_CHANNEL_ID) # SpritePost channel ID
@@ -56,7 +57,9 @@ class ZigZag(Cog):
 
 
         target_tag = spritepost_tags["feedback"]
-        archived_threads = sprite_channels["spritework"].archived_threads(limit=10) #TODO: Only search BEFORE cached date
+        # Define how long ago we want to search
+        two_weeks_ago = datetime.now()-timedelta(weeks=2)
+        archived_threads = sprite_channels["spritework"].archived_threads(limit=100) #TODO: Only search BEFORE cached date
         await ctx.send("Digging for threads. This may take a few minutes. Wait for 'complete' message at end. \n --- ⛏⛏⛏⛏⛏⛏⛏ --- ")
 
         async for thread in archived_threads:
@@ -130,7 +133,8 @@ class PostOptions(ui.Select):
         else:
             message = "How did you do this????"
 
-        await interaction.message.edit(content = message, delete_after=60*5, embed=None)
+        await interaction.message.edit(content = message)
+        return True
         # await interaction.response.send_message(f'You chose action {self.values[0]}')
 
 
@@ -149,9 +153,17 @@ class UnidentifiedOptions(ui.Select):
         super().__init__(placeholder='Choose action...', min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.message.edit(content = f'You chose action {self.values[0]}')
-        await interaction.response.send_message(f'You chose action {self.values[0]}')
+        choice = self.values[0]
+        if choice == 'Clean':
+            gal_tag = spritepost_tags["gallery"]
+            await clean_tags(self.thread, gal_tag)
+            message = "{}: Marked {} as already added to gallery (bc I dont have an other tag setup in this server)".format(interaction.user, self.thread.jump_url)
 
+        elif choice == 'Manual':
+            message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
+
+        await interaction.message.edit(content = message, delete_after=60*5, embed=None)
+        return True
 
 
 class PostOptionsView(discord.ui.View):
@@ -262,6 +274,7 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
     non_numeric_id_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !?@#$%^&*()[]-+="\\"/\n'
 
     try:
+        # TODO: verify this is a real fusion
         head_num, body_num, png = image.filename.split(".")
         return [head_num.translate({ord(i): None for i in non_numeric_id_chars}), body_num.translate({ord(i): None for i in non_numeric_id_chars})]
     except ValueError:
@@ -274,6 +287,7 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
     number_pair = thread_title.translate({ord(i): None for i in non_numeric_id_chars}).split('.')
 
     if len(number_pair) == 2:
+        # TODO: verify this is a real fusion
         return [number_pair[0], number_pair[1]]
     
     # Plan C: Check post title for Pokemon names. For my sanity, we're assuming it's seperated by a '/' for now (i.e Furret/Hoppip)
@@ -308,7 +322,7 @@ async def _get_candidate_info(thread:Thread):
     image = None
 
     async for message in thread.history(oldest_first=True, limit=100):
-        # Find last post from autho with an image attachment
+        # Find last post from author with an image attachment
         if (len(message.attachments) != 0) and (message.author == thread_author):
             image = message.attachments[0]
             break
@@ -346,13 +360,12 @@ def _pretty_formatted_message(thread: Thread,
                             candidate_image:Attachment,
                             canidate_ids:list,
                             gallery_post:Message):
-    """Formats output message"""
+    """Formats output message text"""
     
     header =   'Thread: {} by {}\n'.format(thread.jump_url, thread.owner.name)
-    activity = 'Created {}. Last active {}.\n\n'.format(thread.created_at.strftime("%m/%d/%Y"), thread.last_message)
+    activity = 'Created {}. Last active {}.\n\n'.format(thread.created_at.strftime("%m/%d/%Y"), "TBD")
 
     # Format candidate section
-
     if candidate_image is False:
         candidate_info = "No candidate image found"
     elif canidate_ids is False:
