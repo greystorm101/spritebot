@@ -3,7 +3,9 @@ import json
 import re
 import os
 
-JSON_FILE = os.path.join(os.getcwd(), "data", "NamesToNumbers.json" ) 
+
+
+JSON_FILE = os.path.join(os.getcwd(), "src", "data", "NamesToNumbers.json" ) 
 MULTI_NAME_FILE = os.path.join(os.path.dirname(os.getcwd()), "data", "MultiWordNames.json" ) 
 
 def raw_pokemon_name_to_id(name:str):
@@ -17,7 +19,7 @@ def raw_pokemon_name_to_id(name:str):
     try:
         id = name_to_id_map[clean_name]
     except KeyError:
-        pass
+        pass 
     return id
 
 def clean_pokemon_string(name:str):
@@ -51,7 +53,6 @@ def multi_word_name_list():
         input_data = json.loads(f.read())
 
         return input_data
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
