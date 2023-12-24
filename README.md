@@ -2,10 +2,6 @@
 SpriteBot
 
 
-Words words words 
-I'll write better things here later B)
-
-
 ## Setup
 This project uses [poetry](https://python-poetry.org/docs/) to handle dependencies
 
@@ -26,11 +22,12 @@ Also, make sure that the intents are enabled on the bot (or else it will be grum
 <img src="images/here.PNG" />
 
 
-
-
-
 ## Running
 
 Run the following command in terminal:
 
 `poetry run zigzag.py`
+
+## Troubleshooting 
+
+(todo: add troubleshooting section)

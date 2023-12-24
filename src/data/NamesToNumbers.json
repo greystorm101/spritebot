@@ -27,7 +27,7 @@
     {
         "id": "5",
         "name": "charmeleon",
-        "typos": [],
+        "typos": ["charmelion"],
         "display_name": "Charmeleon"
     },
     {
@@ -117,7 +117,7 @@
     {
         "id": "20",
         "name": "raticate",
-        "typos": [],
+        "typos": ["rattycate"],
         "display_name": "Raticate"
     },
     {
@@ -243,7 +243,7 @@
     {
         "id": "41",
         "name": "zubat",
-        "typos": [],
+        "typos": ["zoobat"],
         "display_name": "Zubat"
     },
     {
@@ -357,19 +357,19 @@
     {
         "id": "60",
         "name": "poliwag",
-        "typos": [],
+        "typos": ["polywag"],
         "display_name": "Poliwag"
     },
     {
         "id": "61",
         "name": "poliwhirl",
-        "typos": ["poliwirl"],
+        "typos": ["poliwirl", "polywhirl"],
         "display_name": "Poliwhirl"
     },
     {
         "id": "62",
         "name": "poliwrath",
-        "typos": ["polirath"],
+        "typos": ["polirath", "polywrath"],
         "display_name": "Poliwrath"
     },
     {
@@ -897,7 +897,7 @@
     {
         "id": "150",
         "name": "mewtwo",
-        "typos": ["mew2"],
+        "typos": ["mew2", "mewtoo"],
         "display_name": "Mewtwo"
     },
     {
