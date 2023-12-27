@@ -7,7 +7,7 @@ from discord import ForumTag, Thread, Attachment, Message, ui
 import discord
 from discord.channel import TextChannel
 
-from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map
+from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map, fusion_is_valid
 
 # Defining configs and hard-coded vals
 SPRITEWORK_CHANNEL_ID = 1185685268133593118
@@ -21,6 +21,7 @@ NONIF_TAG_ID = 1186024872695042048
 
 
 MAX_LOOKAHEAD_THEAD_TIME = 21 # Ammount of time, in days, that we will check in the gallery after time of spritework post, 
+MAX_NUM_FEEDBACK_THREADS = 5 # Ammoumt of feedback threads to find
 
 spritepost_tags = {}
 sprite_channels = {}
@@ -41,20 +42,9 @@ class ZigZag(Cog):
              help ="Finds old threads with needs feedback tag",
              brief = "Finds old threads")
     async def oldest(self, ctx: Context):
-        """Find the oldest threads with a given tag."""
-        # Fill cache with channels and tags
-        if sprite_channels == {}:
-            sprite_channels["spritework"] = self.bot.get_channel(SPRITEWORK_CHANNEL_ID) # SpritePost channel ID
-            sprite_channels["gallery"] = self.bot.get_channel(SPRITEGALLERY_CHANNEL_ID) # SpritePost channel ID
-            sprite_channels["noqa"] = self.bot.get_channel(NOQA_CHANNEL_ID) # SpritePost channel ID
+        """Find the oldest threads with a given tag. Main Zigzag command"""
 
-        if spritepost_tags == {}:
-            spritework_channel = sprite_channels["spritework"]
-            spritepost_tags["feedback"] = spritework_channel.get_tag(NEEDSFEEDBACK_TAG_ID) # "Needs Feedback" tag ID
-            spritepost_tags["gallery"]  = spritework_channel.get_tag(ADDEDTOGAL_TAG_ID) # "Needs Feedback" tag ID
-            spritepost_tags["harvested"]  = spritework_channel.get_tag(HARVESTED_TAG_ID) # "Needs Feedback" tag ID
-            spritepost_tags["non-if"]  = spritework_channel.get_tag(NONIF_TAG_ID) # "Needs Feedback" tag ID
-
+        await check_and_load_cache(self.bot)
 
         target_tag = spritepost_tags["feedback"]
         # Define how long ago we want to search
@@ -78,6 +68,20 @@ class ZigZag(Cog):
         await ctx.send("Digging Complete!")
         
     
+    @command(name="galpost", pass_context=True,
+             help ="Posts the replied to image to the gallery.",
+             brief = "Finds old threads")
+    async def galpost(self, ctx: Context, *args):
+
+        await _manually_post_to_channel("gallery", ctx, args, self.bot)
+
+    @command(name="noqa", pass_context=True,
+             help ="Finds old threads with needs feedback tag",
+             brief = "Finds old threads")
+    async def noqa(self, ctx: Context, *args):
+
+        await _manually_post_to_channel("noqa", ctx, args, self.bot)
+
 async def setup(bot:Bot):
     await bot.add_cog(ZigZag(bot))
 
@@ -102,7 +106,6 @@ class PostOptions(ui.Select):
         super().__init__(placeholder='Choose action...', min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        # await interaction.message.edit(content = f'You chose action {self.values[0]}')
 
         choice = self.values[0]
         if choice == 'Post':
@@ -134,8 +137,8 @@ class PostOptions(ui.Select):
             message = "How did you do this????"
 
         await interaction.message.edit(content = message)
+        await interaction.response.send_message(choice, delete_after=10, ephemeral=True)
         return True
-        # await interaction.response.send_message(f'You chose action {self.values[0]}')
 
 
 class UnidentifiedOptions(ui.Select):
@@ -162,7 +165,8 @@ class UnidentifiedOptions(ui.Select):
         elif choice == 'Manual':
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
 
-        await interaction.message.edit(content = message, delete_after=60*5, embed=None)
+        await interaction.message.edit(content = message)
+        await interaction.response.send_message(choice, delete_after=10, ephemeral=True)
         return True
 
 
@@ -184,6 +188,22 @@ class PostOptionsView(discord.ui.View):
         else:
             self.add_item(PostOptions(thread, fusion, image))
             
+
+async def check_and_load_cache(bot: Bot):
+    """
+    Makes sure the cache is filled with channel and tag names
+    """
+    if sprite_channels == {}:
+            sprite_channels["spritework"] = bot.get_channel(SPRITEWORK_CHANNEL_ID) # SpritePost channel ID
+            sprite_channels["gallery"] = bot.get_channel(SPRITEGALLERY_CHANNEL_ID) # SpritePost channel ID
+            sprite_channels["noqa"] = bot.get_channel(NOQA_CHANNEL_ID) # SpritePost channel ID
+
+    if spritepost_tags == {}:
+        spritework_channel = sprite_channels["spritework"]
+        spritepost_tags["feedback"] = spritework_channel.get_tag(NEEDSFEEDBACK_TAG_ID) # "Needs Feedback" tag ID
+        spritepost_tags["gallery"]  = spritework_channel.get_tag(ADDEDTOGAL_TAG_ID) # "Needs Feedback" tag ID
+        spritepost_tags["harvested"]  = spritework_channel.get_tag(HARVESTED_TAG_ID) # "Needs Feedback" tag ID
+        spritepost_tags["non-if"]  = spritework_channel.get_tag(NONIF_TAG_ID) # "Needs Feedback" tag ID
 
 
 
@@ -226,26 +246,28 @@ async def clean_tags(thread:Thread, remaining_tag: ForumTag):
     await thread.edit(archived=True)
 
 
-async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, author:str):
+async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, author:str, message: str = ""):
     """
     Posts a given image to the given channel
 
-        channel ()
+        channel: channel to post message to
+        fusion: list with head number as element 1 and bo
     """
-    filename = f"{fusion[0]}.{fusion[1]}.png"
+    filename = f"{fusion[0]}.{fusion[1]} by {author}.png"
     image_bytes = await image.read()
     bytes_io_file = io.BytesIO(image_bytes)
 
     fusion_names = [id_to_name_map()[id] for id in fusion]
-    message = "From: {}\n{}/{} ({}.{})".format(author,
+    gal_message = "From: {}\n{}/{} ({}.{}) {}".format(author,
                                               fusion_names[0],
                                               fusion_names[1],
                                               fusion[0],
-                                              fusion[1])
+                                              fusion[1],
+                                              message)
     
     upload_image = discord.File(fp = bytes_io_file, filename= filename)
     
-    post = await channel.send(content=message, file=upload_image)
+    post = await channel.send(content=gal_message, file=upload_image)
     return post
 
 
@@ -274,9 +296,11 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
     non_numeric_id_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !?@#$%^&*()[]-+="\\"/\n'
 
     try:
-        # TODO: verify this is a real fusion
         head_num, body_num, png = image.filename.split(".")
-        return [head_num.translate({ord(i): None for i in non_numeric_id_chars}), body_num.translate({ord(i): None for i in non_numeric_id_chars})]
+        if fusion_is_valid(head_num) and fusion_is_valid(body_num):
+            return [head_num.translate({ord(i): None for i in non_numeric_id_chars}),
+                    body_num.translate({ord(i): None for i in non_numeric_id_chars})]
+        
     except ValueError:
         pass
 
@@ -287,8 +311,8 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
     number_pair = thread_title.translate({ord(i): None for i in non_numeric_id_chars}).split('.')
 
     if len(number_pair) == 2:
-        # TODO: verify this is a real fusion
-        return [number_pair[0], number_pair[1]]
+        if fusion_is_valid(number_pair[0]) and fusion_is_valid(number_pair[1]):
+            return [number_pair[0], number_pair[1]]
     
     # Plan C: Check post title for Pokemon names. For my sanity, we're assuming it's seperated by a '/' for now (i.e Furret/Hoppip)
     pre_and_post_slash_list = [[clean_pokemon_string(word) for word in str.split(' ') if word != ''] for str in thread_title.split('/')]
@@ -321,14 +345,14 @@ async def _get_candidate_info(thread:Thread):
     thread_author = thread.owner
     image = None
 
-    async for message in thread.history(oldest_first=True, limit=100):
+    async for message in thread.history(oldest_first=False, limit=100):
         # Find last post from author with an image attachment
         if (len(message.attachments) != 0) and (message.author == thread_author):
             image = message.attachments[0]
             break
     
     if image is None:
-        return False
+        return [False, False]
     
     pokemon_ids = _get_thread_pokemon_name(thread, image)
     return image, pokemon_ids
@@ -387,3 +411,128 @@ def _pretty_formatted_message(thread: Thread,
             gallery_info = ""
 
     return "~~~~~~~~~~~~~~\n"+header+activity+candidate_info+gallery_info
+
+async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:Bot):
+
+    # Parse args and ensure they are correct
+    arg_results = await _parse_channelpost_args(args)
+    if arg_results is None:
+        usage_message = "Usage (must be in reply to a message): `PicNum[Optional] Head/Body message[optional]`\nFusions can be names or id numbers"
+        await ctx.reply(usage_message, ephemeral=True, delete_after=10)
+        await ctx.message.delete(delay=2)
+        return
+    img_num, fusion_list, message = arg_results
+
+    # Check that we replied to a real post
+    replied_post_reference = ctx.message.reference
+    if replied_post_reference is None:
+        error_message = "Please reply to a message that has an image to post"
+        await ctx.reply(error_message, ephemeral=True, delete_after=6)
+        await ctx.message.delete(delay=2)
+        return
+    
+    # Make sure there is an attachment on the message
+    msg = await ctx.channel.fetch_message(replied_post_reference.message_id)
+    attachments = msg.attachments
+    if len(attachments) <= img_num-1:
+        error_message = "Message attachment out of range"
+        await ctx.reply(error_message, ephemeral=True, delete_after=6)
+        await ctx.message.delete(delay=2)
+        return
+    
+    await check_and_load_cache(bot)
+
+    image = msg.attachments[img_num-1]
+    if location == "gallery":
+        post = await post_to_channel(sprite_channels["gallery"], fusion_list, image, msg.author.name, message=message)
+        await send_galpost_notification(ctx.channel, post)
+
+    else:  
+        post = await post_to_channel(sprite_channels["noqa"], fusion_list, image, msg.author.name, message=message)
+        await send_noqa_notification(ctx.channel, post)
+
+    await ctx.message.delete(delay=2)
+
+
+async def _parse_channelpost_args(args:list):
+    """
+    Parses args for galpost and noqa commands
+
+    Takes in the arg list
+
+    Returns:
+        List of 
+        None if there was an error
+    """
+    pic_num = 1 # Indexing starts at 1
+    fusion_lst = None
+    message = None
+
+    if len(args) == 0:
+        return None
+
+    if len(args) == 1:
+        fusions = args[0].split('/')
+        if len(fusions) != 2:
+            return None
+        
+        fusion_lst = clean_names_or_ids(fusions)
+        if fusion_lst is None:
+            return None
+        
+    if len(args) >= 2:
+        # This could be 'imgNum Head/Body' or 'imgNum Head/Body message'
+        if args[0].isdigit():
+            pic_num = int(args[0])
+            
+            fusions = args[1].split('/')
+            if len(fusions) != 2:
+                return None
+
+            fusion_lst = clean_names_or_ids(fusions)
+            if fusion_lst is None:
+                return None
+            
+            if len(args) > 2:
+                message = ' '.join(args[2:])
+        
+        # 'Head/Body message'
+        elif '/' in args[0]:
+            fusions = args[0].split('/')
+            fusion_lst = clean_names_or_ids(fusions)
+            if fusion_lst is None:
+                return None
+            
+            message = ' '.join(args[1:])
+        
+        else:
+            return None
+
+    return [pic_num, fusion_lst, message]
+
+
+def clean_names_or_ids(fusions):
+    """
+    Take a list of two fusion names OR ids and returns a string with both fusion ids
+
+    Args: list of fusion head and body
+    """
+    # Parse head/fusion id or name
+    headid = raw_pokemon_name_to_id(fusions[0])
+    bodyid = raw_pokemon_name_to_id(fusions[1])
+
+
+    if headid == None:
+        if fusion_is_valid(fusions[0]):
+            headid = fusions[0]
+    if bodyid == None:
+        if fusion_is_valid(fusions[1]):
+            bodyid = fusions[1]
+
+    if headid is None or bodyid is None:
+        print("One is none: Head:{} Body:{} Raw:{}".format(headid, bodyid, fusions))
+        return None
+    
+    fusion_lst = [headid, bodyid]
+    return fusion_lst
+

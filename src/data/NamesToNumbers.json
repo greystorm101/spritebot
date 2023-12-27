@@ -2631,7 +2631,7 @@
     {
         "id": "439",
         "name": "trevenant",
-        "typos": [],
+        "typos": ["trevanant", "trevanent", "trevenent"],
         "display_name": "Trevenant"
     },
     {
