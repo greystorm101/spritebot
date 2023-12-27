@@ -20,8 +20,8 @@ HARVESTED_TAG_ID = 1185685876978753657
 NONIF_TAG_ID = 1186024872695042048
 
 
-MAX_LOOKAHEAD_THEAD_TIME = 21 # Ammount of time, in days, that we will check in the gallery after time of spritework post, 
-MAX_NUM_FEEDBACK_THREADS = 5 # Ammoumt of feedback threads to find
+MAX_LOOKAHEAD_THEAD_TIME = 21 # Amount of time, in days, that we will check in the gallery after time of spritework post, 
+MAX_NUM_FEEDBACK_THREADS = 5 # Amount of feedback threads to find
 
 spritepost_tags = {}
 sprite_channels = {}
@@ -246,7 +246,7 @@ async def clean_tags(thread:Thread, remaining_tag: ForumTag):
     await thread.edit(archived=True)
 
 
-async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, author:str, message: str = ""):
+async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, author:str, message: str = None):
     """
     Posts a given image to the given channel
 
@@ -258,12 +258,13 @@ async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, 
     bytes_io_file = io.BytesIO(image_bytes)
 
     fusion_names = [id_to_name_map()[id] for id in fusion]
-    gal_message = "From: {}\n{}/{} ({}.{}) {}".format(author,
+    gal_message = "From: {}\n{}/{} ({}.{})".format(author,
                                               fusion_names[0],
                                               fusion_names[1],
                                               fusion[0],
-                                              fusion[1],
-                                              message)
+                                              fusion[1])
+    if message is not None:
+        gal_message += " - {}".format(message)
     
     upload_image = discord.File(fp = bytes_io_file, filename= filename)
     
