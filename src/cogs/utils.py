@@ -54,6 +54,10 @@ def multi_word_name_list():
 
         return input_data
 
+def fusion_is_valid(id: str):
+    """Returns true if the id number is a valid fusion, false otherwise"""
+    return id in id_to_name_map().keys()
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("pokename")
