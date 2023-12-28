@@ -3,7 +3,7 @@ import io
 import time
 
 from discord.ext.commands import Bot, Cog, Context, command, has_role
-from discord import ForumTag, Thread, Attachment, Message, ui
+from discord import ForumTag, Member, Thread, Attachment, Message, ui
 import discord
 from discord.channel import TextChannel
 
@@ -99,8 +99,10 @@ class ZigZag(Cog):
             if not archived_thread_found:
                 await ctx.send("Found no feedback threads active before {}.\nTry re-running with `reset` or a specific date `MM/DD/YY`".format(self.most_recent_date))
                 return
-            await ctx.send("Found no feedback threads between {} and {}.\nRun again to search later, or you can run again with `reset` or a specific date `MM/DD/YY`".format(self.most_recent_date,
-                                                                                                                                          thread.archive_timestamp))
+            await ctx.send("Found no feedback threads between {} and {}.\n"\
+                           "Run again to search later, or you can run again with `reset` or a specific date `MM/DD/YY`".format(
+                               self.most_recent_date,
+                               thread.archive_timestamp))
 
         await ctx.send("Digging Complete!")
         
@@ -149,7 +151,7 @@ class PostOptions(ui.Select):
             gal_tag = spritepost_tags["gallery"]
             await clean_tags(self.thread, gal_tag)
 
-            post = await post_to_channel(sprite_channels["gallery"], self.fusion, self.image, self.thread.owner.name)
+            post = await post_to_channel(sprite_channels["gallery"], self.fusion, self.image, self.thread.owner)
             await send_galpost_notification(self.thread, post)
             message = "{} posted sprite from thread {} here: {}".format(interaction.user, self.thread.jump_url, self.thread)
 
@@ -157,9 +159,9 @@ class PostOptions(ui.Select):
             harvested_tag = spritepost_tags["harvested"]
             await clean_tags(self.thread, harvested_tag)
 
-            post = await post_to_channel(sprite_channels["noqa"], self.fusion, self.image, self.thread.owner.name)
+            post = await post_to_channel(sprite_channels["noqa"], self.fusion, self.image, self.thread.owner)
             await send_noqa_notification(self.thread, post)
-            message = "{}: Harvested thread {} here:".format(interaction.user, self.thread.jump_url, self.thread)
+            message = "{}: Harvested thread {} here: {}".format(interaction.user, self.thread.jump_url, self.thread)
             pass
 
         elif choice == 'Clean':
@@ -241,8 +243,8 @@ async def check_and_load_cache(bot: Bot):
         spritepost_tags["gallery"]  = spritework_channel.get_tag(ADDEDTOGAL_TAG_ID) # "Needs Feedback" tag ID
         spritepost_tags["harvested"]  = spritework_channel.get_tag(HARVESTED_TAG_ID) # "Needs Feedback" tag ID
         spritepost_tags["non-if"]  = spritework_channel.get_tag(NONIF_TAG_ID) # "Needs Feedback" tag ID
-
-
+ 
+ 
 
 async def scrape_thread_and_gallery(thread: Thread, gallery_channel: TextChannel):
     """
@@ -283,19 +285,23 @@ async def clean_tags(thread:Thread, remaining_tag: ForumTag):
     await thread.edit(archived=True)
 
 
-async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, author:str, message: str = None):
+async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, author:Member, message: str = None):
     """
     Posts a given image to the given channel
 
         channel: channel to post message to
         fusion: list with head number as element 1 and bo
     """
-    filename = f"{fusion[0]}.{fusion[1]} by {author}.png"
+    if not check_if_user_can_be_posted(author):
+        await channel.send("User has a role that prevents automated posting of sprites", delete_after=30)
+        return
+
+    filename = f"{fusion[0]}.{fusion[1]} by {author.name}.png"
     image_bytes = await image.read()
     bytes_io_file = io.BytesIO(image_bytes)
 
     fusion_names = [id_to_name_map()[id] for id in fusion]
-    gal_message = "From: {}\n{}/{} ({}.{})".format(author,
+    gal_message = "From: {}\n{}/{} ({}.{})".format(author.name,
                                               fusion_names[0],
                                               fusion_names[1],
                                               fusion[0],
@@ -308,6 +314,8 @@ async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, 
     post = await channel.send(content=gal_message, file=upload_image)
     return post
 
+async def check_if_user_can_be_posted(user):
+    pass
 
 async def send_galpost_notification(thread: Thread, galleryPost: Message):
     author = thread.owner
@@ -359,17 +367,17 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
 
         # Grab first fusion name
         pre_id = raw_pokemon_name_to_id(pre_list[-1])
-        if (pre_id == None) and (len(pre_list) > 1):
+        if (pre_id is None) and (len(pre_list) > 1):
             # Try checking if this is a name seperated by a space
             pre_id = raw_pokemon_name_to_id(''.join([pre_list[-2], pre_list[-1]]))
 
         # Grab second fusion name
         post_id = raw_pokemon_name_to_id(post_list[0])
-        if (post_id == None) and (len(post_list) > 1):
+        if (post_id is None) and (len(post_list) > 1):
             # Try checking if this is a name seperated by a space
             post_id = raw_pokemon_name_to_id(''.join([post_list[0], post_list[1]]))
 
-        if pre_id != None and post_id != None:
+        if pre_id is not None and post_id is not None:
             return [pre_id, post_id]
 
     # Sad trombone noise
@@ -482,11 +490,11 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
 
     image = msg.attachments[img_num-1]
     if location == "gallery":
-        post = await post_to_channel(sprite_channels["gallery"], fusion_list, image, msg.author.name, message=message)
+        post = await post_to_channel(sprite_channels["gallery"], fusion_list, image, msg.author, message=message)
         await send_galpost_notification(ctx.channel, post)
 
     else:  
-        post = await post_to_channel(sprite_channels["noqa"], fusion_list, image, msg.author.name, message=message)
+        post = await post_to_channel(sprite_channels["noqa"], fusion_list, image, msg.author, message=message)
         await send_noqa_notification(ctx.channel, post)
 
     await ctx.message.delete(delay=2)
@@ -560,10 +568,10 @@ def clean_names_or_ids(fusions):
     bodyid = raw_pokemon_name_to_id(fusions[1])
 
 
-    if headid == None:
+    if headid is None:
         if fusion_is_valid(fusions[0]):
             headid = fusions[0]
-    if bodyid == None:
+    if bodyid is None:
         if fusion_is_valid(fusions[1]):
             bodyid = fusions[1]
 
@@ -573,4 +581,3 @@ def clean_names_or_ids(fusions):
     
     fusion_lst = [headid, bodyid]
     return fusion_lst
-
