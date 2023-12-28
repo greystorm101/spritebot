@@ -1,13 +1,9 @@
-import asyncio
 import discord
-from discord.ext.commands import has_permissions, MissingPermissions, Bot
-import logging
-import logging.handlers
+from discord.ext.commands import Bot
 
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from aiohttp import ClientSession
 # from cogs.zigzag import find_old_threads
 
 description = '''An example bot to showcase the discord.ext.commands extension

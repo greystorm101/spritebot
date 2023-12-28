@@ -2007,7 +2007,7 @@
     {
         "id": "335",
         "name": "milotic",
-        "typos": [],
+        "typos": ["melotic"],
         "display_name": "Milotic"
     },
     {
@@ -2697,13 +2697,13 @@
     {
         "id": "450",
         "name": "necrozma",
-        "typos": ["necorzma"],
+        "typos": ["necorzma", "necrosma"],
         "display_name": "Necrozma"
     },
 	    {
         "id": "450_1",
         "name": "ultranecrozma",
-        "typos": ["ultra", "necrozmaultra"],
+        "typos": ["ultra", "necrozmaultra", "ultranecrosma"],
         "display_name": "Ultra Necrozma"
     },
     {
