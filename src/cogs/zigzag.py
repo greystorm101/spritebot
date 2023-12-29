@@ -208,6 +208,35 @@ class UnidentifiedOptions(ui.Select):
         await interaction.response.send_message(choice, delete_after=10, ephemeral=True)
         return True
 
+class ImmuneOptions(ui.Select):
+    """ Options available if user has immunity to their sprites being posted """
+    def __init__(self, thread: Thread):
+
+        # Set the options that will be presented inside the dropdown
+        options = [
+            discord.SelectOption(label='Clean', description='Remove Needs Feedback tag and add Other tag', emoji='🧺'),
+            discord.SelectOption(label='Manual', description="Don't do anything", emoji='🧀'),
+        ]
+        self.thread = thread
+        # The placeholder is what will be shown when no option is chosen
+        # The min and max values indicate we can only pick one of the three options
+        # The options parameter defines the dropdown options. We defined this above
+        super().__init__(placeholder='Choose action...', min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        choice = self.values[0]
+        if choice == 'Clean':
+            gal_tag = spritepost_tags["gallery"]
+            await clean_tags(self.thread, gal_tag)
+            message = "{}: Marked {} as already added to gallery".format(interaction.user, self.thread.jump_url)
+
+        elif choice == 'Manual':
+            message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
+
+        await interaction.message.edit(content = message)
+        await interaction.response.send_message(choice, delete_after=10, ephemeral=True)
+        return True
+
 
 class PostOptionsView(discord.ui.View):
     def __init__(self, thread: Thread, fusion: list, image: Attachment):
@@ -221,8 +250,10 @@ class PostOptionsView(discord.ui.View):
         super().__init__()
 
         # Adds the dropdown to our view object.
+        if is_user_immune(thread.owner):
+            self.add_item(ImmuneOptions(thread))
         
-        if fusion is False:
+        elif fusion is False:
             self.add_item(UnidentifiedOptions(thread))
         else:
             self.add_item(PostOptions(thread, fusion, image))
@@ -292,8 +323,8 @@ async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, 
         channel: channel to post message to
         fusion: list with head number as element 1 and bo
     """
-    if not check_if_user_can_be_posted(author):
-        await channel.send("User has a role that prevents automated posting of sprites", delete_after=30)
+    if is_user_immune(author):
+        await channel.send("User has a role that prevents automated posting of sprites", delete_after=30 ,mention_author=True)
         return
 
     filename = f"{fusion[0]}.{fusion[1]} by {author.name}.png"
@@ -333,6 +364,13 @@ async def send_noqa_notification(thread: Thread, noqaPost: Message):
     
     await thread.send(content = message)
 
+def is_user_immune(user: Member):
+    """Determines if a user has yanmega/posting immunity"""
+
+    role_names = [role.name for role in user.roles]
+    if ("Yanmega Immunity" in role_names) or ("Zigzag Immunity" in role_names):
+        return True
+    return False
 
 def _get_thread_pokemon_name(thread:Thread, image:Attachment):
     """
@@ -456,7 +494,11 @@ def _pretty_formatted_message(thread: Thread,
         if canidate_ids is False:
             gallery_info = ""
 
-    return "~~~~~~~~~~~~~~\n"+header+activity+candidate_info+gallery_info
+    full_message = "~~~~~~~~~~~~~~\n"+header+activity+candidate_info+gallery_info
+
+    if is_user_immune(thread.owner):
+        full_message += "\n *User Has Posting Immunity*"
+    return full_message
 
 async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:Bot):
 
@@ -487,6 +529,10 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
         return
     
     await check_and_load_cache(bot)
+
+    if is_user_immune(msg.author):
+        await ctx.channel.send("User is immune to automated sprite posting/harvesting", delete_after=20)
+        return
 
     image = msg.attachments[img_num-1]
     if location == "gallery":
