@@ -38,6 +38,6 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 bot_key = os.environ.get("BOT_SECRET")
 
-bot = SpriteBot(command_prefix='!', description=description, intents=intents, initial_extensions=["cogs.zigzag"])
-bot.run(bot_key)
+this_bot = SpriteBot(command_prefix='!', description=description, intents=intents, initial_extensions=["cogs.zigzag"])
+this_bot.run(bot_key)
 
