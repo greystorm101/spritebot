@@ -171,8 +171,8 @@
     {
         "id": "29",
         "name": "nidoran♀",
-        "typos": ["nidoran♀", "nidoranfemale", "nidoranf"],
-        "display_name": "Nidoran♀"
+        "typos": ["nidoran♀", "nidoranfemale", "nidoranf", "nidoran\u2640"],
+        "display_name": "Nidoran\u2640"
     },
     {
         "id": "30",
@@ -189,8 +189,8 @@
     {
         "id": "32",
         "name": "nidoran♂",
-        "typos": ["nidoran♂", "nidoramale", "nidoranm"],
-        "display_name": "Nidoran♂"
+        "typos": ["nidoran♂", "nidoramale", "nidoranm", "nidoran\u2642"],
+        "display_name": "Nidoran\u2642"
     },
     {
         "id": "33",
@@ -2025,7 +2025,7 @@
     {
         "id": "338",
         "name": "zoroark",
-        "typos": ["zorark"],
+        "typos": ["zorark", "soroark"],
         "display_name": "Zoroark"
     },
     {
@@ -2559,7 +2559,7 @@
     {
         "id": "427",
         "name": "snorunt",
-        "typos": [],
+        "typos": ["snowrunt"],
         "display_name": "Snorunt"
     },
     {
@@ -2715,7 +2715,7 @@
     {
         "id": "452",
         "name": "bewear",
-        "typos": [],
+        "typos": ["beware"],
         "display_name": "Bewear"
     },
     {
@@ -2775,7 +2775,7 @@
     {
         "id": "462",
         "name": "aurorus",
-        "typos": [],
+        "typos": ["aurorous", "auroros"],
         "display_name": "Aurorus"
     },
     {

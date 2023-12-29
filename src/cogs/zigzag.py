@@ -39,7 +39,7 @@ class ZigZag(Cog):
         print(spritework_channel.available_tags)
 
 
-    @command(name="oldest", pass_context=True,
+    @command(name="dig", pass_context=True,
              help ="Finds old threads with needs feedback tag. Run with `MM/DD/YY` to start at a certain date. Run with `reset` to start with 2 weeks ago",
              brief = "Finds old threads")
     async def oldest(self, ctx: Context, start_args:str = None):
@@ -456,6 +456,7 @@ async def _find_gallery_image(thread: Thread, pokemon_ids:list, gallery_channel:
     #                     author__id=thread_author.id)
     ids_as_str = f"{pokemon_ids[0]}.{pokemon_ids[1]}"
 
+    # msg = await discord.utils.get(gallery_channel.history(), author__name='Dave')
     async for post in gallery_channel.history(after=search_start_date, before=search_end_date, oldest_first=True):
         if post.author.id == thread_author.id:
             if ids_as_str in str(post.content) :

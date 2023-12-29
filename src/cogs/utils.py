@@ -58,6 +58,13 @@ def fusion_is_valid(id: str):
     """Returns true if the id number is a valid fusion, false otherwise"""
     return id in id_to_name_map().keys()
 
+def print_typo_list():
+    with open(JSON_FILE) as f:
+        data = json.loads(f.read())
+        typos_list = [item["display_name"]+ ": "+ str(item["typos"]) for item in data["pokemon"]]
+        for poke in typos_list:
+            print(poke)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("pokename")
@@ -66,6 +73,6 @@ if __name__ == "__main__":
     pokemon_name = args.pokename
     pokemon_id = raw_pokemon_name_to_id(pokemon_name)
     display_name = id_to_name_map()[pokemon_id]
-
     print("Input: {} Output: {}".format(pokemon_name, display_name))
+    
 
