@@ -849,7 +849,7 @@
     {
         "id": "142",
         "name": "aerodactyl",
-        "typos": [],
+        "typos": ["aeradactyl", "aerodactly"],
         "display_name": "Aerodactyl"
     },
     {
@@ -1509,7 +1509,7 @@
     {
         "id": "252",
         "name": "azurill",
-        "typos": ["azuril"],
+        "typos": ["azuril", "azurril"],
         "display_name": "Azurill"
     },
     {
@@ -1719,7 +1719,7 @@
     {
         "id": "287",
         "name": "gardevoir",
-        "typos": [],
+        "typos": ["garderoir"],
         "display_name": "Gardevoir"
     },
     {
@@ -2043,7 +2043,7 @@
     {
         "id": "341",
         "name": "groudon",
-        "typos": [],
+        "typos": ["groundon"],
         "display_name": "Groudon"
     },
     {
@@ -2187,7 +2187,7 @@
     {
         "id": "365",
         "name": "litwick",
-        "typos": ["litwic", "litwik"],
+        "typos": ["litwic", "litwik", "litwit"],
         "display_name": "Litwick"
     },
     {
@@ -2817,7 +2817,7 @@
     {
         "id": "469",
         "name": "bruxish",
-        "typos": ["broxish"],
+        "typos": ["broxish", "buxish"],
         "display_name": "Bruxish"
     }
     ]

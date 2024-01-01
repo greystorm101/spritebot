@@ -143,6 +143,7 @@ class ZigZag(Cog):
                            "Run again to search later, or you can run again with `reset` or a specific date `MM/DD/YY`".format(
                                self.most_recent_date,
                                thread.archive_timestamp))
+            self.most_recent_date = thread.archive_timestamp
 
         await ctx.send("Digging Complete!")
         
@@ -239,7 +240,7 @@ class UnidentifiedOptions(ui.Select):
         if choice == 'Clean':
             gal_tag = spritepost_tags["gallery"]
             await clean_tags(self.thread, gal_tag)
-            message = "{}: Marked {} as already added to gallery (bc I dont have an other tag setup in this server)".format(interaction.user, self.thread.jump_url)
+            message = "{}: Marked {} as already added to gallery".format(interaction.user, self.thread.jump_url)
 
         elif choice == 'Manual':
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
