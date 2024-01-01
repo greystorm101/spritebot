@@ -8,6 +8,7 @@ authors = ["Joanie <greystorm101@gmail.com>"]
 python = "^3.10"
 discord = "^2.3.2"
 python-dotenv = "^1.0.0"
+python-dateutil = "^2.8.2"
 
 
 [build-system]

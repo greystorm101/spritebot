@@ -1011,7 +1011,7 @@
     {
         "id": "169",
         "name": "crobat",
-        "typos": [],
+        "typos": ["crowbat"],
         "display_name": "Crobat"
     },
     {
@@ -1533,7 +1533,7 @@
     {
         "id": "256",
         "name": "honchkrow",
-        "typos": [],
+        "typos": ["honchcrow"],
         "display_name": "Honchkrow"
     },
     {
@@ -1995,7 +1995,7 @@
     {
         "id": "333",
         "name": "aggron",
-        "typos": [],
+        "typos": ["agron"],
         "display_name": "Aggron"
     },
     {
@@ -2187,7 +2187,7 @@
     {
         "id": "365",
         "name": "litwick",
-        "typos": ["litwic"],
+        "typos": ["litwic", "litwik"],
         "display_name": "Litwick"
     },
     {
@@ -2295,7 +2295,7 @@
     {
         "id": "383",
         "name": "bibarel",
-        "typos": [],
+        "typos": ["bibarle", "bibarle"],
         "display_name": "Bibarel"
     },
     {
@@ -2577,25 +2577,25 @@
     {
         "id": "430",
         "name": "oricoriobaile",
-        "typos": ["baile"],
+        "typos": ["baile", "bailestyle", "oricoriobailestyle"],
         "display_name": "Oricorio Baile"
     },
     {
         "id": "431",
         "name": "oricoriopompom",
-        "typos": ["pompom", "oricoriopom", "pom"],
+        "typos": ["pompom", "oricoriopom", "pom", "oricoriopompomstyle", "pompomstyle", "oricoriopomstyle", "pomstyle"],
         "display_name": "Oricorio Pom-Pom"
     },
     {
         "id": "432",
         "name": "oricoriopau",
-        "typos": ["pau"],
+        "typos": ["pau", "oricoriopaustyle", "paustyle"],
         "display_name": "Oricorio Pa'u"
     },
     {
         "id": "433",
         "name": "oricoriosensu",
-        "typos": ["sensu"],
+        "typos": ["sensu", "oricoriosensustyle", "sensustyle"],
         "display_name": "Oricorio Sensu"
     },
     {
@@ -2613,7 +2613,7 @@
     {
         "id": "436",
         "name": "carvanha",
-        "typos": [],
+        "typos": ["carvahna"],
         "display_name": "Carvanha"
     },
     {
@@ -2721,7 +2721,7 @@
     {
         "id": "453",
         "name": "dhelmise",
-        "typos": [],
+        "typos": ["delmise"],
         "display_name": "Dhelmise"
     },
     {
@@ -2807,6 +2807,12 @@
         "name": "meloettapirouette",
         "typos": ["meloettap", "meloettapiroette", "pirouette"],
         "display_name": "Meloetta Pirouette"
+    },
+    {
+        "id": "468",
+        "name": "cresselia",
+        "typos": ["crescellia", "cresselia", "creselia", "crescelia"],
+        "display_name": "Cresselia"
     },
     {
         "id": "469",
