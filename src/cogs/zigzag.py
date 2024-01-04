@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+import os
 from dateutil.relativedelta import *
 import io
 import time
@@ -13,33 +14,22 @@ from discord.channel import TextChannel
 from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map, fusion_is_valid
 
 # Defining configs and hard-coded vals
-# SPRITEWORK_CHANNEL_ID = 1185685268133593118 # test
-# SPRITEGALLERY_CHANNEL_ID = 1185991301645209610 # test
-# NOQA_CHANNEL_ID = 1187874415090868224 # test
+SPRITEWORK_CHANNEL_ID = None
+SPRITEGALLERY_CHANNEL_ID = None
+NOQA_CHANNEL_ID = None
 
-SPRITEWORK_CHANNEL_ID = 1050404143807873157 # PIF
-SPRITEGALLERY_CHANNEL_ID = 543958354377179176 # PIF
-NOQA_CHANNEL_ID = 1086137552391639122 # PIF
-# 1191165770667917452 # test
-# 1086137552391639122 # real
+NEEDSFEEDBACK_TAG_ID = None
+ADDEDTOGAL_TAG_ID = None
+HARVESTED_TAG_ID = None
+OTHER_TAG_ID = None
+NONIF_TAG_ID = None
 
-# NEEDSFEEDBACK_TAG_ID = 1185685810960420874 # test
-# ADDEDTOGAL_TAG_ID = 1185685841973084310 # test 
-# HARVESTED_TAG_ID = 1185685876978753657 # test 
-# NONIF_TAG_ID = 1186024872695042048 # test
-
-NEEDSFEEDBACK_TAG_ID = 1050404559496945715 # PIF
-ADDEDTOGAL_TAG_ID = 1050404607043575818 # PIF
-HARVESTED_TAG_ID = 1050404692678680696 # PIF
-OTHER_TAG_ID = 1051367034673434634 # PIF 
-NONIF_TAG_ID = 1058148169986342963 # PIF
-
+HARVEST_IMMUNITY_ID = None
+POST_IMMUNITY_ID = None
+DM_IMMUNITY_ID = None
 
 MAX_LOOKAHEAD_THEAD_TIME = 21 # Amount of time, in days, that we will check in the gallery after time of spritework post, 
 MAX_NUM_FEEDBACK_THREADS = 10 # Amount of feedback threads to find
-
-HARVEST_IMMUNITY_ID = 1191179006578532372
-POST_IMMUNITY_ID = 1191178850713993236
 
 GALLERY_FOOTER = "Note: This sprite was posted by a sprite manager or zigzagoon because it had gone unposted in spritework for over two weeks."\
                      "It may have an incorrect size, file name or other small issue. This will be fixed in the sprite pack!"
@@ -56,6 +46,7 @@ class ZigZag(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.most_recent_date = None
+        load_env_vars(bot.env)
 
     @command(name="tagids")
     async def tagids(self,  ctx: Context):
@@ -161,6 +152,7 @@ class ZigZag(Cog):
     async def noqa(self, ctx: Context, *args):
 
         await _manually_post_to_channel("noqa", ctx, args, self.bot)
+        await ctx.message.delete()
 
 async def setup(bot:Bot):
     await bot.add_cog(ZigZag(bot))
@@ -300,16 +292,68 @@ class PostOptionsView(discord.ui.View):
             self.add_item(PostOptions(thread, fusion, image))
             
 
+def load_env_vars(env: str):
+    """ Loads in env vars based on dev or prod. Makes me cry."""
+    is_dev = env == "dev"
+
+    global SPRITEWORK_CHANNEL_ID
+    SPRITEWORK_CHANNEL_ID = os.environ.get("DEV_SPRITEWORK_CHANNEL_ID") if is_dev else os.environ.get("SPRITEWORK_CHANNEL_ID")
+    SPRITEWORK_CHANNEL_ID = int(SPRITEWORK_CHANNEL_ID)
+
+    global SPRITEGALLERY_CHANNEL_ID
+    SPRITEGALLERY_CHANNEL_ID = os.environ.get("DEV_SPRITEGALLERY_CHANNEL_ID") if is_dev else os.environ.get("SPRITEGALLERY_CHANNEL_ID")
+    SPRITEGALLERY_CHANNEL_ID = int(SPRITEGALLERY_CHANNEL_ID)
+
+    global NOQA_CHANNEL_ID
+    NOQA_CHANNEL_ID = os.environ.get("DEV_NOQA_CHANNEL_ID") if is_dev else os.environ.get("NOQA_CHANNEL_ID")
+    NOQA_CHANNEL_ID = int(NOQA_CHANNEL_ID)
+
+    global NEEDSFEEDBACK_TAG_ID
+    NEEDSFEEDBACK_TAG_ID = os.environ.get("DEV_NEEDSFEEDBACK_TAG_ID") if is_dev else os.environ.get("NEEDSFEEDBACK_TAG_ID")
+    NEEDSFEEDBACK_TAG_ID = int(NEEDSFEEDBACK_TAG_ID)
+
+    global ADDEDTOGAL_TAG_ID
+    ADDEDTOGAL_TAG_ID = os.environ.get("DEV_ADDEDTOGAL_TAG_ID") if is_dev else os.environ.get("ADDEDTOGAL_TAG_ID")
+    ADDEDTOGAL_TAG_ID = int(ADDEDTOGAL_TAG_ID)
+
+    global HARVESTED_TAG_ID
+    HARVESTED_TAG_ID = os.environ.get("DEV_HARVESTED_TAG_ID") if is_dev else os.environ.get("HARVESTED_TAG_ID")
+    HARVESTED_TAG_ID = int(HARVESTED_TAG_ID)
+
+    global OTHER_TAG_ID
+    OTHER_TAG_ID = 0 if is_dev else os.environ.get("OTHER_TAG_ID")
+    OTHER_TAG_ID = int(OTHER_TAG_ID)
+
+    global NONIF_TAG_ID
+    NONIF_TAG_ID = os.environ.get("DEV_NONIF_TAG_ID") if is_dev else os.environ.get("NONIF_TAG_ID")
+    NONIF_TAG_ID = int(NONIF_TAG_ID)
+
+    global HARVEST_IMMUNITY_ID
+    HARVEST_IMMUNITY_ID = os.environ.get("DEV_HARVEST_IMMUNITY_ID") if is_dev else os.environ.get("HARVEST_IMMUNITY_ID")
+    HARVEST_IMMUNITY_ID = int(HARVEST_IMMUNITY_ID)
+
+    global POST_IMMUNITY_ID
+    POST_IMMUNITY_ID = os.environ.get("DEV_POST_IMMUNITY_ID") if is_dev else os.environ.get("POST_IMMUNITY_ID")
+    POST_IMMUNITY_ID = int(POST_IMMUNITY_ID)
+
+    global DM_IMMUNITY_ID
+    DM_IMMUNITY_ID = os.environ.get("DEV_DM_IMMUNITY_ID") if is_dev else os.environ.get("DM_IMMUNITY_ID")
+    DM_IMMUNITY_ID = int(DM_IMMUNITY_ID)
+
+
 async def check_and_load_cache(bot: Bot):
     """
     Makes sure the cache is filled with channel and tag names
     """
+    print(SPRITEGALLERY_CHANNEL_ID)
     if sprite_channels == {}:
+            print(SPRITEWORK_CHANNEL_ID)
             sprite_channels["spritework"] = bot.get_channel(SPRITEWORK_CHANNEL_ID) # SpritePost channel ID
             sprite_channels["gallery"] = bot.get_channel(SPRITEGALLERY_CHANNEL_ID) # SpritePost channel ID
             sprite_channels["noqa"] = bot.get_channel(NOQA_CHANNEL_ID) # SpritePost channel ID
 
     if spritepost_tags == {}:
+        print(sprite_channels)
         spritework_channel = sprite_channels["spritework"]
         spritepost_tags["feedback"] = spritework_channel.get_tag(NEEDSFEEDBACK_TAG_ID) # "Needs Feedback" tag ID
         spritepost_tags["gallery"]  = spritework_channel.get_tag(ADDEDTOGAL_TAG_ID) # "Needs Feedback" tag ID
@@ -403,7 +447,13 @@ async def send_galpost_notification(thread: Thread, galleryPost: Message):
               f"If you have any questions or would like to remove the post, please ping a sprite manager in this thread.\n{galleryPost.embeds[0].image.url}"
     
     await thread.send(content = message)
-    await thread.owner.send(content=message)
+    
+    if is_user_zigzag_muted(thread.owner):
+        return
+    dm_message = f"Hey {author.mention}, this Pokemon Infinite Fusion sprite has been posted to the sprite gallery by "\
+              f"a sprite manager or zigzagoon. You can see the gallery post here: {galleryPost.jump_url}\n"\
+              f"If you have any questions or would like to remove the post, please ping a sprite manager in this thread:{thread.jump_url}.\n{galleryPost.embeds[0].image.url}"
+    await thread.owner.send(content=dm_message)
     await thread.edit(archived=True)
 
 async def send_noqa_notification(thread: Thread, noqaPost: Message):
@@ -414,7 +464,14 @@ async def send_noqa_notification(thread: Thread, noqaPost: Message):
     
 
     await thread.send(content = message)
-    await thread.owner.send(content=message)
+    
+    if is_user_zigzag_muted(thread.owner):
+        return
+    
+    dm_message = f"Hey {author.mention}, due to inactivity this Pokemon Infinite Fusion sprite has been archived by "\
+              f"a sprite manager or zigzagoon.\n"\
+              f"If you have any questions or would like to remove the post, please ping a sprite manager in this thread: {thread.jump_url}.\n{noqaPost.embeds[0].image.url}"
+    await thread.owner.send(content=dm_message)
     await thread.edit(archived=True)
 
 def is_user_immune(user: Member):
@@ -439,6 +496,16 @@ def is_user_harvest_immune(user: Member):
     if (HARVEST_IMMUNITY_ID in role_ids):
         return True
     return False
+
+def is_user_zigzag_muted(user:Member):
+    if user is None:
+        return False
+    
+    role_ids = [role.id for role in user.roles]
+    if (DM_IMMUNITY_ID in role_ids):
+        return True
+    return False
+
 
 def _get_thread_pokemon_name(thread:Thread, image:Attachment):
     """
@@ -495,6 +562,8 @@ async def _get_candidate_info(thread:Thread):
     Returns none if there is no image found.
     """
     thread_author = thread.owner
+
+    print("Thread owner id: {}".format(thread.fetch_member(thread.owner_id)))
     image = None
 
     async for message in thread.history(oldest_first=False, limit=100):
@@ -536,10 +605,6 @@ async def find_gallery_image(thread: Thread, pokemon_ids:list, gallery_channel: 
     msg = discord.utils.find(lambda m: thread_match(m),
                                  cached_gal_list)
     
-    #No cache
-    # msg = await discord.utils.find(lambda m: thread_match(m),
-    #                             gallery_channel.history(after=search_start_date, before=search_end_date, oldest_first=True, limit=None))
-
 
     if msg is None:
         return False
@@ -584,12 +649,12 @@ def _pretty_formatted_message(thread: Thread,
     if thread.owner is None:
         print("Thread with url {} has none user".format(thread.jump_url))
         print(thread.owner)
-        owner_name = "Unable to parse username"
+        owner_name = "Unable to parse username."
     else:
         owner_name = thread.owner.name
 
     header =   'Thread: {} by {}\n'.format(thread.jump_url, owner_name)
-    activity = 'Created {}. Archived at {}.\n\n'.format(thread.created_at.strftime("%m/%d/%Y"), thread.archive_timestamp.strftime("%m/%d/%Y"))
+    activity = 'Created: *{}*. Archived: *{}*.\n\n'.format(thread.created_at.strftime("%m/%d/%Y"), thread.archive_timestamp.strftime("%m/%d/%Y"))
 
     # Format candidate section
     if candidate_image is False:
@@ -598,17 +663,17 @@ def _pretty_formatted_message(thread: Thread,
         candidate_info = "Candidate image: {}\n Unable to Identify Fusion\n".format(candidate_image)
     else:
         fusion_names = [id_to_name_map()[id] for id in canidate_ids]
-        candidate_info = "Candidate image: {} Fusion Identified: {}/{} ({}.{})\n".format(candidate_image, 
-                                                                                        fusion_names[0],
+        candidate_info = "Fusion Identified: \n## {}/{} ({}.{})\n Candidate image: {}\n".format(fusion_names[0],
                                                                                         fusion_names[1],
                                                                                         canidate_ids[0],
-                                                                                        canidate_ids[1])
+                                                                                        canidate_ids[1],
+                                                                                        candidate_image)
 
     # Format gallery section
     if gallery_post:
         gallery_info = "Gallery post found: {} Image: {}\n".format(gallery_post.jump_url, gallery_post.attachments[0].url)
     else:
-        gallery_info = "No matching sprite gallery post found\n"
+        gallery_info = "No matching sprite gallery post found automatically\n"
         if canidate_ids is False:
             gallery_info = ""
 
@@ -639,8 +704,6 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
 
     msg = await ctx.channel.fetch_message(replied_post_reference.message_id)
 
-    print("LOL")
-    print(msg.attachments)
     if msg.author.name == bot.user.name:
         print("Zigzag")
         pass
@@ -657,6 +720,7 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
 
     if is_user_immune(msg.author):
         await ctx.channel.send("User is immune to automated sprite posting/harvesting", delete_after=20)
+        await ctx.message.delete(delay=2)
         return
 
     image = msg.attachments[img_num-1]
