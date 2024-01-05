@@ -145,16 +145,17 @@ class ZigZag(Cog):
              brief = "Posts image to gallery")
     async def galpost(self, ctx: Context, *args):
 
-        await _manually_post_to_channel("gallery", ctx, args, self.bot)
         await ctx.message.delete()
+        await _manually_post_to_channel("gallery", ctx, args, self.bot)
+        
 
     @command(name="noqa", pass_context=True,
              help ="Finds old threads with needs feedback tag",
              brief = "Posts image to noqa")
     async def noqa(self, ctx: Context, *args):
 
-        await _manually_post_to_channel("noqa", ctx, args, self.bot)
         await ctx.message.delete()
+        await _manually_post_to_channel("noqa", ctx, args, self.bot)
 
 async def setup(bot:Bot):
     await bot.add_cog(ZigZag(bot))
@@ -723,6 +724,7 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
             return
     
         post = await post_to_channel(sprite_channels["gallery"], fusion_list, image, msg.author, footer_message=GALLERY_FOOTER, message=message)
+        await ctx.message.delete(delay=2)
         await send_galpost_notification(ctx.channel, msg.author, post)
 
 
@@ -734,6 +736,7 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
         
         footer_message = ""
         post = await post_to_channel(sprite_channels["noqa"], fusion_list, image, msg.author, footer_message=footer_message, message=message)
+        await ctx.message.delete(delay=2)
         await send_noqa_notification(ctx.channel, msg.author, post)
 
     await ctx.message.delete(delay=2)
