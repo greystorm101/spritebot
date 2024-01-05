@@ -247,6 +247,7 @@ class UnidentifiedOptions(ui.Select):
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
 
         await interaction.message.edit(content = message)
+        await interaction.response.defer()
         return True
 
 class ImmuneOptions(ui.Select):
@@ -275,6 +276,7 @@ class ImmuneOptions(ui.Select):
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
 
         await interaction.message.edit(content = message)
+        await interaction.response.defer()
         return True
 
 
