@@ -32,14 +32,17 @@ class Chansey(Cog):
             
             await asyncio.sleep(1) # We run into an error sometimes if we read or send the message too fast after thread was created
 
+            if ("float" in thread.name) or ("align" in thread.name) or ("off center" in thread.name):
+                message += "\n\nA reminder that floating sprites in-game are **not** sprite errors"
+
             # Ensure fusion ids included in title, and there should be 2 if its a misnumber
             if not valid_ids_in_title(thread):
                 problem = True
                 message += "\n\n### Please make sure you include the relevant pokemon's ids in your post title.\nThis not only speeds up the process for our volunteers, "\
-                            "but it also helps others search for issues that have already been reported.\n"
+                            "but it also helps others search for issues that have already been reported."
                 
                 if "Misnumbered" in tags:
-                    message+=" **Since this report is a misnumbering issue, please make sure to include the sprite's current ID and correct ID**"
+                    message+="\n**Since this report is a misnumbering issue, please make sure to include the sprite's current ID and correct ID**"
                 
                 # Try to fix title if we can parse pokemon names from the title
                 ids_to_add = ids_to_add_to_title(thread)
