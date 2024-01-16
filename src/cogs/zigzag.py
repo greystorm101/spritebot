@@ -171,6 +171,8 @@ class PostOptions(ui.Select):
             discord.SelectOption(label='Post', description='Post the candidate image to sprite gallery', emoji='📮'),
             discord.SelectOption(label='Harvest', description='Post candidate image to noqa', emoji='🖌'),
             discord.SelectOption(label='Clean', description='Remove Needs Feedback tag adds Added to Gallery tag', emoji='🧺'),
+            discord.SelectOption(label='Non-IF', description='Remove Needs Feedback tag adds Non-if tag', emoji='🙃'),
+            discord.SelectOption(label='Other', description='Remove Needs Feedback tag adds other tag', emoji='🤔'),
             discord.SelectOption(label='Manual', description="Don't do anything", emoji='🧀'),
         ]
 
@@ -212,6 +214,16 @@ class PostOptions(ui.Select):
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as already added to gallery".format(interaction.user, self.thread.jump_url)
 
+        elif choice == 'Non-IF':
+            gal_tag = spritepost_tags["non-if"]
+            await clean_tags(self.thread, gal_tag)
+            message = "{}: Marked {} as non-if".format(interaction.user, self.thread.jump_url)
+
+        elif choice == 'Other':
+            gal_tag = spritepost_tags["other"]
+            await clean_tags(self.thread, gal_tag)
+            message = "{}: Marked {} as other".format(interaction.user, self.thread.jump_url)
+
         elif choice == 'Manual':
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
 
@@ -229,6 +241,8 @@ class UnidentifiedOptions(ui.Select):
         # Set the options that will be presented inside the dropdown
         options = [
             discord.SelectOption(label='Clean', description='Remove Needs Feedback tag and add Other tag', emoji='🧺'),
+            discord.SelectOption(label='Non-IF', description='Remove Needs Feedback tag adds Non-if tag', emoji='🙃'),
+            discord.SelectOption(label='Other', description='Remove Needs Feedback tag adds other tag', emoji='🤔'),
             discord.SelectOption(label='Manual', description="Don't do anything", emoji='🧀'),
         ]
         self.thread = thread
@@ -243,6 +257,16 @@ class UnidentifiedOptions(ui.Select):
             gal_tag = spritepost_tags["gallery"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as already added to gallery".format(interaction.user, self.thread.jump_url)
+
+        elif choice == 'Non-IF':
+            gal_tag = spritepost_tags["non-if"]
+            await clean_tags(self.thread, gal_tag)
+            message = "{}: Marked {} as non-if".format(interaction.user, self.thread.jump_url)
+
+        elif choice == 'Other':
+            gal_tag = spritepost_tags["other"]
+            await clean_tags(self.thread, gal_tag)
+            message = "{}: Marked {} as other".format(interaction.user, self.thread.jump_url)
 
         elif choice == 'Manual':
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
@@ -258,6 +282,8 @@ class ImmuneOptions(ui.Select):
         # Set the options that will be presented inside the dropdown
         options = [
             discord.SelectOption(label='Clean', description='Remove Needs Feedback tag and add gallery tag', emoji='🧺'),
+            discord.SelectOption(label='Non-IF', description='Remove Needs Feedback tag adds Non-if tag', emoji='🙃'),
+            discord.SelectOption(label='Other', description='Remove Needs Feedback tag adds other tag', emoji='🤔'),
             discord.SelectOption(label='Manual', description="Don't do anything", emoji='🧀'),
         ]
         self.thread = thread
@@ -272,6 +298,16 @@ class ImmuneOptions(ui.Select):
             gal_tag = spritepost_tags["gallery"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as already added to gallery".format(interaction.user, self.thread.jump_url)
+
+        elif choice == 'Non-IF':
+            gal_tag = spritepost_tags["non-if"]
+            await clean_tags(self.thread, gal_tag)
+            message = "{}: Marked {} as non-if".format(interaction.user, self.thread.jump_url)
+
+        elif choice == 'Other':
+            gal_tag = spritepost_tags["other"]
+            await clean_tags(self.thread, gal_tag)
+            message = "{}: Marked {} as other".format(interaction.user, self.thread.jump_url)
 
         elif choice == 'Manual':
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
@@ -366,6 +402,7 @@ async def check_and_load_cache(bot: Bot):
         spritepost_tags["gallery"]  = spritework_channel.get_tag(ADDEDTOGAL_TAG_ID) # "Needs Feedback" tag ID
         spritepost_tags["harvested"]  = spritework_channel.get_tag(HARVESTED_TAG_ID) # "Needs Feedback" tag ID
         spritepost_tags["non-if"]  = spritework_channel.get_tag(NONIF_TAG_ID) # "Needs Feedback" tag ID
+        spritepost_tags["other"]  = spritework_channel.get_tag(OTHER_TAG_ID) # "Needs Feedback" tag ID
  
  
 
@@ -434,6 +471,7 @@ async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, 
     
 
     embedded_message = Embed(title=gal_message_title, color=16764242)
+    
     if author.avatar != None:
         embedded_message.set_author(name=author, icon_url=author.avatar.url)
     else:

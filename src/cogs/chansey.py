@@ -21,6 +21,8 @@ class Chansey(Cog):
         """
         Listen for an error thread to be created, and react depending on the content in the thread
         """
+        await asyncio.sleep(2) # We run into an error sometimes if we read or send the message too fast after thread was created
+
         if thread.parent_id == ERROR_CHANNEL_ID:
             problem = False
 
@@ -29,8 +31,6 @@ class Chansey(Cog):
             tags = [tag.name for tag in thread.applied_tags]
             message = f"Hey {thread.owner.mention},\nThanks for your sprite error submission. While you wait for a Chansey to start reviewing this ticket, "\
                       f"please make sure you've read through {GUIDELINES_THREAD.jump_url}."
-            
-            await asyncio.sleep(1) # We run into an error sometimes if we read or send the message too fast after thread was created
 
             if ("float" in thread.name) or ("align" in thread.name) or ("off center" in thread.name):
                 message += "\n\nA reminder that floating sprites in-game are **not** sprite errors"
