@@ -56,7 +56,7 @@ class Chansey(Cog):
                     problem = True
                     message+="\n\n### Remember to tag the original fusion artist if you are reporting an error on a sprite that is not yours."
         
-        await thread.send(content = message)
+            await thread.send(content = message)
 
 async def setup(bot:Bot):
     await bot.add_cog(Chansey(bot))

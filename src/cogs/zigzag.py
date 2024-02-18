@@ -705,7 +705,10 @@ def _pretty_formatted_message(thread: Thread,
 
     # Format gallery section
     if gallery_post:
-        gallery_info = "Gallery post found: {} Image: {}\n".format(gallery_post.jump_url, gallery_post.attachments[0].url)
+        if len(gallery_post.attachments) != 0:
+            gallery_info = "Gallery post found: {} Image: {}\n".format(gallery_post.jump_url, gallery_post.attachments[0].url)
+        else:
+            gallery_info = "Gallery post found: {} **Image not attached**\n".format(gallery_post.jump_url)
     else:
         gallery_info = "No matching sprite gallery post found automatically\n"
         if canidate_ids is False:
@@ -723,7 +726,7 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
     arg_results = await _parse_channelpost_args(args)
     if arg_results is None:
         usage_message = "Usage (must be in reply to a message): `PicNum[Optional] Head/Body message[optional]`\nFusions can be names or id numbers"
-        await ctx.reply(usage_message, ephemeral=True, delete_after=10)
+        await ctx.send(usage_message, delete_after=10, ephemeral=True)
         await ctx.message.delete(delay=2)
         return
     img_num, fusion_list, message = arg_results
@@ -732,21 +735,17 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
     replied_post_reference = ctx.message.reference
     if replied_post_reference is None:
         error_message = "Please reply to a message that has an image to post"
-        await ctx.reply(error_message, ephemeral=True, delete_after=6)
+        await ctx.send(error_message, ephemeral=True, delete_after=6)
         await ctx.message.delete(delay=2)
         return
 
     msg = await ctx.channel.fetch_message(replied_post_reference.message_id)
 
-    # if msg.author.name == bot.user.name:
-    #     print("Zigzag")
-    #     pass
-
     # Make sure there is an attachment on the message
     attachments = msg.attachments
     if len(attachments) <= img_num-1:
         error_message = "Message attachment out of range"
-        await ctx.reply(error_message, ephemeral=True, delete_after=6)
+        await ctx.send(error_message, ephemeral=True, delete_after=6)
         await ctx.message.delete(delay=2)
         return
     
@@ -754,28 +753,52 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
 
     image = msg.attachments[img_num-1]
 
+    
+    # If the user is not the author of the post, warn the user
+    sprite_author = msg.author
+    is_og_author = True
 
+    if msg.channel.owner != msg.author:
+        warning_message = "*This image is not from the post author.* Post will be credited to original author."
+        await ctx.send(warning_message, ephemeral=True, delete_after=10)
+        is_og_author = False
+        sprite_author = msg.channel.owner
+        
     if location == "gallery":
+        # Check for posting immunity. Check message and thread author if they are different people
         if is_user_post_immune(msg.author):
-            await ctx.channel.send("User is immune to automated sprite posting", delete_after=20)
+            await ctx.send("User is immune to automated sprite posting", delete_after=20)
             await ctx.message.delete(delay=2)
             return
-    
-        post = await post_to_channel(sprite_channels["gallery"], fusion_list, image, msg.author, footer_message=GALLERY_FOOTER, message=message)
+        if not is_og_author:
+            if is_user_post_immune(sprite_author):
+                await ctx.send("Message author is immune to automated sprite posting", delete_after=20)
+                await ctx.message.delete(delay=2)
+                return
+
+        post = await post_to_channel(sprite_channels["gallery"], fusion_list, image, sprite_author, footer_message=GALLERY_FOOTER, message=message)
         await ctx.message.delete(delay=2)
-        await send_galpost_notification(ctx.channel, msg.author, post)
+        await clean_tags(ctx.channel, spritepost_tags["gallery"])
+        await send_galpost_notification(ctx.channel, sprite_author, post)
 
 
     elif location == "noqa":
+        # Check for harvest immunity. Check message and thread author if they are different people
         if is_user_harvest_immune(msg.author):
-            await ctx.channel.send("User is immune to automated sprite harvesting", delete_after=20)
+            await ctx.send("User is immune to automated sprite harvesting", delete_after=20)
             await ctx.message.delete(delay=2)
             return
+        if not is_og_author:
+            if is_user_harvest_immune(sprite_author):
+                await ctx.send("Message author is immune to automated sprite harvesting", delete_after=20)
+                await ctx.message.delete(delay=2)
+                return
         
         footer_message = ""
-        post = await post_to_channel(sprite_channels["noqa"], fusion_list, image, msg.author, footer_message=footer_message, message=message)
+        post = await post_to_channel(sprite_channels["noqa"], fusion_list, image, sprite_author, footer_message=footer_message, message=message)
         await ctx.message.delete(delay=2)
-        await send_noqa_notification(ctx.channel, msg.author, post)
+        await clean_tags(ctx.channel, spritepost_tags["harvested"])
+        await send_noqa_notification(ctx.channel, sprite_author, post)
 
     await ctx.message.delete(delay=2)
 

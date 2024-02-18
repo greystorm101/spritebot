@@ -15,13 +15,13 @@
     {
         "id": "3",
         "name": "venusaur",
-        "typos": ["venasaur", "venussauro"],
+        "typos": ["venasaur", "venussauro", "venosaur"],
         "display_name": "Venusaur"
     },
     {
         "id": "4",
         "name": "charmander",
-        "typos": [],
+        "typos": ["chamander"],
         "display_name": "Charmander"
     },
     {
@@ -447,7 +447,7 @@
     {
         "id": "75",
         "name": "graveler",
-        "typos": ["gravler"],
+        "typos": ["gravler", "graveller"],
         "display_name": "Graveler"
     },
     {
@@ -1515,7 +1515,7 @@
     {
         "id": "253",
         "name": "wynaut",
-        "typos": [],
+        "typos": ["waynut", "wyanut"],
         "display_name": "Wynaut"
     },
     {
@@ -1605,7 +1605,7 @@
     {
         "id": "268",
         "name": "magmortar",
-        "typos": [],
+        "typos": ["magmotar"],
         "display_name": "Magmortar"
     },
     {
@@ -2073,7 +2073,7 @@
     {
         "id": "346",
         "name": "regigigas",
-        "typos": [],
+        "typos": ["regigigias"],
         "display_name": "Regigigas"
     },
     {
@@ -2109,7 +2109,7 @@
     {
         "id": "352",
         "name": "roserade",
-        "typos": [],
+        "typos": ["roseraid"],
         "display_name": "Roserade"
     },
     {
@@ -2199,7 +2199,7 @@
     {
         "id": "367",
         "name": "chandelure",
-        "typos": [],
+        "typos": ["chsndelure"],
         "display_name": "Chandelure"
     },
     {
@@ -2259,7 +2259,7 @@
     {
         "id": "377",
         "name": "hydreigon",
-        "typos": [],
+        "typos": ["hydeigon"],
         "display_name": "Hydreigon"
     },
     {
@@ -2283,7 +2283,7 @@
     {
         "id": "381",
         "name": "jirachi",
-        "typos": [],
+        "typos": ["jirachie"],
         "display_name": "Jirachi"
     },
     {
@@ -2445,7 +2445,7 @@
     {
         "id": "408",
         "name": "cottonee",
-        "typos": [],
+        "typos": ["cotonee","cottone", "cotone"],
         "display_name": "Cottonee"
     },
     {
@@ -2541,7 +2541,7 @@
     {
         "id": "424",
         "name": "scolipede",
-        "typos": [],
+        "typos": ["scoliopede", "scolopede"],
         "display_name": "Scolipede"
     },
     {
@@ -2565,7 +2565,7 @@
     {
         "id": "428",
         "name": "glalie",
-        "typos": [],
+        "typos": ["glaile"],
         "display_name": "Glalie"
     },
     {
@@ -2781,7 +2781,7 @@
     {
         "id": "463",
         "name": "rockruff",
-        "typos": ["rocruff"],
+        "typos": ["rocruff", "rochruff"],
         "display_name": "Rockruff"
     },
     {
@@ -2799,7 +2799,7 @@
     {
         "id": "466",
         "name": "meloettaaria",
-        "typos": ["meloetta", "meloettaa", "meloette"],
+        "typos": ["meloetta", "meloettaa", "meloette", "maloeta"],
         "display_name": "Meloetta Aria"
     },
     {
