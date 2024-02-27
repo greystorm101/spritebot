@@ -758,7 +758,7 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
     sprite_author = msg.author
     is_og_author = True
 
-    if msg.channel.owner != msg.author:
+    if (msg.channel.owner != msg.author) and (msg.channel.owner != None):
         warning_message = "*This image is not from the post author.* Post will be credited to original author."
         await ctx.send(warning_message, ephemeral=True, delete_after=10)
         is_og_author = False
