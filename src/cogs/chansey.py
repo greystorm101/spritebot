@@ -1,10 +1,10 @@
 import asyncio
 import os
-from discord.ext.commands import Bot, Cog, Context, command, has_role, has_any_role
 
-from discord import ForumTag, Member, Thread, Attachment, Message, ui, Embed, User, Client, client
-import discord
-from cogs.utils import clean_pokemon_string, fusion_is_valid, raw_pokemon_name_to_id
+from discord import Thread
+from discord.ext.commands import Bot, Cog
+
+from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id
 
 ERROR_CHANNEL_ID = None
 GUIDELINES_THREAD_ID = None

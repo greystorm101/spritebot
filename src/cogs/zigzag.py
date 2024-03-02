@@ -1,15 +1,13 @@
-from datetime import timedelta, datetime
-import os
-from dateutil.relativedelta import *
 import io
+import os
 import time
-import sys
+from datetime import timedelta, datetime
 
-import pickle
-from discord.ext.commands import Bot, Cog, Context, command, has_role, has_any_role
-from discord import ForumTag, Member, Thread, Attachment, Message, ui, Embed, User
 import discord
+from dateutil.relativedelta import *
+from discord import ForumTag, Member, Thread, Attachment, Message, ui, Embed, User
 from discord.channel import TextChannel
+from discord.ext.commands import Bot, Cog, Context, command, has_any_role
 
 from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map, fusion_is_valid
 
