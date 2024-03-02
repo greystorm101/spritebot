@@ -19,7 +19,7 @@ class Smeargle(Cog):
         self.load_env_vars()
 
     def load_env_vars(self):
-        pass  # TODO: Move a some constants to the env file
+        pass  # TODO: Move a some constants to the env file and load them here
 
     @Cog.listener("on_message")
     async def on_message(self, message: discord.Message):
@@ -31,7 +31,6 @@ class Smeargle(Cog):
 
         attachments = message.reference.resolved.attachments
 
-        logging.info(f"Found {len(attachments)} attachments")
         for attachment in attachments:
             filename = attachment.filename
 
@@ -40,12 +39,9 @@ class Smeargle(Cog):
             battle_image = self.battleImageCreator.generate_battle_image(filename, image)
 
             if battle_image is None:
-                logging.warning("Failed to create image")
-                continue
-
-            logging.info("Created image, sending to Discord")
-
-            await self._send_battle_image(battle_image, attachment.filename, message)
+                await self._send_invalid_id(image, attachment.filename, message)
+            else:
+                await self._send_battle_image(battle_image, attachment.filename, message)
 
     @staticmethod
     async def _send_battle_image(image: Image, filename: str, message: Message):
@@ -56,6 +52,20 @@ class Smeargle(Cog):
         file = discord.File(buffer, filename=filename)
 
         embed = discord.Embed()
+        embed.set_image(url=f"attachment://{filename}")
+
+        await message.channel.send(file=file, embed=embed)
+
+    @staticmethod
+    async def _send_invalid_id(image: Image, filename: str, message: Message):
+        buffer = io.BytesIO()
+        image.save(buffer, "png")
+        buffer.seek(0)
+
+        file = discord.File(buffer, filename=filename)
+
+        embed = discord.Embed(title="Invalid filename",
+                              description="Filename must be a valid fusion filename. E.g. 293.59.png")
         embed.set_image(url=f"attachment://{filename}")
 
         await message.channel.send(file=file, embed=embed)
