@@ -73,9 +73,10 @@ class Smeargle(Cog):
 
 
 @dataclass
-class Offset:
+class SpriteOffset:
     player_offset: tuple[int, int]
     enemy_offset: tuple[int, int]
+    altitude: int
 
 
 @dataclass
@@ -91,33 +92,63 @@ class BattleImageCreator:
         self.battles = self._generate_battles(self.basePath)
         self.spriteOffsets = self._generate_sprite_offsets()
 
-    def _generate_sprite_offsets(self) -> dict[Any, Offset]:
+    def generate_battle_image(
+            self, filename: str, image: Image, areas: Iterable[str]
+    ) -> Image:
+        image = image.convert("RGBA")
+
+        # TODO: Regex for single ID
+        regex_result = re.search(r"\d+\.(\d+)", filename)
+        if regex_result is None:
+            return
+
+        body_id = regex_result.group(1)
+        area = self._get_area(areas)
+        battle = self.battles[area]
+
+        self._add_player_sprite(
+            battle, image, self.spriteOffsets[body_id]
+        )
+        self._add_enemy_sprite(battle, image, self.spriteOffsets[body_id])
+
+        battle = battle.image.resize(
+            (battle.image.width * 3, battle.image.height * 3),
+            resample=Resampling.NEAREST,
+        )
+
+        return battle
+
+    def _generate_sprite_offsets(self) -> dict[Any, SpriteOffset]:
         with open(Path(self.basePath, "pokemon.txt")) as file:
-            data = file.read()
-
-        ids = re.findall(r"\[(\d+)]", data)
-
-        player_offsets = list(
-            zip(
-                tuple(
-                    [int(el) for el in re.findall(r"BattlerPlayerX = (-?\d+)", data)]
-                ),
-                tuple(
-                    [int(el) for el in re.findall(r"BattlerPlayerY = (-?\d+)", data)]
-                ),
-            )
-        )
-
-        enemy_offsets = list(
-            zip(
-                tuple([int(el) for el in re.findall(r"BattlerEnemyX = (-?\d+)", data)]),
-                tuple([int(el) for el in re.findall(r"BattlerEnemyY = (-?\d+)", data)]),
-            )
-        )
+            segments = file.read().split("#-------------------------------")
 
         offsets = {}
-        for ind, el in enumerate(ids):
-            offsets[el] = Offset(player_offsets[ind], enemy_offsets[ind])
+        for segment in segments:
+            pokemon_id = re.search(r"\[(\d+)]", segment)
+            battler_player_x = re.search(r"BattlerPlayerX = (-?\d+)", segment)
+            battler_player_y = re.search(r"BattlerPlayerY = (-?\d+)", segment)
+            battler_enemy_x = re.search(r"BattlerEnemyX = (-?\d+)", segment)
+            battler_enemy_y = re.search(r"BattlerEnemyY = (-?\d+)", segment)
+            battler_altitude = re.search(r"BattlerAltitude = (-?\d+)", segment)
+
+            if None in (
+                    pokemon_id,
+                    battler_player_x,
+                    battler_player_y,
+                    battler_enemy_x,
+                    battler_enemy_y,
+            ):
+                continue
+
+            offsets[pokemon_id.group(1)] = SpriteOffset(
+                (int(battler_player_x.group(1)), int(battler_player_y.group(1))),
+                (int(battler_enemy_x.group(1)), int(battler_enemy_y.group(1))),
+                (
+                    0
+                    if battler_altitude is None
+                    else int(battler_altitude.group(1))
+                ),
+            )
 
         return offsets
 
@@ -147,7 +178,9 @@ class BattleImageCreator:
 
         return battles
 
-    def _generate_battle(self, player_base_path: Path, enemy_base_path: Path, background_path: Path) -> Battle:
+    def _generate_battle(
+            self, player_base_path: Path, enemy_base_path: Path, background_path: Path
+    ) -> Battle:
         player_base = self.open_image(player_base_path)
         enemy_base = self.open_image(enemy_base_path)
         background = self.open_image(background_path)
@@ -171,49 +204,41 @@ class BattleImageCreator:
 
         return Battle(background, player_base_position, enemy_base_position)
 
-    def add_player_sprite(self, battle: Battle, player_sprite: Image, offset: tuple[int, int]) -> None:
+    def _add_player_sprite(
+            self, battle: Battle, player_sprite: Image, sprite_offset: SpriteOffset
+    ) -> None:
         sprite = self.transform_player_sprite(player_sprite)
 
-        player_bottom_centre_position = self.get_player_bottom_centre_position(battle.image)
+        player_bottom_centre_position = self.get_player_bottom_centre_position(
+            battle.image
+        )
         position = (
-            round(player_bottom_centre_position[0] - (sprite.width / 2)) + offset[0] - 2,
-            round(player_bottom_centre_position[1] - sprite.height) + 20 + offset[1]
+            round(player_bottom_centre_position[0] - (sprite.width / 2))
+            + sprite_offset.player_offset[0]
+            - 2,
+            round(player_bottom_centre_position[1] - sprite.height) + 20 + sprite_offset.player_offset[1],
         )
 
         battle.image.paste(sprite, position, sprite)
 
-    def add_enemy_sprite(self, battle: Battle, enemy_sprite: Image, offset: tuple[int, int]) -> None:
+    def _add_enemy_sprite(
+            self, battle: Battle, enemy_sprite: Image, sprite_offset: SpriteOffset
+    ) -> None:
         sprite = self.transform_enemy_sprite(enemy_sprite)
 
-        enemy_bottom_centre_position = self.get_enemy_bottom_centre_position(battle.image)
-        # TODO: Use BattlerAltitude in height equation
+        enemy_bottom_centre_position = self.get_enemy_bottom_centre_position(
+            battle.image
+        )
+
         position = (
-            round(enemy_bottom_centre_position[0] - (sprite.width / 2)) + offset[0] + 2,
-            round(enemy_bottom_centre_position[1] - (sprite.height / 2)) + 4 + offset[1]
+            round(enemy_bottom_centre_position[0] - (sprite.width / 2)) + sprite_offset.enemy_offset[0] + 2,
+            round(enemy_bottom_centre_position[1] - (sprite.height / 2))
+            + 4
+            + sprite_offset.enemy_offset[1]
+            - (sprite_offset.altitude * 3),
         )
 
         battle.image.paste(sprite, position, sprite)
-
-    def generate_battle_image(self, filename: str, image: Image, areas: Iterable[str]) -> Image:
-        image = image.convert("RGBA")
-
-        regex_result = re.search(r"\d+\.(\d+)", filename)
-        if regex_result is None:
-            return
-
-        body_id = regex_result.group(1)
-        area = self._get_area(areas)
-        battle = self.battles[area]
-
-        self.add_player_sprite(battle, image, self.spriteOffsets[body_id].player_offset)
-        self.add_enemy_sprite(battle, image, self.spriteOffsets[body_id].enemy_offset)
-
-        battle = battle.image.resize(
-            (battle.image.width * 3, battle.image.height * 3),
-            resample=Resampling.NEAREST,
-        )
-
-        return battle
 
     def _get_area(self, areas):
         for area in areas:
