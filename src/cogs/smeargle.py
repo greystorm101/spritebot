@@ -1,5 +1,4 @@
 import io
-import logging
 import random
 import re
 from dataclasses import dataclass
@@ -79,15 +78,20 @@ class Offset:
     enemy_offset: tuple[int, int]
 
 
+@dataclass
+class Battle:
+    image: Image
+    player_base_position: tuple[int, int]
+    enemy_base_position: tuple[int, int]
+
+
 class BattleImageCreator:
     def __init__(self):
-        self.enemySpritePos = (290, 19)  # TODO: Make these work off the dynamic base positions
-        self.playerSpritePos = (-20, 30)  # TODO: Make these work off the dynamic base positions
         self.basePath = Path("smeargle-data")
-        self.backgrounds = self._generate_bases(self.basePath)
-        self.offsets = self._generate_offsets()
+        self.battles = self._generate_battles(self.basePath)
+        self.spriteOffsets = self._generate_sprite_offsets()
 
-    def _generate_offsets(self) -> dict[Any, Offset]:
+    def _generate_sprite_offsets(self) -> dict[Any, Offset]:
         with open(Path(self.basePath, "pokemon.txt")) as file:
             data = file.read()
 
@@ -117,59 +121,78 @@ class BattleImageCreator:
 
         return offsets
 
-    def _generate_bases(self, base_path: Path | str) -> dict[str, Image]:
-        areas = [child for child in Path(base_path, "images").iterdir() if child.is_dir()]
+    def _generate_battles(self, base_path: Path | str) -> dict[str, Battle]:
+        areas = [
+            child for child in Path(base_path, "images").iterdir() if child.is_dir()
+        ]
 
-        backgrounds = {}
+        battles = {}
         for area in areas:
             player_base = Path(area, "player-base.png")
             enemy_base = Path(area, "enemy-base.png")
             background = Path(area, "background.png")
 
-            if any((not player_base.is_file(), not enemy_base.is_file(), not background.is_file())):
-                logging.warning(f"{area} is missing a player-base.png, enemy-base.png or background.png")
+            if any(
+                    (
+                            not player_base.is_file(),
+                            not enemy_base.is_file(),
+                            not background.is_file(),
+                    )
+            ):
                 continue
 
-            backgrounds[area.name] = self._generate_base(player_base, enemy_base, background)
+            battles[area.name] = self._generate_battle(
+                player_base, enemy_base, background
+            )
 
-        return backgrounds
+        return battles
 
-    def _generate_base(self, player_base_path: Path, enemy_base_path: Path, background_path: Path):
+    def _generate_battle(self, player_base_path: Path, enemy_base_path: Path, background_path: Path) -> Battle:
         player_base = self.open_image(player_base_path)
         enemy_base = self.open_image(enemy_base_path)
         background = self.open_image(background_path)
 
-        player_base_position = (-75, 303 - player_base.height)
-        enemy_base_position = (248, 112)
+        player_bottom_centre_position = self.get_player_bottom_centre_position(
+            background
+        )
+        player_base_position = (
+            round(player_bottom_centre_position[0] - (player_base.width / 2)),
+            player_bottom_centre_position[1] - player_base.height,
+        )
+
+        enemy_bottom_centre_position = self.get_enemy_bottom_centre_position(background)
+        enemy_base_position = (
+            round(enemy_bottom_centre_position[0] - (enemy_base.width / 2)),
+            enemy_bottom_centre_position[1],
+        )
 
         background.paste(player_base, player_base_position, player_base)
         background.paste(enemy_base, enemy_base_position, enemy_base)
 
-        return background
+        return Battle(background, player_base_position, enemy_base_position)
 
-    def add_player_sprite(self, background: Image, player_sprite: Image, offset: tuple[int, int]):
+    def add_player_sprite(self, battle: Battle, player_sprite: Image, offset: tuple[int, int]) -> None:
         sprite = self.transform_player_sprite(player_sprite)
 
-        # TODO: position is player_base_position + generic_offset + sprite_specific_offset
+        player_bottom_centre_position = self.get_player_bottom_centre_position(battle.image)
         position = (
-            self.playerSpritePos[0] + offset[0],
-            self.playerSpritePos[1] + offset[1],
+            round(player_bottom_centre_position[0] - (sprite.width / 2)) + offset[0] - 2,
+            round(player_bottom_centre_position[1] - sprite.height) + 20 + offset[1]
         )
 
-        background.paste(sprite, position, sprite)
+        battle.image.paste(sprite, position, sprite)
 
-    def add_enemy_sprite(self, background: Image, enemy_sprite: Image, offset: tuple[int, int]):
+    def add_enemy_sprite(self, battle: Battle, enemy_sprite: Image, offset: tuple[int, int]) -> None:
         sprite = self.transform_enemy_sprite(enemy_sprite)
 
-        # TODO: position is player_base_position + generic_offset + sprite_specific_offset
+        enemy_bottom_centre_position = self.get_enemy_bottom_centre_position(battle.image)
+        # TODO: Use BattlerAltitude in height equation
         position = (
-            self.enemySpritePos[0] + offset[0],
-            self.enemySpritePos[1] + offset[1],
+            round(enemy_bottom_centre_position[0] - (sprite.width / 2)) + offset[0] + 2,
+            round(enemy_bottom_centre_position[1] - (sprite.height / 2)) + 4 + offset[1]
         )
 
-        background.paste(sprite, position, sprite)
-
-        return background
+        battle.image.paste(sprite, position, sprite)
 
     def generate_battle_image(self, filename: str, image: Image, areas: Iterable[str]) -> Image:
         image = image.convert("RGBA")
@@ -180,21 +203,24 @@ class BattleImageCreator:
 
         body_id = regex_result.group(1)
         area = self._get_area(areas)
-        background = self.backgrounds[area].copy()
+        battle = self.battles[area]
 
-        self.add_player_sprite(background, image, self.offsets[body_id].player_offset)
-        self.add_enemy_sprite(background, image, self.offsets[body_id].enemy_offset)
+        self.add_player_sprite(battle, image, self.spriteOffsets[body_id].player_offset)
+        self.add_enemy_sprite(battle, image, self.spriteOffsets[body_id].enemy_offset)
 
-        background = background.resize((background.width * 3, background.height * 3), resample=Resampling.NEAREST)
+        battle = battle.image.resize(
+            (battle.image.width * 3, battle.image.height * 3),
+            resample=Resampling.NEAREST,
+        )
 
-        return background
+        return battle
 
     def _get_area(self, areas):
         for area in areas:
-            if area in self.backgrounds.keys():
+            if area in self.battles.keys():
                 return area
 
-        return random.choice(list(self.backgrounds.keys()))
+        return random.choice(list(self.battles.keys()))
 
     @staticmethod
     def transform_player_sprite(sprite: Image.Image) -> Image.Image:
@@ -209,6 +235,17 @@ class BattleImageCreator:
     @staticmethod
     def open_image(file_path) -> Image.Image:
         return Image.open(file_path).convert("RGBA")
+
+    @staticmethod
+    def get_player_bottom_centre_position(background: Image) -> tuple[int, int]:
+        return 128, background.height + 16
+
+    @staticmethod
+    def get_enemy_bottom_centre_position(background: Image) -> tuple[int, int]:
+        return (
+            background.width - 128,
+            round((background.height * 3 / 4) - 112 + 8),
+        )
 
 
 async def setup(bot: Bot):
