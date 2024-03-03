@@ -1,9 +1,10 @@
 import io
 import logging
+import random
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 import discord
 from PIL import Image
@@ -30,13 +31,14 @@ class Smeargle(Cog):
             return
 
         attachments = message.reference.resolved.attachments
+        areas = message.content.split(" ")
 
         for attachment in attachments:
             filename = attachment.filename
 
             image = Image.open(io.BytesIO(await attachment.read()))
 
-            battle_image = self.battleImageCreator.generate_battle_image(filename, image)
+            battle_image = self.battleImageCreator.generate_battle_image(filename, image, areas)
 
             if battle_image is None:
                 await self._send_invalid_id(image, attachment.filename, message)
@@ -78,19 +80,11 @@ class Offset:
 
 
 class BattleImageCreator:
-    def __init__(self, ):
-        self.playerBasePos = (-75, 207)
-        self.enemyBasePos = (248, 112)
-        self.enemySpritePos = (290, 19)
-        self.playerSpritePos = (-20, 30)
+    def __init__(self):
+        self.enemySpritePos = (290, 19)  # TODO: Make these work off the dynamic base positions
+        self.playerSpritePos = (-20, 30)  # TODO: Make these work off the dynamic base positions
         self.basePath = Path("smeargle-data")
-
-        # TODO: Change field-night to use an arg
-        self.background = self._generate_base(
-            Path(self.basePath, "images", "field-night", "player-base.png"),
-            Path(self.basePath, "images", "field-night", "enemy-base.png"),
-            Path(self.basePath, "images", "field-night", "background.png"),
-        )
+        self.backgrounds = self._generate_bases(self.basePath)
         self.offsets = self._generate_offsets()
 
     def _generate_offsets(self) -> dict[Any, Offset]:
@@ -123,18 +117,40 @@ class BattleImageCreator:
 
         return offsets
 
-    def _generate_base(self, player_base: Path, enemy_base: Path, background: Path):
-        player_base = self.open_image(player_base)
-        enemy_base = self.open_image(enemy_base)
-        background = self.open_image(background)
+    def _generate_bases(self, base_path: Path | str) -> dict[str, Image]:
+        areas = [child for child in Path(base_path, "images").iterdir() if child.is_dir()]
 
-        background.paste(player_base, self.playerBasePos, player_base)
-        background.paste(enemy_base, self.enemyBasePos, enemy_base)
+        backgrounds = {}
+        for area in areas:
+            player_base = Path(area, "player-base.png")
+            enemy_base = Path(area, "enemy-base.png")
+            background = Path(area, "background.png")
+
+            if any((not player_base.is_file(), not enemy_base.is_file(), not background.is_file())):
+                logging.warning(f"{area} is missing a player-base.png, enemy-base.png or background.png")
+                continue
+
+            backgrounds[area.name] = self._generate_base(player_base, enemy_base, background)
+
+        return backgrounds
+
+    def _generate_base(self, player_base_path: Path, enemy_base_path: Path, background_path: Path):
+        player_base = self.open_image(player_base_path)
+        enemy_base = self.open_image(enemy_base_path)
+        background = self.open_image(background_path)
+
+        player_base_position = (-75, 303 - player_base.height)
+        enemy_base_position = (248, 112)
+
+        background.paste(player_base, player_base_position, player_base)
+        background.paste(enemy_base, enemy_base_position, enemy_base)
 
         return background
 
     def add_player_sprite(self, background: Image, player_sprite: Image, offset: tuple[int, int]):
         sprite = self.transform_player_sprite(player_sprite)
+
+        # TODO: position is player_base_position + generic_offset + sprite_specific_offset
         position = (
             self.playerSpritePos[0] + offset[0],
             self.playerSpritePos[1] + offset[1],
@@ -144,6 +160,8 @@ class BattleImageCreator:
 
     def add_enemy_sprite(self, background: Image, enemy_sprite: Image, offset: tuple[int, int]):
         sprite = self.transform_enemy_sprite(enemy_sprite)
+
+        # TODO: position is player_base_position + generic_offset + sprite_specific_offset
         position = (
             self.enemySpritePos[0] + offset[0],
             self.enemySpritePos[1] + offset[1],
@@ -153,16 +171,16 @@ class BattleImageCreator:
 
         return background
 
-    def generate_battle_image(self, filename: str, image: Image) -> Image:
+    def generate_battle_image(self, filename: str, image: Image, areas: Iterable[str]) -> Image:
         image = image.convert("RGBA")
 
         regex_result = re.search(r"\d+\.(\d+)", filename)
         if regex_result is None:
-            logging.warning(f"Invalid filename: {filename}")
             return
 
         body_id = regex_result.group(1)
-        background = self.background.copy()
+        area = self._get_area(areas)
+        background = self.backgrounds[area].copy()
 
         self.add_player_sprite(background, image, self.offsets[body_id].player_offset)
         self.add_enemy_sprite(background, image, self.offsets[body_id].enemy_offset)
@@ -170,6 +188,13 @@ class BattleImageCreator:
         background = background.resize((background.width * 3, background.height * 3), resample=Resampling.NEAREST)
 
         return background
+
+    def _get_area(self, areas):
+        for area in areas:
+            if area in self.backgrounds.keys():
+                return area
+
+        return random.choice(list(self.backgrounds.keys()))
 
     @staticmethod
     def transform_player_sprite(sprite: Image.Image) -> Image.Image:
