@@ -54,7 +54,7 @@ class ZigZag(Cog):
         spritework_channel= self.bot.get_channel(SPRITEWORK_CHANNEL_ID)
         print(spritework_channel.available_tags)
     
-    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager")
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="galcache")
     async def galcache(self,  ctx: Context, starttime = None):
         """Caches gallery posts"""
@@ -68,7 +68,7 @@ class ZigZag(Cog):
         # with open() as f:
         # pickle.dump
 
-    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager")
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="dig", pass_context=True,
              help ="Finds old threads with needs feedback tag. Run with `MM/DD/YY` to start at a certain date. Run with `reset` to start with 2 weeks ago",
              brief = "Finds old threads")
@@ -139,7 +139,7 @@ class ZigZag(Cog):
 
         await ctx.send("Digging Complete!")
         
-    
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="galpost", pass_context=True,
              help ="Posts the replied to image to the gallery.",
              brief = "Posts image to gallery")
@@ -148,7 +148,7 @@ class ZigZag(Cog):
         await ctx.message.delete()
         await _manually_post_to_channel("gallery", ctx, args, self.bot)
         
-
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="noqa", pass_context=True,
              help ="Finds old threads with needs feedback tag",
              brief = "Posts image to noqa")
@@ -484,9 +484,12 @@ async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, 
 
 
 async def send_galpost_notification(thread: Thread, thread_owner: User, galleryPost: Message):
-    message = f"Hey {thread_owner.mention}, this sprite has been posted to the sprite gallery by "\
-              f"a sprite manager or zigzagoon. You can see the gallery post here: {galleryPost.jump_url}\n"\
-              f"If you have any questions or would like to remove the post, please ping a sprite manager in this thread.\n{galleryPost.embeds[0].image.url}"
+    message = f"### Hey {thread_owner.mention}!\nA sprite manager or Zigzagoon thought this sprite looked great, so it has "\
+              f"been automatically posted to the sprite gallery for you here: {galleryPost.jump_url} :ohyes: . You can expect to see "\
+              f"it included in an upcoming sprite pack release. **You should not post this sprite to the gallery, or it will cause a duplicate**\n"\
+              f"## If you would like to remove this sprite from the gallery:\n- Ping `Zigzagoon (abandoned sprite poster)`"\
+              f"or a sprite manager in this thread.\n- Let them know you would like the sprite removed from the gallery."\
+              f"\n*Make sure to remove the “Needs Feedback” tag on your spritework posts once they’re added to the gallery* :happo: \n{galleryPost.embeds[0].image.url}"
     
     await thread.send(content = message)
     
@@ -494,15 +497,18 @@ async def send_galpost_notification(thread: Thread, thread_owner: User, galleryP
         return
     dm_message = f"Hey {thread_owner.mention}, this Pokemon Infinite Fusion sprite has been posted to the sprite gallery by "\
               f"a sprite manager or zigzagoon. You can see the gallery post here: {galleryPost.jump_url}\n"\
-              f"If you have any questions or would like to remove the post, please ping a sprite manager in this thread:{thread.jump_url}.\n{galleryPost.embeds[0].image.url}"
+              f"If you have any questions or would like to remove the post, please ping a sprite manager or zigzagoon in this thread:{thread.jump_url}.\n{galleryPost.embeds[0].image.url}"
     await thread_owner.send(content=dm_message)
     await thread.edit(archived=True)
 
 async def send_noqa_notification(thread: Thread, thread_owner: User, noqaPost: Message):
-    message = f"Hey {thread_owner.mention}, due to inactivity this sprite has been archived by "\
-              f"a sprite manager or zigzagoon.\n"\
-              f"If you have any questions or would like to remove the post, please ping a sprite manager in this thread.\n{noqaPost.embeds[0].image.url}"
-    
+
+    message = f"### Hey {thread_owner.mention}!\nDue to inactivity, this sprite has been archived by a Zigzagoon or Sprite Manager. "\
+              f"After a certain amount of time, it will be made available for other spriters to edit so it can be added to the game (you will still be credited) :ohyes:\n"\
+              f"## If you would like to remove this sprite from the archive:\n- Ping `Zigzagoon (abandoned sprite poster)`"\
+              f"or a sprite manager in this thread.\n- Let them know you would like the sprite removed from the archive.\n- You may "\
+              f"continue working on this sprite (in this thread or a new thread), or you can chose to leave it abandoned."\
+              f"\n*Make sure to remove the “Needs Feedback” tag on your spritework posts once you're done with your sprite* :happo: \n{noqaPost.embeds[0].image.url}"
 
     await thread.send(content = message)
     
