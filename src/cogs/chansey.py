@@ -116,10 +116,9 @@ class Chansey(Cog):
 
         await check_and_load_cache(self.bot)
 
-        print(args)
-        target_tags = []
         # Parse args and determine start date
         if args is not None:
+            self.target_tags = []
             for arg in args:
                 if len(arg.split('/')) == 3:
                     try:
@@ -140,7 +139,7 @@ class Chansey(Cog):
                         await ctx.send("Unrecognized tag/argument: {}\n**Make sure tag names have `-` instead of space.** Ex: `Needs Fixing` should be `Needs-Fixing`".format(arg))
                         return
                     
-                    target_tags.append(error_tags[arg.lower()])
+                    self.target_tags.append(error_tags[arg.lower()])
 
         if self.most_recent_date is None:
             two_weeks_ago = datetime.now()-timedelta(weeks=1)
@@ -154,8 +153,8 @@ class Chansey(Cog):
         async for thread in archived_threads:
             archived_thread_found = True
 
-            if not ("Not an error/dupe" in thread.applied_tags) and not("Implemented" in thread.applied_tags):
-                if len(target_tags) > 0 and (set(target_tags) <= set(thread.applied_tags)):
+            if not (error_tags["not-an-error/dupe"] in thread.applied_tags) and not(error_tags["implemented"] in thread.applied_tags):
+                if (set(self.target_tags) <= set(thread.applied_tags)):
                     num_found_threads += 1
 
                     first_message = await thread.history(oldest_first=True).__anext__()
@@ -214,7 +213,7 @@ class ErrorOptions(ui.Select):
         # Set the options that will be presented inside the dropdown
         options = [
             discord.SelectOption(label='Implemented', description='Mark as implemented', emoji='📮'),
-            discord.SelectOption(label='Not an Error/Dupe', description='Mark as Not and Error/Dupe', emoji='🖌'),
+            discord.SelectOption(label='Not an Error/Dupe', description='Mark as Not an Error/Dupe', emoji='🖌'),
             discord.SelectOption(label='Manual', description="Don't do anything", emoji='🧀'),
         ]
 
