@@ -41,7 +41,7 @@ class SpriteBot(Bot):
     async def setup_hook(self) -> None:
         for extension in self.initial_extensions:
             await self.load_extension(extension)
-
+        await self.tree.sync()
 
 
 dotenv_path = join(dirname(__file__), '.env')
@@ -57,5 +57,5 @@ this_bot = SpriteBot(command_prefix='!',
                      description=description,
                      intents=intents,
                      is_prod=args.prod,
-                     initial_extensions=["cogs.zigzag", "cogs.chansey", "cogs.smeargle"])
+                     initial_extensions=["cogs.zigzag", "cogs.chansey", "cogs.contest", "cogs.smeargle"])
 this_bot.run(bot_key)
