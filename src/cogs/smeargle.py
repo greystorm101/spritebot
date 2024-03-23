@@ -97,7 +97,7 @@ class BattleImageCreator:
     ) -> Image:
         image = image.convert("RGBA")
 
-        # TODO: Regex for single ID
+        # TODO: Add regex for single ID (so that custom bases work)
         regex_result = re.search(r"\d+\.(\d+)", filename)
         if regex_result is None:
             return
@@ -106,6 +106,7 @@ class BattleImageCreator:
         area = self._get_area(areas)
         battle = self.battles[area]
 
+        # TODO: Add shadows for player/enemy sprites
         self._add_player_sprite(
             battle, image, self.spriteOffsets[body_id]
         )
@@ -199,6 +200,8 @@ class BattleImageCreator:
             enemy_bottom_centre_position[1],
         )
 
+        # TODO: Look into transparency issue:
+        #  https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.paste
         background.paste(player_base, player_base_position, player_base)
         background.paste(enemy_base, enemy_base_position, enemy_base)
 
@@ -219,6 +222,8 @@ class BattleImageCreator:
             round(player_bottom_centre_position[1] - sprite.height) + 20 + sprite_offset.player_offset[1],
         )
 
+        # TODO: Look into transparency issue:
+        #  https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.paste
         battle.image.paste(sprite, position, sprite)
 
     def _add_enemy_sprite(
@@ -238,6 +243,8 @@ class BattleImageCreator:
             - (sprite_offset.altitude * 3),
         )
 
+        # TODO: Look into transparency issue:
+        #  https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.paste
         battle.image.paste(sprite, position, sprite)
 
     def _get_area(self, areas):
