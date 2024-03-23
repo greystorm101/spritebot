@@ -37,7 +37,7 @@ class SpriteBot(Bot):
         self.initial_extensions = initial_extensions
         self.env = "prod" if is_prod else "dev"
         print("Starting bot in env {}".format(self.env))
-    
+
     async def setup_hook(self) -> None:
         for extension in self.initial_extensions:
             await self.load_extension(extension)
@@ -57,5 +57,5 @@ this_bot = SpriteBot(command_prefix='!',
                      description=description,
                      intents=intents,
                      is_prod=args.prod,
-                     initial_extensions=["cogs.zigzag", "cogs.chansey", "cogs.contest"])
+                     initial_extensions=["cogs.zigzag", "cogs.chansey", "cogs.contest", "cogs.smeargle"])
 this_bot.run(bot_key)

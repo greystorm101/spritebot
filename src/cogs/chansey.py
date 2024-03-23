@@ -90,7 +90,7 @@ class Chansey(Cog):
         except FileNotFoundError:
             await ctx.send("No threads were saved for this pack!")
             return
-        
+
         # Release the hounds
         await ctx.send("Happy pack release! :partying_face: Here's the threads to revisit")
 
@@ -100,13 +100,13 @@ class Chansey(Cog):
         await ctx.send("-----------------")
         await ctx.message.delete(delay=2)
 
-        # Cleanup the file and save it off for archiving 
+        # Cleanup the file and save it off for archiving
         now = datetime.now()
         date_time = now.strftime("%m-%d-%Y-%H-%M-%S")
         os.rename(f"{FILEPACK_DIR}{FILEPACK_NAME}", f"{FILEPACK_DIR}{date_time}.txt")
 
         return
-    
+
     @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager")
     @command(name="egg", pass_context=True,
              help ="[CHANSEY] Finds old error threads with unresolved tags tag. Run with `MM/DD/YY` to start at a certain date. Run with `reset` to start with 1 week ago. Add tag names to only search a subset",
@@ -130,7 +130,7 @@ class Chansey(Cog):
 
                 elif arg.lower() == "reset":
                     self.most_recent_date = None
-                
+
                 else:
                     # This arg may be a tag
                     try:
@@ -138,7 +138,7 @@ class Chansey(Cog):
                     except KeyError:
                         await ctx.send("Unrecognized tag/argument: {}\n**Make sure tag names have `-` instead of space.** Ex: `Needs Fixing` should be `Needs-Fixing`".format(arg))
                         return
-                    
+
                     self.target_tags.append(error_tags[arg.lower()])
 
         if self.most_recent_date is None:
@@ -159,7 +159,7 @@ class Chansey(Cog):
                     num_found_threads += 1
 
                     first_message = await thread.history(oldest_first=True).__anext__()
-                    
+
                     try:
                         candidate_image = first_message.attachments[0]
                     except:
@@ -176,7 +176,7 @@ class Chansey(Cog):
             # Check if we are at our max number of threads
             if num_found_threads >= MAX_NUM_ERROR_THREADS:
                 break
-        
+
         if num_found_threads == 0:
             if not archived_thread_found:
                 await ctx.send("Found no error threads active before {}.\nTry re-running with `reset` or a specific date `MM/DD/YY`".format(self.most_recent_date))
@@ -195,16 +195,16 @@ async def setup(bot:Bot):
 class ErrorOptionsView(discord.ui.View):
     def __init__(self, thread: Thread, thread_owner:User):
         """
-        
+
         Args:
             - thread (Thread): candidate thread
         """
         super().__init__(timeout=None)
 
         # Adds the dropdown to our view object.
-      
+
         self.add_item(ErrorOptions(thread, thread_owner))
-            
+
 class ErrorOptions(ui.Select):
     """
     Options available if the fusion was able to be identified
@@ -262,8 +262,8 @@ async def check_and_load_cache(bot: Bot):
     global error_tags
     if error_tags == {}:
         error_channel = bot.get_channel(ERROR_CHANNEL_ID)
-        error_tags = {tag.name.lower().replace(' ','-'):error_channel.get_tag(tag.id) for tag in error_channel.available_tags} 
- 
+        error_tags = {tag.name.lower().replace(' ','-'):error_channel.get_tag(tag.id) for tag in error_channel.available_tags}
+
 
 def valid_ids_in_title(thread: Thread):
     # Check post title for numbers. We are assuming that the numbers in the post are separated by '.' (i.e 162.187)
@@ -329,7 +329,7 @@ def load_env_vars(bot: Bot):
     GUIDELINES_THREAD_ID = int(GUIDELINES_THREAD_ID)
 
 
-def _pretty_formatted_message(thread: Thread, 
+def _pretty_formatted_message(thread: Thread,
                             candidate_image:Attachment,
                             thread_owner:User):
     """Formats output message text"""

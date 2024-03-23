@@ -173,7 +173,7 @@ class ZigZag(Cog):
         await ctx.message.delete()
 
         # print(await ctx.fetch_message())
-        
+
         await _manually_post_to_channel("noqa", ctx, args, self.bot)
 
 async def setup(bot:Bot):
