@@ -37,11 +37,11 @@ class SpriteBot(Bot):
         self.initial_extensions = initial_extensions
         self.env = "prod" if is_prod else "dev"
         print("Starting bot in env {}".format(self.env))
-
+    
     async def setup_hook(self) -> None:
         for extension in self.initial_extensions:
             await self.load_extension(extension)
-
+        await self.tree.sync()
 
 
 dotenv_path = join(dirname(__file__), '.env')

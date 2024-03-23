@@ -1,17 +1,15 @@
 from datetime import timedelta, datetime
 import os
-from dateutil.relativedelta import *
+from typing import List
 import io
 import time
-import sys
 
-import pickle
-from discord.ext.commands import Bot, Cog, Context, command, has_role, has_any_role
-from discord import ForumTag, Member, Thread, Attachment, Message, ui, Embed, User
+from discord.ext.commands import Bot, Cog, Context, command, has_any_role, hybrid_command
+from discord import ForumTag, Member, Thread, Attachment, Message, ui, Embed, User, app_commands
 import discord
 from discord.channel import TextChannel
 
-from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map, fusion_is_valid
+from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map, fusion_is_valid, name_to_id_map
 
 # Defining globals
 SPRITEWORK_CHANNEL_ID = None
@@ -42,6 +40,12 @@ cached_gal_list = []
 cache_start_date = None
 cache_end_date = None
 
+poke_names = [*name_to_id_map().keys()]
+
+async def pokename_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+    choices = [app_commands.Choice(name=choice, value=choice) for choice in poke_names if current.lower() in choice][:25]
+    return choices
+
 class ZigZag(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
@@ -70,8 +74,9 @@ class ZigZag(Cog):
 
     @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="dig", pass_context=True,
-             help ="Finds old threads with needs feedback tag. Run with `MM/DD/YY` to start at a certain date. Run with `reset` to start with 2 weeks ago",
+             help ="[ZIGZAGOON] Finds old threads with needs feedback tag. Run with `MM/DD/YY` to start at a certain date. Run with `reset` to start with 2 weeks ago",
              brief = "Finds old threads")
+    @app_commands.describe(start_args="'reset': starts from 2 weeks ago.\n'MM/DD/YY': starts on specific day")
     async def oldest(self, ctx: Context, start_args:str = None):
         """Find the oldest threads with a given tag. Main Zigzag command"""
 
@@ -139,22 +144,36 @@ class ZigZag(Cog):
 
         await ctx.send("Digging Complete!")
         
+    # async def galpost(self, ctx: Context, head_mon: str, body_mon: str, attachment_num:int = 1, message:str=""):
+    #     fusion_list = clean_names_or_ids([head_mon, body_mon])
+    #     args = [attachment_num, fusion_list, message]
     @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="galpost", pass_context=True,
-             help ="Posts the replied to image to the gallery.",
+             help ="[ZIGZAGOON] Posts the replied to image to the gallery.",
              brief = "Posts image to gallery")
+    # @app_commands.autocomplete(head_mon=pokename_autocomplete, body_mon=pokename_autocomplete)
     async def galpost(self, ctx: Context, *args):
+        # fusion_list = clean_names_or_ids([head_mon, body_mon])
+        # args = [attachment_num, fusion_list, message]
 
+        # if ctx.prefix == "!":
         await ctx.message.delete()
         await _manually_post_to_channel("gallery", ctx, args, self.bot)
         
     @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="noqa", pass_context=True,
-             help ="Finds old threads with needs feedback tag",
+             help ="[ZIGZAGOON] Finds old threads with needs feedback tag",
              brief = "Posts image to noqa")
+    # @app_commands.autocomplete(head_mon=pokename_autocomplete, body_mon=pokename_autocomplete)
     async def noqa(self, ctx: Context, *args):
+        # fusion_list = clean_names_or_ids([head_mon, body_mon])
+        # args = [attachment_num, fusion_list, message]
 
+        # if ctx.prefix == "!":
         await ctx.message.delete()
+
+        # print(await ctx.fetch_message())
+        
         await _manually_post_to_channel("noqa", ctx, args, self.bot)
 
 async def setup(bot:Bot):
@@ -736,6 +755,8 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
         await ctx.message.delete(delay=2)
         return
     img_num, fusion_list, message = arg_results
+
+    # img_num, fusion_list, message = args
 
     # Check that we replied to a real post
     replied_post_reference = ctx.message.reference

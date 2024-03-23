@@ -1,11 +1,11 @@
 import asyncio
 import os
-from discord.ext.commands import Bot, Cog, Context, command, has_role, has_any_role
+from discord.ext.commands import Bot, Cog, Context, command, has_any_role, hybrid_command
 
 from datetime import datetime, timedelta
-from discord import ForumTag, Member, Thread, Attachment, Message, ui, Embed, User, Client, client
+from discord import ForumTag, Thread, Attachment, ui, User
 import discord
-from cogs.utils import clean_pokemon_string, fusion_is_valid, raw_pokemon_name_to_id
+from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id
 
 ERROR_CHANNEL_ID = None
 GUIDELINES_THREAD_ID = None
@@ -66,10 +66,10 @@ class Chansey(Cog):
             await thread.send(content = message)
 
     @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager")
-    @command(name="pack", pass_context=True,
-             help ="Packs a thread.",
-             brief = "Packs a thread")
-    async def pack(self, ctx: Context, *args):
+    @hybrid_command(name="pack", pass_context=True,
+             help ="[CHANSEY] Marks an error thread to be revisited in the next pack release.",
+             brief = "Packs an error thread")
+    async def pack(self, ctx: Context):
         return_url = ctx.channel.jump_url
         # f = open("/datadir/curpack.txt", "a")
         f = open(f"{FILEPACK_DIR}{FILEPACK_NAME}", "a")
@@ -81,10 +81,10 @@ class Chansey(Cog):
         return
 
     @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager")
-    @command(name="release", pass_context=True,
-             help ="Packs a thread .",
-             brief = "Posts image to gallery")
-    async def release(self, ctx: Context, *args):
+    @hybrid_command(name="release", pass_context=True,
+             help ="[CHANSEY] Returns all threads to be revisited in this pack release",
+             brief = "Returns packed threads")
+    async def release(self, ctx: Context):
         try:
             f = open(f"{FILEPACK_DIR}{FILEPACK_NAME}", "r")
         except FileNotFoundError:
@@ -109,7 +109,7 @@ class Chansey(Cog):
     
     @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager")
     @command(name="egg", pass_context=True,
-             help ="Finds old error threads with unresolved tags tag. Run with `MM/DD/YY` to start at a certain date. Run with `reset` to start with 1 week ago. Add tag names to only search a subset",
+             help ="[CHANSEY] Finds old error threads with unresolved tags tag. Run with `MM/DD/YY` to start at a certain date. Run with `reset` to start with 1 week ago. Add tag names to only search a subset",
              brief = "Finds old error threads")
     async def old_errors(self, ctx: Context, *args):
         """Find old error threads threads with given tags if specified."""
@@ -147,13 +147,14 @@ class Chansey(Cog):
 
         error_channel = self.bot.get_channel(ERROR_CHANNEL_ID) # SpritePost channel ID
         archived_threads = error_channel.archived_threads(limit=500, before=self.most_recent_date)
-        num_found_threads = 0; archived_thread_found = False
+        num_found_threads = 0
+        archived_thread_found = False
 
         await ctx.send("Searching for threads. This may take a few minutes. Wait for 'complete' message at end. \n --- :egg: :egg: :egg: :egg: --- ")
         async for thread in archived_threads:
             archived_thread_found = True
 
-            if not (error_tags["not-an-error/dupe"] in thread.applied_tags) and not(error_tags["implemented"] in thread.applied_tags):
+            if error_tags["not-an-error/dupe"] not in thread.applied_tags and error_tags["implemented"] not in thread.applied_tags:
                 if (set(self.target_tags) <= set(thread.applied_tags)):
                     num_found_threads += 1
 
@@ -266,7 +267,6 @@ async def check_and_load_cache(bot: Bot):
 
 def valid_ids_in_title(thread: Thread):
     # Check post title for numbers. We are assuming that the numbers in the post are separated by '.' (i.e 162.187)
-    thread_title = thread.name
     tags = [tag.name for tag in thread.applied_tags]
 
     num_ids = _number_of_ids_in_string(thread.name)
