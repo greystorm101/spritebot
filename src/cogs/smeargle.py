@@ -1,4 +1,5 @@
 import io
+import os
 import random
 import re
 from dataclasses import dataclass
@@ -78,6 +79,10 @@ class SpriteOffset:
     enemy_offset: tuple[int, int]
     altitude: int
 
+@dataclass
+class SpriteShadow:
+    shadow_x: int
+    shadow_size: int
 
 @dataclass
 class Battle:
@@ -88,9 +93,10 @@ class Battle:
 
 class BattleImageCreator:
     def __init__(self):
-        self.basePath = Path("smeargle-data")
+        self.basePath = Path(os.path.join(os.getcwd(), "src", "smeargle-data"))
         self.battles = self._generate_battles(self.basePath)
         self.spriteOffsets = self._generate_sprite_offsets()
+        # self.spriteShadows = self._generate_sprite_shadows() # TODO: Uncommenting until downstream works
 
     def generate_battle_image(
             self, filename: str, image: Image, areas: Iterable[str]
@@ -112,6 +118,8 @@ class BattleImageCreator:
         )
         self._add_enemy_sprite(battle, image, self.spriteOffsets[body_id])
 
+        self._add_enemy_dropshadow(battle, image, self.spriteShadows[body_id])
+
         battle = battle.image.resize(
             (battle.image.width * 3, battle.image.height * 3),
             resample=Resampling.NEAREST,
@@ -130,6 +138,8 @@ class BattleImageCreator:
             battler_player_y = re.search(r"BattlerPlayerY = (-?\d+)", segment)
             battler_enemy_x = re.search(r"BattlerEnemyX = (-?\d+)", segment)
             battler_enemy_y = re.search(r"BattlerEnemyY = (-?\d+)", segment)
+            battler_shadow_x = re.search(r"BattlerShadowX = (-?\d+)", segment)
+            battler_shadow_size = re.search(r"BattlerShadowSize = (-?\d+)", segment)
             battler_altitude = re.search(r"BattlerAltitude = (-?\d+)", segment)
 
             if None in (
@@ -138,6 +148,8 @@ class BattleImageCreator:
                     battler_player_y,
                     battler_enemy_x,
                     battler_enemy_y,
+                    battler_shadow_x,
+                    battler_shadow_size,                    
             ):
                 continue
 
@@ -153,6 +165,31 @@ class BattleImageCreator:
 
         return offsets
 
+    def _generate_sprite_shadows(self) -> dict[Any, SpriteShadow]:
+        with open(Path(self.basePath, "pokemon.txt")) as file:
+            segments = file.read().split("#-------------------------------")
+
+        offsets = {}
+        for segment in segments:
+            pokemon_id = re.search(r"\[(\d+)]", segment)
+            battler_shadow_x = re.search(r"BattlerShadowX = (-?\d+)", segment)
+            battler_shadow_size = re.search(r"BattlerShadowSize = (-?\d+)", segment)
+
+            if None in (
+                    pokemon_id,
+                    battler_shadow_x,
+                    battler_shadow_size,                    
+            ):
+                continue
+
+            offsets[pokemon_id.group(1)] = SpriteShadow(
+                int(battler_shadow_x),
+                int(battler_shadow_size),
+            )
+
+        return offsets
+
+
     def _generate_battles(self, base_path: Path | str) -> dict[str, Battle]:
         areas = [
             child for child in Path(base_path, "images").iterdir() if child.is_dir()
@@ -166,9 +203,9 @@ class BattleImageCreator:
 
             if any(
                     (
-                            not player_base.is_file(),
-                            not enemy_base.is_file(),
-                            not background.is_file(),
+                        not player_base.is_file(),
+                        not enemy_base.is_file(),
+                        not background.is_file(),
                     )
             ):
                 continue
@@ -227,7 +264,7 @@ class BattleImageCreator:
         battle.image.paste(sprite, position, sprite)
 
     def _add_enemy_sprite(
-            self, battle: Battle, enemy_sprite: Image, sprite_offset: SpriteOffset
+            self, battle: Battle, enemy_sprite: Image, sprite_offset: SpriteOffset, sprite_shadow: SpriteShadow
     ) -> None:
         sprite = self.transform_enemy_sprite(enemy_sprite)
 
@@ -245,6 +282,11 @@ class BattleImageCreator:
 
         # TODO: Look into transparency issue:
         #  https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.paste
+        battle.image.paste(sprite, position, sprite)
+
+        shadow_position = self.get_shadow_position()
+
+
         battle.image.paste(sprite, position, sprite)
 
     def _get_area(self, areas):

@@ -1,6 +1,5 @@
 import asyncio
 import os
-from discord import Thread
 from discord.ext.commands import Bot, Cog, Context, command, has_any_role, hybrid_command
 
 from datetime import datetime, timedelta
