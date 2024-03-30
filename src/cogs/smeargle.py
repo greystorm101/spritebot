@@ -1,6 +1,7 @@
 import io
 import os
 import random
+import copy
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -96,7 +97,7 @@ class BattleImageCreator:
         self.basePath = Path(os.path.join(os.getcwd(), "src", "smeargle-data"))
         self.battles = self._generate_battles(self.basePath)
         self.spriteOffsets = self._generate_sprite_offsets()
-        # self.spriteShadows = self._generate_sprite_shadows() # TODO: Uncommenting until downstream works
+        self.spriteShadows = self._generate_sprite_shadows()
 
     def generate_battle_image(
             self, filename: str, image: Image, areas: Iterable[str]
@@ -110,22 +111,26 @@ class BattleImageCreator:
 
         body_id = regex_result.group(1)
         area = self._get_area(areas)
-        battle = self.battles[area]
+        battle = copy.deepcopy(self.battles[area])
 
-        # TODO: Add shadows for player/enemy sprites
         self._add_player_sprite(
             battle, image, self.spriteOffsets[body_id]
         )
+        self._add_enemy_dropshadow(battle, self.spriteShadows[body_id])
+
         self._add_enemy_sprite(battle, image, self.spriteOffsets[body_id])
 
-        self._add_enemy_dropshadow(battle, image, self.spriteShadows[body_id])
+        self._add_health_bars(battle)
 
         battle = battle.image.resize(
             (battle.image.width * 3, battle.image.height * 3),
             resample=Resampling.NEAREST,
         )
-
+        
         return battle
+
+    def _clear_battle(self):
+        pass
 
     def _generate_sprite_offsets(self) -> dict[Any, SpriteOffset]:
         with open(Path(self.basePath, "pokemon.txt")) as file:
@@ -181,10 +186,10 @@ class BattleImageCreator:
                     battler_shadow_size,                    
             ):
                 continue
-
+            
             offsets[pokemon_id.group(1)] = SpriteShadow(
-                int(battler_shadow_x),
-                int(battler_shadow_size),
+                int(battler_shadow_x.group(1)),
+                int(battler_shadow_size.group(1)),
             )
 
         return offsets
@@ -237,10 +242,8 @@ class BattleImageCreator:
             enemy_bottom_centre_position[1],
         )
 
-        # TODO: Look into transparency issue:
-        #  https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.paste
-        background.paste(player_base, player_base_position, player_base)
-        background.paste(enemy_base, enemy_base_position, enemy_base)
+        background.alpha_composite(player_base, dest = player_base_position)
+        background.alpha_composite(enemy_base, dest = enemy_base_position)
 
         return Battle(background, player_base_position, enemy_base_position)
 
@@ -259,12 +262,11 @@ class BattleImageCreator:
             round(player_bottom_centre_position[1] - sprite.height) + 20 + sprite_offset.player_offset[1],
         )
 
-        # TODO: Look into transparency issue:
-        #  https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.paste
-        battle.image.paste(sprite, position, sprite)
+        battle.image.alpha_composite(sprite, dest=position)
+
 
     def _add_enemy_sprite(
-            self, battle: Battle, enemy_sprite: Image, sprite_offset: SpriteOffset, sprite_shadow: SpriteShadow
+            self, battle: Battle, enemy_sprite: Image, sprite_offset: SpriteOffset
     ) -> None:
         sprite = self.transform_enemy_sprite(enemy_sprite)
 
@@ -273,21 +275,57 @@ class BattleImageCreator:
         )
 
         position = (
-            round(enemy_bottom_centre_position[0] - (sprite.width / 2)) + sprite_offset.enemy_offset[0] + 2,
-            round(enemy_bottom_centre_position[1] - (sprite.height / 2))
-            + 4
-            + sprite_offset.enemy_offset[1]
-            - (sprite_offset.altitude * 3),
+            round(enemy_bottom_centre_position[0] - (sprite.width / 2)) + (sprite_offset.enemy_offset[0]*2) + 2,
+            round(enemy_bottom_centre_position[1] - (sprite.height/2)) + (sprite_offset.enemy_offset[1] * 2)
+            - 12
+            - (sprite_offset.altitude * 2),
         )
 
-        # TODO: Look into transparency issue:
-        #  https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.paste
-        battle.image.paste(sprite, position, sprite)
+        battle.image.alpha_composite(sprite, dest=position)
 
-        shadow_position = self.get_shadow_position()
+    def _add_enemy_dropshadow(
+            self, battle: Battle, sprite_shadow: SpriteShadow
+    ) -> None:
+        shadow = self.get_shadow_image(sprite_shadow.shadow_size)
+
+        enemy_bottom_centre_position = self.get_enemy_bottom_centre_position(
+            battle.image
+        )
+        
+        enemy_base_x, enemy_base_y = battle.enemy_base_position
+        print(f"Enemy base x:{enemy_base_x}, Enemy base y:{enemy_base_y}, Enemy center x:{enemy_bottom_centre_position[0]}, Enemy center y:{enemy_bottom_centre_position[1]},")
 
 
-        battle.image.paste(sprite, position, sprite)
+        position = (
+            round(enemy_bottom_centre_position[0] - (shadow.width / 2) ) - (sprite_shadow.shadow_x),
+            (round(enemy_bottom_centre_position[1] - (shadow.height / 2)  + (128/2) ) )
+        )
+
+        battle.image.alpha_composite(shadow, dest =position)
+
+    def _add_health_bars(self, battle: Battle) -> None:
+        healthbar = self.get_healthbar_image()
+
+        position = (
+            round(((battle.image.width) - 244)),
+            round(((battle.image.height)  - (176 ))) + round(healthbar.height)
+        )
+        battle.image.paste(healthbar, position, healthbar)
+
+        foe_healthbar = self.get_foe_healthbar_image()
+
+        # This is the correct position for modified UI
+        # foe_position = (
+        #     (8 - 18//2),
+        #     (0 + 12) + (foe_healthbar.height//2) 
+        # )
+
+        foe_position = (
+            8,
+            0
+        )
+
+        battle.image.alpha_composite(foe_healthbar, dest=foe_position)
 
     def _get_area(self, areas):
         for area in areas:
@@ -304,7 +342,22 @@ class BattleImageCreator:
 
     @staticmethod
     def transform_enemy_sprite(sprite: Image.Image) -> Image.Image:
-        return sprite.resize((96 * 2, 96 * 2), Resampling.NEAREST)
+        return sprite.resize((96 * 2, 96 * 2), Resampling.NEAREST)\
+        
+    @staticmethod
+    def get_shadow_image(shadow_size: int) -> Image.Image:
+        shadow_path = os.path.join(os.getcwd(), "src", "smeargle-data", "shadows", f"{shadow_size}.png")
+        return BattleImageCreator.open_image(shadow_path)
+
+    @staticmethod
+    def get_healthbar_image() -> Image.Image:
+        healthbar_path = os.path.join(os.getcwd(), "src", "smeargle-data", "overlay", "databox_normal.png")
+        return BattleImageCreator.open_image(healthbar_path)
+    
+    @staticmethod
+    def get_foe_healthbar_image() -> Image.Image:
+        healthbar_path = os.path.join(os.getcwd(), "src", "smeargle-data", "overlay", "databox_normal_foe.png")
+        return BattleImageCreator.open_image(healthbar_path)
 
     @staticmethod
     def open_image(file_path) -> Image.Image:
