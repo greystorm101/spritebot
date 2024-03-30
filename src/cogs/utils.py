@@ -56,7 +56,10 @@ def multi_word_name_list():
 
 def fusion_is_valid(id: str):
     """Returns true if the id number is a valid fusion, false otherwise"""
-    return id in id_to_name_map().keys()
+    valid_ids_map = id_to_name_map()
+    # Handle legacy images that have ultra necrozma as 450_1
+    valid_ids_map["450_1"] = "Ultra Necrozma"
+    return id in valid_ids_map.keys()
 
 def print_typo_list():
     with open(JSON_FILE) as f:

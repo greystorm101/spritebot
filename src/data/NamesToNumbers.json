@@ -2700,12 +2700,6 @@
         "typos": ["necorzma", "necrosma"],
         "display_name": "Necrozma"
     },
-	    {
-        "id": "450_1",
-        "name": "ultranecrozma",
-        "typos": ["ultra", "necrozmaultra", "ultranecrosma"],
-        "display_name": "Ultra Necrozma"
-    },
     {
         "id": "451",
         "name": "stufful",
@@ -2819,6 +2813,12 @@
         "name": "bruxish",
         "typos": ["broxish", "buxish"],
         "display_name": "Bruxish"
+    },
+    {
+        "id": "470",
+        "name": "ultranecrozma",
+        "typos": ["ultra", "necrozmaultra", "ultranecrosma"],
+        "display_name": "Ultra Necrozma"
     }
     ]
 }   

@@ -2,8 +2,8 @@ from discord.ext.commands import Bot, Cog, Context, has_any_role, hybrid_command
 from discord import User, utils
 import discord
 
-WINNING_ROLE_NAME="Current Winner"
-PREV_WINNER_ROLE_NAME="Past Winner"
+WINNING_ROLE_NAME="Event Winner"
+PREV_WINNER_ROLE_NAME="Past Event Winner"
 
 class Contest(Cog):
     def __init__(self, bot: Bot) -> None:
@@ -12,8 +12,7 @@ class Contest(Cog):
     @has_any_role("Mime Jr.(Event Organizer)", "Sprite Manager", "Bot Manager")
     @hybrid_command(name="win", pass_context=True,
                 help ="[MIMEJR] Gives a mentioned user the current mini-contest winner role",
-                brief = "Crowns a champion",
-                guild=discord.Object(id=12417128931))
+                brief = "Crowns a champion",)
     async def crown(self, ctx: Context, name: User = None):
         winning_user = ctx.guild.get_member(name.id)
 
@@ -33,7 +32,7 @@ class Contest(Cog):
 
         winner_role = utils.get(ctx.guild.roles,name=WINNING_ROLE_NAME)
         past_winner_role = utils.get(ctx.guild.roles,name=PREV_WINNER_ROLE_NAME)
-
+        
         await winning_user.add_roles(past_winner_role)
         await winning_user.remove_roles(winner_role)
 

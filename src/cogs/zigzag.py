@@ -577,11 +577,14 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
     """
     Tries to extrapolate pokemon name 
     """
-    # Plan A: check file name and, if it is formatted correctly, grab id from there
+    # Plan A: check file name and, if it is formatted correctly, grab ids from there
     non_numeric_id_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !?@#$%^&*()[]-+="\\"/\n'
 
     try:
         head_num, body_num, png = image.filename.split(".")
+        head_num = handle_ultra_necrozma(head_num)
+        body_num = handle_ultra_necrozma(body_num)
+
         if fusion_is_valid(head_num) and fusion_is_valid(body_num):
             return [head_num.translate({ord(i): None for i in non_numeric_id_chars}),
                     body_num.translate({ord(i): None for i in non_numeric_id_chars})]
@@ -597,7 +600,8 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
 
     if len(number_pair) == 2:
         if fusion_is_valid(number_pair[0]) and fusion_is_valid(number_pair[1]):
-            return [number_pair[0], number_pair[1]]
+            return [handle_ultra_necrozma(number_pair[0]),
+                    handle_ultra_necrozma(number_pair[1])]
     
     # Plan C: Check post title for Pokemon names. For my sanity, we're assuming it's seperated by a '/' for now (i.e Furret/Hoppip)
     pre_and_post_slash_list = [[clean_pokemon_string(word) for word in str.split(' ') if word != ''] for str in thread_title.split('/')]
@@ -608,12 +612,14 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
         pre_id = raw_pokemon_name_to_id(pre_list[-1])
         if (pre_id is None) and (len(pre_list) > 1):
             # Try checking if this is a name seperated by a space
+            pre_id = handle_ultra_necrozma(pre_id)
             pre_id = raw_pokemon_name_to_id(''.join([pre_list[-2], pre_list[-1]]))
 
         # Grab second fusion name
         post_id = raw_pokemon_name_to_id(post_list[0])
         if (post_id is None) and (len(post_list) > 1):
             # Try checking if this is a name seperated by a space
+            post_id = handle_ultra_necrozma(post_id)
             post_id = raw_pokemon_name_to_id(''.join([post_list[0], post_list[1]]))
 
         if pre_id is not None and post_id is not None:
@@ -621,6 +627,12 @@ def _get_thread_pokemon_name(thread:Thread, image:Attachment):
 
     # Sad trombone noise
     return False
+
+def handle_ultra_necrozma(id_number:str):
+    """
+    Handles the legacy numbering for ultra necrozma
+    """
+    return "470" if id_number=="450_1" else id_number
 
 async def _get_candidate_info(thread:Thread, bot: Bot):
     """
