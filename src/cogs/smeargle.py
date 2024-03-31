@@ -13,6 +13,8 @@ from PIL.Image import Resampling
 from discord import Message
 from discord.ext.commands import Bot, Cog, Context, command
 
+from cogs.utils import id_to_name_map
+
 
 class Smeargle(Cog):
     def __init__(self, bot: Bot) -> None:
@@ -26,7 +28,7 @@ class Smeargle(Cog):
     @command(name="battle", pass_context=True,
              help ="Generates a battle image for a sprite.",
              brief = "Generates a battle image")
-    async def on_message(self, ctx: Context, start_args:str = ""):
+    async def battle(self, ctx: Context, start_args:str = ""):
 
         replied_post_reference = ctx.message.reference
         if replied_post_reference is None:
@@ -46,15 +48,22 @@ class Smeargle(Cog):
             image = Image.open(io.BytesIO(await attachment.read()))
 
             body_id = self._determine_body_id_from_filename(filename)
-            battle_image = self.battleImageCreator.generate_battle_image(body_id, image, areas)
+            if body_id == 0:
+                error_message = "Cannot parse pokemon id from filename. Please make sure filename is in format `###.###.png` for a fusion or `###.png` for a custom base"
+                await ctx.send(error_message, ephemeral=True, delete_after=30)
+                await ctx.message.delete(delay=2)
+                return
+
+            battle_image, area = self.battleImageCreator.generate_battle_image(body_id, image, areas)
 
             if battle_image is None:
                 await self._send_invalid_id(image, attachment.filename, msg)
             else:
-                await self._send_battle_image(battle_image, attachment.filename, msg)
+                body_mon = id_to_name_map()[body_id]
+                await self._send_battle_image(battle_image, attachment.filename, body_mon, area, msg)
 
     @staticmethod
-    async def _send_battle_image(image: Image, filename: str, message: Message):
+    async def _send_battle_image(image: Image, filename: str, body_mon: str, area: str, message: Message):
         buffer = io.BytesIO()
         image.save(buffer, "png")
         buffer.seek(0)
@@ -63,6 +72,7 @@ class Smeargle(Cog):
 
         embed = discord.Embed()
         embed.set_image(url=f"attachment://{filename}")
+        embed.set_footer(text=f"{body_mon} body fighting in '{area}'")
 
         await message.channel.send(file=file, embed=embed)
 
@@ -139,7 +149,7 @@ class BattleImageCreator:
             resample=Resampling.NEAREST,
         )
         
-        return battle
+        return battle, area
 
     def _clear_battle(self):
         pass
