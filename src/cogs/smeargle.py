@@ -14,7 +14,9 @@ from discord import Message
 from discord.ext.commands import Bot, Cog, Context, command
 
 from cogs.utils import id_to_name_map
-
+#
+# @Author: WiseNat, Greystorm101
+#
 
 class Smeargle(Cog):
     def __init__(self, bot: Bot) -> None:
