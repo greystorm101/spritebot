@@ -54,7 +54,7 @@ def multi_word_name_list():
 
         return input_data
 
-def fusion_is_valid(id: str):
+def fusion_is_valid(id: str):   
     """Returns true if the id number is a valid fusion, false otherwise"""
     valid_ids_map = id_to_name_map()
     # Handle legacy images that have ultra necrozma as 450_1
