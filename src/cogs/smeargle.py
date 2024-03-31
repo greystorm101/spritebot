@@ -10,8 +10,8 @@ from typing import Any, Iterable
 import discord
 from PIL import Image
 from PIL.Image import Resampling
-from discord import MessageType, Message
-from discord.ext.commands import Cog, Bot
+from discord import Message
+from discord.ext.commands import Bot, Cog, Context, command
 
 
 class Smeargle(Cog):
@@ -23,28 +23,35 @@ class Smeargle(Cog):
     def load_env_vars(self):
         pass  # TODO: Move a some constants to the env file and load them here
 
-    @Cog.listener("on_message")
-    async def on_message(self, message: discord.Message):
-        if message.type != MessageType.reply or not self.bot.user.mentioned_in(message):
-            return
+    @command(name="battle", pass_context=True,
+             help ="Generates a battle image for a sprite.",
+             brief = "Generates a battle image")
+    async def on_message(self, ctx: Context, start_args:str = ""):
 
-        if message.reference is None or message.reference.resolved is None:
+        replied_post_reference = ctx.message.reference
+        if replied_post_reference is None:
+            error_message = "Please reply to a message with an image"
+            await ctx.send(error_message, ephemeral=True, delete_after=6)
+            await ctx.message.delete(delay=2)
             return
+        
+        msg = await ctx.channel.fetch_message(replied_post_reference.message_id)
 
-        attachments = message.reference.resolved.attachments
-        areas = message.content.split(" ")
+        attachments = msg.attachments
+        areas = start_args.split(" ")
 
         for attachment in attachments:
             filename = attachment.filename
 
             image = Image.open(io.BytesIO(await attachment.read()))
 
-            battle_image = self.battleImageCreator.generate_battle_image(filename, image, areas)
+            body_id = self._determine_body_id_from_filename(filename)
+            battle_image = self.battleImageCreator.generate_battle_image(body_id, image, areas)
 
             if battle_image is None:
-                await self._send_invalid_id(image, attachment.filename, message)
+                await self._send_invalid_id(image, attachment.filename, msg)
             else:
-                await self._send_battle_image(battle_image, attachment.filename, message)
+                await self._send_battle_image(battle_image, attachment.filename, msg)
 
     @staticmethod
     async def _send_battle_image(image: Image, filename: str, message: Message):
@@ -72,6 +79,17 @@ class Smeargle(Cog):
         embed.set_image(url=f"attachment://{filename}")
 
         await message.channel.send(file=file, embed=embed)
+    
+    @staticmethod
+    def _determine_body_id_from_filename(filename: str) -> str:
+        regex_result = re.search(r"\d+\.(\d+)", filename)
+        if regex_result is None:
+            # This might be a custom base
+            regex_result = re.search(r"(\d+)", filename)
+            if regex_result is None:
+                return 0
+
+        return regex_result.group(1)        
 
 
 @dataclass
@@ -100,16 +118,10 @@ class BattleImageCreator:
         self.spriteShadows = self._generate_sprite_shadows()
 
     def generate_battle_image(
-            self, filename: str, image: Image, areas: Iterable[str]
+            self, body_id: str, image: Image, areas: Iterable[str]
     ) -> Image:
         image = image.convert("RGBA")
 
-        # TODO: Add regex for single ID (so that custom bases work)
-        regex_result = re.search(r"\d+\.(\d+)", filename)
-        if regex_result is None:
-            return
-
-        body_id = regex_result.group(1)
         area = self._get_area(areas)
         battle = copy.deepcopy(self.battles[area])
 
@@ -291,10 +303,6 @@ class BattleImageCreator:
         enemy_bottom_centre_position = self.get_enemy_bottom_centre_position(
             battle.image
         )
-        
-        enemy_base_x, enemy_base_y = battle.enemy_base_position
-        print(f"Enemy base x:{enemy_base_x}, Enemy base y:{enemy_base_y}, Enemy center x:{enemy_bottom_centre_position[0]}, Enemy center y:{enemy_bottom_centre_position[1]},")
-
 
         position = (
             round(enemy_bottom_centre_position[0] - (shadow.width / 2) ) - (sprite_shadow.shadow_x),
