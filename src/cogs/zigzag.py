@@ -53,12 +53,6 @@ class ZigZag(Cog):
         self.bot = bot
         self.most_recent_date = None
         load_env_vars(bot.env)
-
-    @command(name="tagids")
-    async def tagids(self,  ctx: Context):
-        """Debug command to get tag ids for the channel"""
-        spritework_channel= self.bot.get_channel(SPRITEWORK_CHANNEL_ID)
-        print(spritework_channel.available_tags)
     
     @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="galcache")
@@ -146,37 +140,29 @@ class ZigZag(Cog):
 
         await ctx.send("Digging Complete!")
         
-    # async def galpost(self, ctx: Context, head_mon: str, body_mon: str, attachment_num:int = 1, message:str=""):
-    #     fusion_list = clean_names_or_ids([head_mon, body_mon])
-    #     args = [attachment_num, fusion_list, message]
     @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="galpost", pass_context=True,
              help ="[ZIGZAGOON] Posts the replied to image to the gallery.",
              brief = "Posts image to gallery")
-    # @app_commands.autocomplete(head_mon=pokename_autocomplete, body_mon=pokename_autocomplete)
     async def galpost(self, ctx: Context, *args):
-        # fusion_list = clean_names_or_ids([head_mon, body_mon])
-        # args = [attachment_num, fusion_list, message]
-
-        # if ctx.prefix == "!":
         await ctx.message.delete()
         await _manually_post_to_channel("gallery", ctx, args, self.bot)
         
     @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="noqa", pass_context=True,
-             help ="[ZIGZAGOON] Finds old threads with needs feedback tag",
+             help ="[ZIGZAGOON] Posts the replied to image to the noqa channel.",
              brief = "Posts image to noqa")
-    # @app_commands.autocomplete(head_mon=pokename_autocomplete, body_mon=pokename_autocomplete)
     async def noqa(self, ctx: Context, *args):
-        # fusion_list = clean_names_or_ids([head_mon, body_mon])
-        # args = [attachment_num, fusion_list, message]
-
-        # if ctx.prefix == "!":
         await ctx.message.delete()
-
-        # print(await ctx.fetch_message())
-        
         await _manually_post_to_channel("noqa", ctx, args, self.bot)
+
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
+    @command(name="asspost", pass_context=True,
+             help ="[ZIGZAGOON] Posts the replied to image to the asset gallery.",
+             brief = "Posts image to asset gallery")
+    async def asspost(self, ctx: Context, *args):
+        await ctx.message.delete()
+        await _manually_post_to_channel("assetgallery", ctx, args, self.bot)
 
 async def setup(bot:Bot):
     await bot.add_cog(ZigZag(bot))
@@ -371,6 +357,10 @@ def load_env_vars(env: str):
     SPRITEGALLERY_CHANNEL_ID = os.environ.get("DEV_SPRITEGALLERY_CHANNEL_ID") if is_dev else os.environ.get("SPRITEGALLERY_CHANNEL_ID")
     SPRITEGALLERY_CHANNEL_ID = int(SPRITEGALLERY_CHANNEL_ID)
 
+    global ASSETGALLERY_CHANNEL_ID
+    ASSETGALLERY_CHANNEL_ID = os.environ.get("DEV_ASSETGALLERY_CHANNEL_ID") if is_dev else os.environ.get("ASSETGALLERY_CHANNEL_ID")
+    ASSETGALLERY_CHANNEL_ID = int(ASSETGALLERY_CHANNEL_ID)
+
     global NOQA_CHANNEL_ID
     NOQA_CHANNEL_ID = os.environ.get("DEV_NOQA_CHANNEL_ID") if is_dev else os.environ.get("NOQA_CHANNEL_ID")
     NOQA_CHANNEL_ID = int(NOQA_CHANNEL_ID)
@@ -416,6 +406,7 @@ async def check_and_load_cache(bot: Bot):
             sprite_channels["spritework"] = bot.get_channel(SPRITEWORK_CHANNEL_ID) # SpritePost channel ID
             sprite_channels["gallery"] = bot.get_channel(SPRITEGALLERY_CHANNEL_ID) # SpritePost channel ID
             sprite_channels["noqa"] = bot.get_channel(NOQA_CHANNEL_ID) # SpritePost channel ID
+            sprite_channels["assetgallery"] = bot.get_channel(ASSETGALLERY_CHANNEL_ID) # Asset Gallery channel ID
 
     if spritepost_tags == {}:
         spritework_channel = sprite_channels["spritework"]
@@ -466,7 +457,7 @@ async def clean_tags(thread:Thread, remaining_tag: ForumTag):
     return
 
 
-async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, author:User, footer_message:str, message: str = None):
+async def post_to_channel(channel: TextChannel, fusion:list | str, image: Attachment, author:User, footer_message:str, message: str = None):
     """
     Posts a given image to the given channel
 
@@ -475,16 +466,25 @@ async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, 
         image: image to post
         author: Discord member representing user who created the thread.
     """
+    artist_name = author.name if author.name != "Deleted User" else "Unknown"
 
-    filename = f"{fusion[0]}.{fusion[1]} by {author.name}.png"
+    if type(fusion) != list:
+        # This is an asset, not a fusion
+        filename = f"{fusion} by {artist_name}.png"
+        fusion_name = id_to_name_map()[fusion]
+        gal_message_title = "{} ({}) - Credit if used!".format(fusion_name,
+                                                                fusion)
+    else:
+        filename = f"{fusion[0]}.{fusion[1]} by {artist_name}.png"
+        fusion_names = [id_to_name_map()[id] for id in fusion]
+        gal_message_title = "{}/{} ({}.{})".format(fusion_names[0],
+                                                fusion_names[1],
+                                                fusion[0],
+                                                fusion[1])
+        
     image_bytes = await image.read()
     bytes_io_file = io.BytesIO(image_bytes)
 
-    fusion_names = [id_to_name_map()[id] for id in fusion]
-    gal_message_title = "{}/{} ({}.{})".format(fusion_names[0],
-                                              fusion_names[1],
-                                              fusion[0],
-                                              fusion[1])
     if message is not None:
         gal_message_title += " {}".format(message)
     
@@ -506,7 +506,7 @@ async def post_to_channel(channel: TextChannel, fusion:list, image: Attachment, 
 
 async def send_galpost_notification(thread: Thread, thread_owner: User, galleryPost: Message):
     message = f"### Hey {thread_owner.mention}!\nA sprite manager or Zigzagoon thought this sprite looked great, so it has "\
-              f"been automatically posted to the sprite gallery for you here: {galleryPost.jump_url} :ohyes: . You can expect to see "\
+              f"been automatically posted to the gallery for you here: {galleryPost.jump_url} :ohyes: . You can expect to see "\
               f"it included in an upcoming sprite pack release. **You should not post this sprite to the gallery, or it will cause a duplicate**\n"\
               f"## If you would like to remove this sprite from the gallery:\n- Ping `Zigzagoon (abandoned sprite poster)`"\
               f"or a sprite manager in this thread.\n- Let them know you would like the sprite removed from the gallery."\
@@ -759,18 +759,13 @@ def _pretty_formatted_message(thread: Thread,
         full_message += "\n *User Has Posting Immunity*"
     return full_message
 
+
 async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:Bot):
 
-    # Parse args and ensure they are correct
-    arg_results = await _parse_channelpost_args(args)
-    if arg_results is None:
-        usage_message = "Usage (must be in reply to a message): `PicNum[Optional] Head/Body message[optional]`\nFusions can be names or id numbers"
-        await ctx.send(usage_message, delete_after=10, ephemeral=True)
-        await ctx.message.delete(delay=2)
+    arg_parse_results = await _parse_post_args(ctx, args, location)
+    if arg_parse_results is None:
         return
-    img_num, fusion_list, message = arg_results
-
-    # img_num, fusion_list, message = args
+    img_num, fusion_list, message = arg_parse_results
 
     # Check that we replied to a real post
     replied_post_reference = ctx.message.reference
@@ -791,9 +786,7 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
         return
     
     await check_and_load_cache(bot)
-
     image = msg.attachments[img_num-1]
-
     
     # If the user is not the author of the post, warn the user
     sprite_author = msg.author
@@ -805,7 +798,7 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
         is_og_author = False
         sprite_author = msg.channel.owner
         
-    if location == "gallery":
+    if location == "gallery" or location == "assetgallery":
         # Check for posting immunity. Check message and thread author if they are different people
         if is_user_post_immune(msg.author):
             await ctx.send("User is immune to automated sprite posting", delete_after=20)
@@ -817,10 +810,8 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
                 await ctx.message.delete(delay=2)
                 return
 
-        post = await post_to_channel(sprite_channels["gallery"], fusion_list, image, sprite_author, footer_message=GALLERY_FOOTER, message=message)
-        await ctx.message.delete(delay=2)
-        await clean_tags(ctx.channel, spritepost_tags["gallery"])
-        await send_galpost_notification(ctx.channel, sprite_author, post)
+        footer_message=GALLERY_FOOTER
+        new_tag = "gallery"
 
 
     elif location == "noqa":
@@ -836,13 +827,38 @@ async def _manually_post_to_channel(location: str, ctx: Context, args:list, bot:
                 return
         
         footer_message = ""
-        post = await post_to_channel(sprite_channels["noqa"], fusion_list, image, sprite_author, footer_message=footer_message, message=message)
-        await ctx.message.delete(delay=2)
-        await clean_tags(ctx.channel, spritepost_tags["harvested"])
+        new_tag = "harvested"
+
+    # Post to channel and update post tags
+    post = await post_to_channel(sprite_channels[location], fusion_list, image, sprite_author, footer_message=footer_message, message=message)
+    await ctx.message.delete(delay=2)
+    await clean_tags(ctx.channel, spritepost_tags[new_tag])
+    if location == "noqa":
         await send_noqa_notification(ctx.channel, sprite_author, post)
+    else:
+        await send_galpost_notification(ctx.channel, sprite_author, post)
+    
 
     await ctx.message.delete(delay=2)
 
+async def _parse_post_args(ctx: Context, args:list, location: str):
+    # Parse args and ensure they are correct
+    arg_results = await _parse_channelpost_args(args)
+
+    # If we only found one fusion and this is not asspost, raise an error
+    if location != "assetgallery" and arg_results is not None and type(arg_results[1]) != list:
+         arg_results = None
+
+    # Check asspost got a fusion id
+    if location == "assetgallery" and arg_results is not None and arg_results[1] == None:
+        arg_results = None
+
+    if arg_results is None:
+        usage_message = "Usage (must be in reply to a message): `PicNum[Optional] Head/Body message[optional]`\nFusions can be names or id numbers"
+        await ctx.send(usage_message, delete_after=10, ephemeral=True)
+        await ctx.message.delete(delay=2)
+        return
+    return arg_results
 
 async def _parse_channelpost_args(args:list):
     """
@@ -861,27 +877,28 @@ async def _parse_channelpost_args(args:list):
     if len(args) == 0:
         return None
 
+    # Arg in format: Head/Body or Head
     if len(args) == 1:
         fusions = args[0].split('/')
         if len(fusions) != 2:
-            return None
-        
-        fusion_lst = clean_names_or_ids(fusions)
-        if fusion_lst is None:
-            return None
-        
+            fusion_lst = raw_pokemon_name_to_id(fusions[0])
+        else:
+            fusion_lst = clean_names_or_ids(fusions)
+            if fusion_lst is None:
+                return None
+            
+    # Arg in format: 'imgNum Head/Body' or 'imgNum Head/Body message' 
     if len(args) >= 2:
-        # This could be 'imgNum Head/Body' or 'imgNum Head/Body message'
         if args[0].isdigit():
             pic_num = int(args[0])
             
             fusions = args[1].split('/')
             if len(fusions) != 2:
-                return None
-
-            fusion_lst = clean_names_or_ids(fusions)
-            if fusion_lst is None:
-                return None
+                fusion_lst = raw_pokemon_name_to_id(fusions[0])
+            else:
+                fusion_lst = clean_names_or_ids(fusions)
+                if fusion_lst is None:
+                    return None
             
             if len(args) > 2:
                 message = ' '.join(args[2:])
@@ -889,9 +906,12 @@ async def _parse_channelpost_args(args:list):
         # 'Head/Body message'
         elif '/' in args[0]:
             fusions = args[0].split('/')
-            fusion_lst = clean_names_or_ids(fusions)
-            if fusion_lst is None:
-                return None
+            if len(fusions) != 2:
+                fusion_lst = raw_pokemon_name_to_id(fusions[0])
+            else:
+                fusion_lst = clean_names_or_ids(fusions)
+                if fusion_lst is None:
+                    return None
             
             message = ' '.join(args[1:])
         
