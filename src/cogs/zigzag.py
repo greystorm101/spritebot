@@ -54,7 +54,7 @@ class ZigZag(Cog):
         self.most_recent_date = None
         load_env_vars(bot.env)
     
-    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager", "Creator")
     @command(name="galcache")
     async def galcache(self,  ctx: Context, starttime = None):
         """Caches gallery posts"""
@@ -68,7 +68,7 @@ class ZigZag(Cog):
         # with open() as f:
         # pickle.dump
 
-    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager", "Creator")
     @command(name="dig", pass_context=True,
              help ="[ZIGZAGOON] Finds old threads with needs feedback tag. Run with `MM/DD/YY` to start at a certain date. Run with `reset` to start with 2 weeks ago",
              brief = "Finds old threads")
@@ -148,7 +148,7 @@ class ZigZag(Cog):
         await ctx.message.delete()
         await _manually_post_to_channel("gallery", ctx, args, self.bot)
         
-    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager", "Creator")
     @command(name="noqa", pass_context=True,
              help ="[ZIGZAGOON] Posts the replied to image to the noqa channel.",
              brief = "Posts image to noqa")
@@ -156,7 +156,7 @@ class ZigZag(Cog):
         await ctx.message.delete()
         await _manually_post_to_channel("noqa", ctx, args, self.bot)
 
-    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager", "Creator")
     @command(name="asspost", pass_context=True,
              help ="[ZIGZAGOON] Posts the replied to image to the asset gallery.",
              brief = "Posts image to asset gallery")
@@ -904,7 +904,8 @@ async def _parse_channelpost_args(args:list):
                 message = ' '.join(args[2:])
         
         # 'Head/Body message'
-        elif '/' in args[0]:
+        else:
+            # if '/' in args[0]:
             fusions = args[0].split('/')
             if len(fusions) != 2:
                 fusion_lst = raw_pokemon_name_to_id(fusions[0])
@@ -915,9 +916,6 @@ async def _parse_channelpost_args(args:list):
             
             message = ' '.join(args[1:])
         
-        else:
-            return None
-
     return [pic_num, fusion_lst, message]
 
 

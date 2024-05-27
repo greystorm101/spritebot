@@ -9,7 +9,7 @@ class Contest(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @has_any_role("Mime Jr.(Event Organizer)", "Sprite Manager", "Bot Manager")
+    @has_any_role("Mime Jr.(Event Organizer)", "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="win", pass_context=True,
                 help ="[MIMEJR] Gives a mentioned user the current mini-contest winner role",
                 brief = "Crowns a champion",)
@@ -23,7 +23,7 @@ class Contest(Cog):
         await ctx.send(f"Crowned {winning_user.name} as a champion!")
         return
     
-    @has_any_role("Mime Jr.(Event Organizer)", "Sprite Manager", "Bot Manager")
+    @has_any_role("Mime Jr.(Event Organizer)", "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="retire", pass_context=True,
                 help ="[MIMEJR] Removes current winner role from user and adds past winner role",
                 brief = "Makes a winner a past winner")

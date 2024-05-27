@@ -65,7 +65,7 @@ class Chansey(Cog):
         
             await thread.send(content = message)
 
-    @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager")
+    @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="pack", pass_context=True,
              help ="[CHANSEY] Marks an error thread to be revisited in the next pack release.",
              brief = "Packs an error thread")
@@ -80,7 +80,7 @@ class Chansey(Cog):
         await ctx.send("This thread has been marked to be revisited in the next spritepack.")
         return
 
-    @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager")
+    @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="release", pass_context=True,
              help ="[CHANSEY] Returns all threads to be revisited in this pack release",
              brief = "Returns packed threads")
@@ -107,7 +107,7 @@ class Chansey(Cog):
 
         return
     
-    @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager")
+    @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager", "Creator")
     @command(name="egg", pass_context=True,
              help ="[CHANSEY] Finds old error threads with unresolved tags tag. Run with `MM/DD/YY` to start at a certain date. Run with `reset` to start with 1 week ago. Add tag names to only search a subset",
              brief = "Finds old error threads")
