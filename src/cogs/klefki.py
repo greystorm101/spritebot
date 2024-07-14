@@ -12,8 +12,8 @@ SPRITE_APP_CHANNEL_ID=0
 deny_reasons = {"alt": "One or more of sprites do not follow the criteria for a conventional head/body fusion. Please reapply with three sprites that meet the fusion requirements in https://discord.com/channels/302153478556352513/873571372981452830/909608552639897660",
               "similar sprites": "Your sprites are **too similar**, which makes it difficult for the managers to evaluate your spriting skills! Please reapply "\
                                  "with a trio of sprites that are more varied, such as using three **different Pokémon** for the heads of the 3 sprites.",
-              "not three": "You did not submit **three sprites**. Please reapply once you have three sprites ready to post",
-                "self fusion": "One or more of your submission is a **self-fusion** ( a Pokémon fused with itself), which are not accepted for spriter application due to "\
+              "not three": "You did not submit **three sprites**. You either submitted too many or too few sprites. Please reapply once you have three sprites ready to post",
+                "self fusion": "One or more of your sprites is a **self-fusion** ( a Pokémon fused with itself), which are not accepted for spriter application due to "\
                               "how different their designs usually are. They're difficult to evaluate. Please reapply once you have three sprites that aren't self fusions!",
               "guidelines": "Your sprites do not follow the  <#873571372981452830>. Please reapply after you have re-read through the guidelines and made 3 unique sprites that follow them.",
               "inactivity": "Due to inactivity, this application will be closed. Feel free to open another application in the future.",
@@ -52,10 +52,10 @@ class Klefki(Cog):
             await thread.send(content = message)
 
 
-    @has_any_role("Klefki(Sprite role giver)", "Sprite Manager", "Bot Manager", "Creator")
+    @has_any_role("Klefki (Spriter role giver)", "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="appapp", pass_context=True,
                 help ="[KLEFKI] Grants spriter role, removes applicant role, sends a message",
-                brief = " Grants the spriter role")
+                brief = " Grants the spriter role and gives info")
     async def appaccept(self, ctx: Context, name: User, more_work_needed: bool = False):
         selected_user = ctx.guild.get_member(name.id)
 
@@ -91,10 +91,10 @@ class Klefki(Cog):
         await ctx.send(message)
         return
     
-    @has_any_role("Klefki(Sprite role giver)", "Sprite Manager", "Bot Manager", "Creator")
+    @has_any_role("Klefki (Spriter role giver)", "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="denyapp", pass_context=True,
                 help ="[KLEFKI] Grants spriter role, removes applicant role, sends a message",
-                brief = " Grants the spriter role")
+                brief = "Removes the spriter applicant role and gives info")
     @app_commands.describe(name="The user to give the role to")
     @app_commands.describe(reason="Reason for denial")
     @app_commands.autocomplete(reason=deny_autocomplete)
@@ -120,7 +120,7 @@ class Klefki(Cog):
         return
 
 
-    @has_any_role("Klefki(Sprite role giver)", "Sprite Manager", "Bot Manager", "Creator")
+    @has_any_role("Klefki (Spriter role giver)", "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="apply", pass_context=True,
                 help ="[KLEFKI] Gives a user the spriter applicant role (silent)",
                 brief = "Gives a user the spriter applicant role (silent)",)
@@ -134,7 +134,7 @@ class Klefki(Cog):
         await ctx.send(f"Gave {selected_user.name} applicant role", ephemeral=True, delete_after=60)
         return
     
-    @has_any_role("Klefki(Sprite role giver)", "Sprite Manager", "Bot Manager", "Creator")
+    @has_any_role("Klefki (Spriter role giver)", "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="removeapp", pass_context=True,
                 help ="[KLEFKI] Removes the spriter applicant role (silent)",
                 brief = "Removes the spriter applicant role (silent)")
@@ -143,13 +143,13 @@ class Klefki(Cog):
 
         applicant_role = utils.get(ctx.guild.roles,id=SPRITER_APPLICANT_ID)
         
-        await selected_user.add_roles(applicant_role)
+        await selected_user.remove_roles(applicant_role)
 
         await ctx.message.delete(delay=2)
         await ctx.send(f"Removed applicant role from {selected_user.name}", ephemeral=True, delete_after=60)
         return
     
-    @has_any_role("Klefki(Sprite role giver)", "Sprite Manager", "Bot Manager", "Creator")
+    @has_any_role("Klefki (Spriter role giver)", "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="givespriter", pass_context=True,
                 help ="[KLEFKI] Gives a user the spriter role (silent)",
                 brief = "Gives a user the spriter role (silent)",)

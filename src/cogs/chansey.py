@@ -189,6 +189,16 @@ class Chansey(Cog):
 
         await ctx.send("Complete!")
 
+    @has_any_role("Chansey (sprite error fixer)", "Sprite Manager", "Bot Manager", "Creator")
+    @hybrid_command(name="implemented", pass_context=True,
+             help ="[CHANSEY] Marks sprite error thread as implemented",
+             brief = "Marks sprite error thread as implemented")
+    async def done(self, ctx: Context):
+        await check_and_load_cache(self.bot)
+        await ctx.channel.edit(archived=False, applied_tags=[error_tags["implemented"]])
+        await ctx.send("This report has been marked completed. If there are further issues, please make a new report and link the previous report in the description if necessary.")
+        return
+
 async def setup(bot:Bot):
     await bot.add_cog(Chansey(bot))
 
