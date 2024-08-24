@@ -845,12 +845,14 @@ async def _parse_post_args(ctx: Context, args:list, location: str):
     # Parse args and ensure they are correct
     arg_results = await _parse_channelpost_args(args)
 
-    # If we only found one fusion and this is not asspost, raise an error
-    if location != "assetgallery" and arg_results is not None and type(arg_results[1]) != list:
+    # If we only found one fusion and this is not asspost or noqa, raise an error
+    if location not in ["assetgallery", "noqa"] and arg_results is not None and type(arg_results[1]) != list:
+         print(location)
          arg_results = None
 
     # Check asspost got a fusion id
-    if location == "assetgallery" and arg_results is not None and arg_results[1] == None:
+    if location not in ["assetgallery", "noqa"] and arg_results is not None and arg_results[1] == None:
+        print(2)
         arg_results = None
 
     if arg_results is None:
@@ -915,7 +917,7 @@ async def _parse_channelpost_args(args:list):
                     return None
             
             message = ' '.join(args[1:])
-        
+
     return [pic_num, fusion_lst, message]
 
 
