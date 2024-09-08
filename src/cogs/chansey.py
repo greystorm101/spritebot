@@ -13,7 +13,7 @@ GUIDELINES_THREAD = None
 MAX_NUM_ERROR_THREADS = 5
 
 FILEPACK_NAME = "curpack.txt"
-FILEPACK_DIR = ""
+FILEPACK_DIR = "/datadir/"
 
 error_tags = {}
 
@@ -196,7 +196,8 @@ class Chansey(Cog):
     async def done(self, ctx: Context):
         await check_and_load_cache(self.bot)
         await ctx.channel.edit(archived=False, applied_tags=[error_tags["implemented"]])
-        await ctx.send("This report has been marked completed. If there are further issues, please make a new report and link the previous report in the description if necessary.")
+        await ctx.send("This report has been marked completed. If there are further issues, please make a new report and link the previous report in the description if necessary. \n\n"\
+                       "Remember, any fixes made here will *not* be present in the monthly sprite packs, only the **full** sprite packs")
         return
 
 async def setup(bot:Bot):

@@ -2819,6 +2819,188 @@
         "name": "ultranecrozma",
         "typos": ["ultra", "necrozmaultra", "ultranecrosma"],
         "display_name": "Ultra Necrozma"
+    },
+    {
+        "id": "471",
+        "name": "jangmoo",
+        "typos": ["jangmo"],
+        "display_name": "Jangmo-o"
+    },
+    {
+        "id": "472",
+        "name": "hakamoo",
+        "typos": ["hakamoo", "hakmoo", "hakamo"],
+        "display_name": "Hakamo-o"
+    },
+    {
+        "id": "473",
+        "name": "kommoo",
+        "typos": ["komoo", "kommo", "komo"],
+        "display_name": "Kommo-o"
+    },
+    {
+        "id": "474",
+        "name": "mysterymon1",
+        "typos": [],
+        "display_name": "MysteryMon1"
+    },
+    {
+        "id": "475",
+        "name": "mysterymon2",
+        "typos": [],
+        "display_name": "MysteryMon2"
+    },
+    {
+        "id": "476",
+        "name": "fomantis",
+        "typos": ["formantis"],
+        "display_name": "Fomantis"
+    },
+    {
+        "id": "477",
+        "name": "lurantis",
+        "typos": ["luantis"],
+        "display_name": "Lurantis"
+    },
+    {
+        "id": "478",
+        "name": "carbink",
+        "typos": ["karbink", "carbin", "carbonk", "carpink"],
+        "display_name": "Carbink"
+    },
+    {
+        "id": "479",
+        "name": "chespin",
+        "typos": ["chestpin"],
+        "display_name": "Chespin"
+    },
+    {
+        "id": "480",
+        "name": "quilladin",
+        "typos": [],
+        "display_name": "Quilladin"
+    },
+    {
+        "id": "481",
+        "name": "chesnaught",
+        "typos": ["chestnut"],
+        "display_name": "Chesnaught"
+    },
+    {
+        "id": "482",
+        "name": "fennekin",
+        "typos": ["fenekin"],
+        "display_name": "Fennekin"
+    },
+    {
+        "id": "483",
+        "name": "braixen",
+        "typos": ["braxen"],
+        "display_name": "Braixen"
+    },
+    {
+        "id": "484",
+        "name": "delphox",
+        "typos": ["delfox"],
+        "display_name": "Delphox"
+    },
+    {
+        "id": "485",
+        "name": "froakie",
+        "typos": [""],
+        "display_name": "Froakie"
+    },
+    {
+        "id": "486",
+        "name": "frogadier",
+        "typos": [],
+        "display_name": "Frogadier"
+    },
+    {
+        "id": "487",
+        "name": "greninja",
+        "typos": [""],
+        "display_name": "Greninja"
+    },
+    {
+        "id": "488",
+        "name": "mysterymonx",
+        "typos": [],
+        "display_name": "MysteryMonx"
+    },
+    {
+        "id": "489",
+        "name": "mysterymon3",
+        "typos": [],
+        "display_name": "MysteryMon3"
+    },
+
+    {
+        "id": "490",
+        "name": "mysterymon4",
+        "typos": [],
+        "display_name": "MysteryMon4"
+    },
+    {
+        "id": "491",
+        "name": "mysterymon5",
+        "typos": [],
+        "display_name": "MysteryMon5"
+    },
+    {
+        "id": "492",
+        "name": "mysterymon6",
+        "typos": [],
+        "display_name": "MysteryMon6"
+    },
+    {
+        "id": "493",
+        "name": "mysterymon7",
+        "typos": [],
+        "display_name": "MysteryMon7"
+    },
+    {
+        "id": "494",
+        "name": "mysterymon8",
+        "typos": [],
+        "display_name": "MysteryMon8"
+    },
+    {
+        "id": "495",
+        "name": "mysterymon9",
+        "typos": [],
+        "display_name": "MysteryMon9"
+    },
+    {
+        "id": "496",
+        "name": "mysterymon10",
+        "typos": [],
+        "display_name": "MysteryMon10"
+    },
+    {
+        "id": "497",
+        "name": "mysterymon11",
+        "typos": [],
+        "display_name": "MysteryMon11"
+    },
+    {
+        "id": "498",
+        "name": "mysterymon12",
+        "typos": [],
+        "display_name": "MysteryMon12"
+    },
+    {
+        "id": "499",
+        "name": "mysterymon13",
+        "typos": [],
+        "display_name": "MysteryMon13"
+    },
+    {
+        "id": "500",
+        "name": "mysterymon14",
+        "typos": [],
+        "display_name": "MysteryMon14"
     }
+    
     ]
 }   

@@ -18,7 +18,10 @@ deny_reasons = {"alt": "One or more of sprites do not follow the criteria for a 
               "guidelines": "Your sprites do not follow the  <#873571372981452830>. Please reapply after you have re-read through the guidelines and made 3 unique sprites that follow them.",
               "inactivity": "Due to inactivity, this application will be closed. Feel free to open another application in the future.",
               "feedback": "Applicants are evaluated not only for their sprite quality, but also on their ability to properly take and act on feedback. You may re-apply once you are able to demonstrate taking feedback on your sprites",
-              "missing spritework": "Your sprites have not gone through ⁠<#1050404143807873157> before applying for spriter. You may re-apply once you create posts for your sprites."}
+              "missing spritework": "Your sprites have not gone through ⁠<#1050404143807873157> before applying for spriter. You may re-apply once you create posts for your sprites.",
+              "24 hours": "The ⁠<#1050404143807873157> thread for one or more of your sprites was opened too recently (less that 24 hours ago). In order to ensure quality, it's best for an applicant to leave their sprites open for feedback "\
+                           "for at least 24 hours before applying for the role. That way, more people can see your work and give you feedback. If you have not gotten feedback on your sprites and would like some, you can use the /feedbackpls "\
+                           "command and the <#882011946801569802> channel to get more eyes on your work. Feel free to reapply once all three of your sprites have been on the gallery for 24 hours or more."}
 
 deny_names = [*deny_reasons.keys()]
 
