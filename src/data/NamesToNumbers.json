@@ -2840,15 +2840,15 @@
     },
     {
         "id": "474",
-        "name": "mysterymon1",
-        "typos": [],
-        "display_name": "MysteryMon1"
+        "name": "wimpod",
+        "typos": ["whimpod"],
+        "display_name": "Wimpod"
     },
     {
         "id": "475",
-        "name": "mysterymon2",
+        "name": "golisopod",
         "typos": [],
-        "display_name": "MysteryMon2"
+        "display_name": "Golisopod"
     },
     {
         "id": "476",
@@ -2924,34 +2924,34 @@
     },
     {
         "id": "488",
-        "name": "mysterymonx",
-        "typos": [],
-        "display_name": "MysteryMonx"
+        "name": "torkoal",
+        "typos": ["torcoal", "torkol"],
+        "display_name": "Torkoal"
     },
     {
         "id": "489",
-        "name": "mysterymon3",
-        "typos": [],
-        "display_name": "MysteryMon3"
+        "name": "pumpkaboo",
+        "typos": ["pumpkabo"],
+        "display_name": "Pumpkaboo"
     },
 
     {
         "id": "490",
-        "name": "mysterymon4",
-        "typos": [],
-        "display_name": "MysteryMon4"
+        "name": "gourgeist",
+        "typos": ["gorgeist", "gourgest"],
+        "display_name": "Gourgeist"
     },
     {
         "id": "491",
-        "name": "mysterymon5",
+        "name": "swirlix",
         "typos": [],
-        "display_name": "MysteryMon5"
+        "display_name": "Swirlix"
     },
     {
         "id": "492",
-        "name": "mysterymon6",
-        "typos": [],
-        "display_name": "MysteryMon6"
+        "name": "slurpuff",
+        "typos": ["slurpuf"],
+        "display_name": "Slurpuff"
     },
     {
         "id": "493",
