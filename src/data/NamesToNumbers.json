@@ -2967,21 +2967,21 @@
     },
     {
         "id": "495",
-        "name": "mysterymon9",
+        "name": "lotad",
         "typos": [],
-        "display_name": "MysteryMon9"
+        "display_name": "Lotad"
     },
     {
         "id": "496",
-        "name": "mysterymon10",
-        "typos": [],
-        "display_name": "MysteryMon10"
+        "name": "lombre",
+        "typos": ["lober"],
+        "display_name": "Lombre"
     },
     {
         "id": "497",
-        "name": "mysterymon11",
+        "name": "ludicolo",
         "typos": [],
-        "display_name": "MysteryMon11"
+        "display_name": "Ludicolo"
     },
     {
         "id": "498",
