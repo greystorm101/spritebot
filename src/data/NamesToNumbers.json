@@ -2985,15 +2985,15 @@
     },
     {
         "id": "498",
-        "name": "mysterymon12",
-        "typos": [],
-        "display_name": "MysteryMon12"
+        "name": "miniormeteor",
+        "typos": ["miniorm", "meteor"],
+        "display_name": "Minior Meteor"
     },
     {
         "id": "499",
-        "name": "mysterymon13",
-        "typos": [],
-        "display_name": "MysteryMon13"
+        "name": "miniorcore",
+        "typos": ["miniorc", "core"],
+        "display_name": "Minior Core"
     },
     {
         "id": "500",
