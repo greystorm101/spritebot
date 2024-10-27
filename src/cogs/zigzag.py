@@ -4,8 +4,10 @@ from typing import List
 import io
 import os
 import time
+import pickle
+from enum import Enum
 
-from discord.ext.commands import Bot, Cog, Context, command, has_any_role
+from discord.ext.commands import Bot, Cog, Context, command, has_any_role, hybrid_command
 from discord import ForumTag, Member, Thread, Attachment, Message, ui, Embed, User, app_commands
 import discord
 from dateutil.relativedelta import *
@@ -31,9 +33,20 @@ DM_IMMUNITY_ID = None
 MAX_LOOKAHEAD_THEAD_TIME = 21 # Amount of time, in days, that we will check in the gallery after time of spritework post, 
 MAX_NUM_FEEDBACK_THREADS = 10 # Amount of feedback threads to find
 
+ZIGZAG_STATS_NAME = "zigzagstats.pckl"
+ZIGZAG_STATS_DIR = "./datadir/"
+
+class ZigzagStats(Enum):
+    DIG = "dig"
+    GALPOST = "galpost"
+    NOQA = "noqa"
+    ASSPOST = "asspost"
+    CLEAN = "clean"
+    NONIF = "non-if"
+    OTHER = "other"
+
 GALLERY_FOOTER = "Note: This sprite was posted by a sprite manager or zigzagoon because it had gone unposted in spritework for over two weeks."\
                      "It may have an incorrect size, file name or other small issue. This will be fixed in the sprite pack!"
-
 
 spritepost_tags = {}
 sprite_channels = {}
@@ -75,6 +88,8 @@ class ZigZag(Cog):
     @app_commands.describe(start_args="'reset': starts from 2 weeks ago.\n'MM/DD/YY': starts on specific day")
     async def oldest(self, ctx: Context, start_args:str = None):
         """Find the oldest threads with a given tag. Main Zigzag command"""
+
+        mark_user_stats(ctx.author, ZigzagStats.DIG)
 
         # Parse args and determine start date
         if start_args is not None:
@@ -147,6 +162,7 @@ class ZigZag(Cog):
     async def galpost(self, ctx: Context, *args):
         await ctx.message.delete()
         await _manually_post_to_channel("gallery", ctx, args, self.bot)
+        mark_user_stats(ctx.author, ZigzagStats.GALPOST)
         
     @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager", "Creator")
     @command(name="noqa", pass_context=True,
@@ -155,6 +171,7 @@ class ZigZag(Cog):
     async def noqa(self, ctx: Context, *args):
         await ctx.message.delete()
         await _manually_post_to_channel("noqa", ctx, args, self.bot)
+        mark_user_stats(ctx.author, ZigzagStats.NOQA)
 
     @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager", "Creator")
     @command(name="asspost", pass_context=True,
@@ -163,6 +180,39 @@ class ZigZag(Cog):
     async def asspost(self, ctx: Context, *args):
         await ctx.message.delete()
         await _manually_post_to_channel("assetgallery", ctx, args, self.bot)
+        mark_user_stats(ctx.author, ZigzagStats.ASSPOST)
+
+
+    @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager", "Creator")
+    @hybrid_command(name="zigstats", pass_context=True,
+             help ="[ZIGZAGOON] Stats for Zigzagoons",
+             brief = "Stats for Zigzagoons")
+    async def zigstats(self, ctx: Context, alltime: bool = False):
+        message = ""
+
+        if alltime:
+            filename = f"{ZIGZAG_STATS_DIR}{ZIGZAG_STATS_NAME}"
+            message += "## Stats for Zigzag usage\n"
+        else:
+            filename = f"{datetime.now().month}-{datetime.now().year}-stats.pckl"
+            message += f"## Stats for {datetime.now().month}/{datetime.now().year}\n"
+
+        f = open(filename, "rb")
+        stats = pickle.load(f)
+
+        for user in stats:
+            user_stats : dict[ZigzagStats, int] = stats[user]
+            out_str = ""
+
+            for action in user_stats:
+                out_str += f"\t**{action.value}** : {user_stats[action]}\n"
+            message += f"### {user} :\n{out_str}-----\n"
+
+
+        await ctx.send(message)
+
+        f.close()
+        return
 
 async def setup(bot:Bot):
     await bot.add_cog(ZigZag(bot))
@@ -203,6 +253,7 @@ class PostOptions(ui.Select):
             post = await post_to_channel(sprite_channels["gallery"], self.fusion, self.image, self.thread_owner, footer_message=GALLERY_FOOTER)
             await send_galpost_notification(self.thread, self.thread_owner, post)
             message = "{} posted sprite from thread {}".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.GALPOST)
 
         elif choice == 'Harvest':
             harvested_tag = spritepost_tags["harvested"]
@@ -214,22 +265,25 @@ class PostOptions(ui.Select):
             post = await post_to_channel(sprite_channels["noqa"], self.fusion, self.image, self.thread_owner, footer_message="")
             await send_noqa_notification(self.thread, self.thread_owner, post)
             message = "{}: Harvested thread {}".format(interaction.user, self.thread.jump_url)
-            pass
+            mark_user_stats(interaction.user, ZigzagStats.NOQA)
 
         elif choice == 'Clean':
             gal_tag = spritepost_tags["gallery"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as already added to gallery".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.CLEAN)
 
         elif choice == 'Non-IF':
             gal_tag = spritepost_tags["non-if"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as non-if".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.NONIF)
 
         elif choice == 'Other':
             gal_tag = spritepost_tags["other"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as other".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.OTHER)
 
         elif choice == 'Manual':
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
@@ -264,16 +318,19 @@ class UnidentifiedOptions(ui.Select):
             gal_tag = spritepost_tags["gallery"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as already added to gallery".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.CLEAN)
 
         elif choice == 'Non-IF':
             gal_tag = spritepost_tags["non-if"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as non-if".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.NONIF)
 
         elif choice == 'Other':
             gal_tag = spritepost_tags["other"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as other".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.OTHER)
 
         elif choice == 'Manual':
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
@@ -305,16 +362,19 @@ class ImmuneOptions(ui.Select):
             gal_tag = spritepost_tags["gallery"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as already added to gallery".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.CLEAN)
 
         elif choice == 'Non-IF':
             gal_tag = spritepost_tags["non-if"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as non-if".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.NONIF)
 
         elif choice == 'Other':
             gal_tag = spritepost_tags["other"]
             await clean_tags(self.thread, gal_tag)
             message = "{}: Marked {} as other".format(interaction.user, self.thread.jump_url)
+            mark_user_stats(interaction.user, ZigzagStats.OTHER)
 
         elif choice == 'Manual':
             message = "{}: manually handling {}".format(interaction.user, self.thread.jump_url)
@@ -945,3 +1005,33 @@ def clean_names_or_ids(fusions):
     
     fusion_lst = [headid, bodyid]
     return fusion_lst
+
+def mark_user_stats(user:  User | Member , action : ZigzagStats):
+    cur_month_file = f"{datetime.now().month}-{datetime.now().year}-stats.pckl"
+    total_file = f"{ZIGZAG_STATS_DIR}{ZIGZAG_STATS_NAME}"
+    
+    def open_and_append_stats(fname):
+        try:
+            f = open(fname, "rb")
+            pickled_stats = f.read()
+            stats = pickle.loads(pickled_stats)
+            f.close()
+        except EOFError:
+            stats = {}
+            f.close()
+        except FileNotFoundError:
+            stats = {}
+
+        username = user.name
+        if username not in stats:
+            stats[username] = {item:0 for item in ZigzagStats}
+        stats[username][action] += 1
+
+        f = open(fname, "wb")
+        pickle.dump(stats, f)
+        f.close()
+        return
+    
+    open_and_append_stats(cur_month_file)
+    open_and_append_stats(total_file)
+    return
