@@ -187,7 +187,7 @@ class ZigZag(Cog):
     @hybrid_command(name="zigstats", pass_context=True,
              help ="[ZIGZAGOON] Stats for Zigzagoons",
              brief = "Stats for Zigzagoons")
-    async def zigstats(self, ctx: Context, alltime: bool = False):
+    async def zigstats(self, ctx: Context, alltime: bool = False, ephemeral = True):
         message = ""
 
         if alltime:
@@ -209,7 +209,7 @@ class ZigZag(Cog):
             message += f"### {user} :\n{out_str}-----\n"
 
 
-        await ctx.send(message)
+        await ctx.send(message, ephemeral=ephemeral)
 
         f.close()
         return
