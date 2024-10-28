@@ -194,7 +194,7 @@ class ZigZag(Cog):
             filename = f"{ZIGZAG_STATS_DIR}{ZIGZAG_STATS_NAME}"
             message += "## Stats for Zigzag usage\n"
         else:
-            filename = f"{datetime.now().month}-{datetime.now().year}-stats.pckl"
+            filename = f"{ZIGZAG_STATS_DIR}/{datetime.now().month}-{datetime.now().year}-stats.pckl"
             message += f"## Stats for {datetime.now().month}/{datetime.now().year}\n"
 
         f = open(filename, "rb")
@@ -1007,7 +1007,7 @@ def clean_names_or_ids(fusions):
     return fusion_lst
 
 def mark_user_stats(user:  User | Member , action : ZigzagStats):
-    cur_month_file = f"{datetime.now().month}-{datetime.now().year}-stats.pckl"
+    cur_month_file = f"{ZIGZAG_STATS_DIR}/{datetime.now().month}-{datetime.now().year}-stats.pckl"
     total_file = f"{ZIGZAG_STATS_DIR}{ZIGZAG_STATS_NAME}"
     
     def open_and_append_stats(fname):
