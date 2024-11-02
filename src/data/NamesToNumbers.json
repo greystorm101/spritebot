@@ -2997,9 +2997,15 @@
     },
     {
         "id": "500",
-        "name": "mysterymon14",
+        "name": "diance",
         "typos": [],
-        "display_name": "MysteryMon14"
+        "display_name": "Diance"
+    },
+    {
+        "id": "500",
+        "name": "luvdisc",
+        "typos": ["luvdisk"],
+        "display_name": "Luvdisc"
     }
     
     ]
