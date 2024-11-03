@@ -16063,13 +16063,39 @@ BattlerShadowX = 0
 BattlerShadowSize = 2
 #-------------------------------
 [501]
-BattlerPlayerX = 0
-BattlerPlayerY = 0
-BattlerEnemyX = 0
-BattlerEnemyY = 0
+Name = Luvdisc
+InternalName = LUVDISC
+Type1 = WATER
+BaseStats = 43,30,55,97,40,65
+GenderRate = Female75Percent
+GrowthRate = Fast
+BaseEXP = 116
+EffortPoints = 0,0,0,1,0,0
+Rareness = 225
+Happiness = 70
+Abilities = SWIFTSWIM
+HiddenAbility = HYDRATION
+Moves = 1,TACKLE,1,CHARM,4,WATERGUN,7,AGILITY,9,DRAININGKISS,13,LUCKYCHANT,17,WATERPULSE,20,ATTRACT,22,HEARTSTAMP,26,FLAIL,31,SWEETKISS,34,TAKEDOWN,37,CAPTIVATE,40,AQUARING,42,SOAK,46,HYDROPUMP,49,SAFEGUARD
+TutorMoves = ATTRACT,BLIZZARD,BOUNCE,CONFIDE,DIVE,DOUBLETEAM,FACADE,FRUSTRATION,HAIL,HIDDENPOWER,ICEBEAM,ICYWIND,LIQUIDATION,PROTECT,PSYCHUP,RAINDANCE,REST,RETURN,ROUND,SAFEGUARD,SCALD,SLEEPTALK,SNORE,SUBSTITUTE,SURF,SWAGGER,TOXIC,WATERFALL,WATERPULSE
+EggMoves = AQUAJET,AQUARING,BRINE,CAPTIVATE,ENTRAINMENT,HEALPULSE,MUDSPORT,SPLASH,SUPERSONIC,WATERSPORT
+Compatibility = Water2
+StepsToHatch = 5120
+Height = 0.6
+Weight = 8.7
+Color = Pink
+Shape = Finned
+Habitat = Sea
+Kind = Rendezvous
+Pokedex = Luvdisc make the branches of Corsola their nests. There is a custom from long ago of giving a Luvdisc as a gift to express one's feelings of love.
+Generation = 3
+WildItemCommon = HEARTSCALE
+BattlerPlayerX = 1
+BattlerPlayerY = 19
+BattlerEnemyX = -4
+BattlerEnemyY = 9
 BattlerShadowX = 0
-BattlerShadowSize = 2
-#-------------------------------
+BattlerShadowSize = 1
+#---------------------
 [999999]
 Name = Zapmolcuno
 InternalName = ZAPMOLTICUNO
