@@ -8,6 +8,8 @@ import discord
 SPRITER_APPLICANT_ID=0
 SPRITER_ID=0
 SPRITE_APP_CHANNEL_ID=0
+APPLICANT_ABANDONED_ID=0
+APPLICANT_ROLE_GIVEN_ID=0
 
 deny_reasons = {"alt": "One or more of sprites do not follow the criteria for a conventional head/body fusion. Please reapply with three sprites that meet the fusion requirements in https://discord.com/channels/302153478556352513/873571372981452830/909608552639897660",
               "similar sprites": "Your sprites are **too similar**, which makes it difficult for the managers to evaluate your spriting skills! Please reapply "\
@@ -67,6 +69,7 @@ class Klefki(Cog):
         
         await selected_user.add_roles(spriter_role)
         await selected_user.remove_roles(applicant_role)
+        await ctx.channel.edit(archived=False, applied_tags=[APPLICANT_ROLE_GIVEN_ID])
 
         is_spman = "Sprite Manager" in [role.name for role in ctx.author.roles]
         approver_role = "Sprite Manager" if is_spman else "Klefki"
@@ -107,7 +110,7 @@ class Klefki(Cog):
         applicant_role = utils.get(ctx.guild.roles,id=SPRITER_APPLICANT_ID)
         
         await selected_user.remove_roles(applicant_role)
-
+        await ctx.channel.edit(archived=False, applied_tags=[APPLICANT_ABANDONED_ID])
 
         message = f"Hey {selected_user.mention}! Unfortunately, your application has been denied for the time being for the following reason: **{reason.upper()}**.\n\n"\
         
@@ -188,3 +191,11 @@ def load_env_vars(env: str):
     global SPRITE_APP_CHANNEL_ID
     SPRITE_APP_CHANNEL_ID = os.environ.get("DEV_SPRITE_APP_CHANNEL_ID") if is_dev else os.environ.get("SPRITE_APP_CHANNEL_ID")
     SPRITE_APP_CHANNEL_ID = int(SPRITE_APP_CHANNEL_ID)
+
+    global APPLICANT_ABANDONED_ID
+    APPLICANT_ABANDONED_ID = os.environ.get("DEV_APPLICANT_ABANDONED_ID") if is_dev else os.environ.get("APPLICANT_ABANDONED_ID")
+    APPLICANT_ABANDONED_ID = int(APPLICANT_ABANDONED_ID)
+
+    global APPLICANT_ROLE_GIVEN_ID
+    APPLICANT_ROLE_GIVEN_ID = os.environ.get("DEV_APPLICANT_ROLE_GIVEN_ID") if is_dev else os.environ.get("APPLICANT_ROLE_GIVEN_ID")
+    APPLICANT_ROLE_GIVEN_ID = int(APPLICANT_ROLE_GIVEN_ID)

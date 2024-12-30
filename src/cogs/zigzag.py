@@ -566,11 +566,11 @@ async def post_to_channel(channel: TextChannel, fusion:list | str, image: Attach
 
 async def send_galpost_notification(thread: Thread, thread_owner: User, galleryPost: Message):
     message = f"### Hey {thread_owner.mention}!\nA sprite manager or Zigzagoon thought this sprite looked great, so it has "\
-              f"been automatically posted to the gallery for you here: {galleryPost.jump_url} :ohyes: . You can expect to see "\
+              f"been automatically posted to the gallery for you here: {galleryPost.jump_url} <:ohyes:686653537911832661> . You can expect to see "\
               f"it included in an upcoming sprite pack release. **You should not post this sprite to the gallery, or it will cause a duplicate**\n"\
               f"## If you would like to remove this sprite from the gallery:\n- Ping `Zigzagoon (abandoned sprite poster)`"\
               f"or a sprite manager in this thread.\n- Let them know you would like the sprite removed from the gallery."\
-              f"\n*Make sure to remove the “Needs Feedback” tag on your spritework posts once they’re added to the gallery* :happo: \n{galleryPost.embeds[0].image.url}"
+              f"\n*Make sure to remove the “Needs Feedback” tag on your spritework posts once they’re added to the gallery* <:happo:1058708428425535559> \n{galleryPost.embeds[0].image.url}"
     
     await thread.send(content = message)
     
@@ -585,11 +585,11 @@ async def send_galpost_notification(thread: Thread, thread_owner: User, galleryP
 async def send_noqa_notification(thread: Thread, thread_owner: User, noqaPost: Message):
 
     message = f"### Hey {thread_owner.mention}!\nDue to inactivity, this sprite has been archived by a Zigzagoon or Sprite Manager. "\
-              f"After a certain amount of time, it will be made available for other spriters to edit so it can be added to the game (you will still be credited) :ohyes:\n"\
+              f"After a certain amount of time, it will be made available for other spriters to edit so it can be added to the game (you will still be credited) <:ohyes:686653537911832661>\n"\
               f"## If you would like to remove this sprite from the archive:\n- Ping `Zigzagoon (abandoned sprite poster)`"\
               f"or a sprite manager in this thread.\n- Let them know you would like the sprite removed from the archive.\n- You may "\
               f"continue working on this sprite (in this thread or a new thread), or you can chose to leave it abandoned."\
-              f"\n*Make sure to remove the “Needs Feedback” tag on your spritework posts once you're done with your sprite* :happo: \n{noqaPost.embeds[0].image.url}"
+              f"\n*Make sure to remove the “Needs Feedback” tag on your spritework posts once you're done with your sprite* <:happo:1058708428425535559> \n{noqaPost.embeds[0].image.url}"
 
     await thread.send(content = message)
     
