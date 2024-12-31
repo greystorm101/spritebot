@@ -11,6 +11,8 @@ SPRITE_APP_CHANNEL_ID=0
 APPLICANT_ABANDONED_ID=0
 APPLICANT_ROLE_GIVEN_ID=0
 
+tags = {}
+
 deny_reasons = {"alt": "One or more of sprites do not follow the criteria for a conventional head/body fusion. Please reapply with three sprites that meet the fusion requirements in https://discord.com/channels/302153478556352513/873571372981452830/909608552639897660",
               "similar sprites": "Your sprites are **too similar**, which makes it difficult for the managers to evaluate your spriting skills! Please reapply "\
                                  "with a trio of sprites that are more varied, such as using three **different Pokémon** for the heads of the 3 sprites.",
@@ -67,9 +69,11 @@ class Klefki(Cog):
         applicant_role = utils.get(ctx.guild.roles,id=SPRITER_APPLICANT_ID)
         spriter_role = utils.get(ctx.guild.roles,id=SPRITER_ID)
         
+        await check_and_load_cache(self.bot)
+
         await selected_user.add_roles(spriter_role)
         await selected_user.remove_roles(applicant_role)
-        await ctx.channel.edit(archived=False, applied_tags=[APPLICANT_ROLE_GIVEN_ID])
+        await ctx.channel.edit(archived=False, applied_tags=[tags["given"]])
 
         is_spman = "Sprite Manager" in [role.name for role in ctx.author.roles]
         approver_role = "Sprite Manager" if is_spman else "Klefki"
@@ -108,9 +112,9 @@ class Klefki(Cog):
         selected_user = ctx.guild.get_member(name.id)
 
         applicant_role = utils.get(ctx.guild.roles,id=SPRITER_APPLICANT_ID)
-        
+        await check_and_load_cache(self.bot)
         await selected_user.remove_roles(applicant_role)
-        await ctx.channel.edit(archived=False, applied_tags=[APPLICANT_ABANDONED_ID])
+        await ctx.channel.edit(archived=False, applied_tags=[tags["abandoned"]])
 
         message = f"Hey {selected_user.mention}! Unfortunately, your application has been denied for the time being for the following reason: **{reason.upper()}**.\n\n"\
         
@@ -175,6 +179,12 @@ class Klefki(Cog):
 async def setup(bot:Bot):
     await bot.add_cog(Klefki(bot))
 
+
+async def check_and_load_cache(bot: Bot):
+    if tags == {}:
+        application_channel = bot.get_channel(SPRITE_APP_CHANNEL_ID)
+        tags["abandoned"] = application_channel.get_tag(APPLICANT_ABANDONED_ID) # "Needs Feedback" tag ID
+        tags["given"]  = application_channel.get_tag(APPLICANT_ROLE_GIVEN_ID) # "Needs Feedback" tag ID
 
 def load_env_vars(env: str):
     """ Loads in env vars based on dev or prod. Makes me cry."""
