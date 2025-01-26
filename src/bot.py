@@ -5,7 +5,6 @@ from discord.ext.commands import Bot
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-# from cogs.zigzag import find_old_threads
 
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
@@ -57,5 +56,5 @@ this_bot = SpriteBot(command_prefix='!',
                      description=description,
                      intents=intents,
                      is_prod=args.prod,
-                     initial_extensions=["cogs.chansey", "cogs.contest",  "cogs.klefki", "cogs.smeargle", "cogs.zigzag"])
+                     initial_extensions=["cogs.chansey", "cogs.contest",  "cogs.eraser", "cogs.klefki", "cogs.smeargle", "cogs.zigzag"])
 this_bot.run(bot_key)

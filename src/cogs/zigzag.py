@@ -13,7 +13,7 @@ import discord
 from dateutil.relativedelta import *
 from discord.channel import TextChannel
 
-from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map, fusion_is_valid, name_to_id_map
+from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map, fusion_is_valid, name_to_id_map, is_former_spriter
 
 # Defining globals
 SPRITEWORK_CHANNEL_ID = None
@@ -607,6 +607,9 @@ def is_user_immune(user: Member):
 
 def is_user_post_immune(user: Member):
     """Determines if a user has yanmega/posting immunity"""
+    if is_former_spriter(user):
+        return True
+    
     if user is None or type(user) == User:
         return False
     
@@ -617,6 +620,9 @@ def is_user_post_immune(user: Member):
 
 def is_user_harvest_immune(user: Member):
     """Determines if a user has yanmega/posting immunity"""
+    if is_former_spriter(user):
+        return True
+
     if user is None or type(user) == User:
         return False
     

@@ -5,6 +5,8 @@ from discord.ext.commands import Bot, Cog, Context, has_any_role, hybrid_command
 from discord import Thread, User, utils, app_commands
 import discord
 
+from cogs.utils import is_former_spriter
+
 SPRITER_APPLICANT_ID=0
 SPRITER_ID=0
 SPRITE_APP_CHANNEL_ID=0
@@ -47,6 +49,15 @@ class Klefki(Cog):
 
         if thread.parent_id == SPRITE_APP_CHANNEL_ID:
             
+            if is_former_spriter(thread.owner):
+                await check_and_load_cache(self.bot)
+                message = f"Hello {thread.owner.mention}\n\n It appears you have the `Withdrawn Artist` role, which mean you are ineligible to apply for the spriter role and this application will be marked as abandoned.\n\n"\
+                          f"If you believe this is a mistake, please contact a sprite manager."
+
+                await thread.edit(archived=False, applied_tags=[tags["abandoned"]])
+                await thread.send(content = message)
+                return
+
             applicant_role = utils.get(thread.guild.roles,id=SPRITER_APPLICANT_ID)
             await thread.owner.add_roles(applicant_role)
 
@@ -70,6 +81,9 @@ class Klefki(Cog):
         spriter_role = utils.get(ctx.guild.roles,id=SPRITER_ID)
         
         await check_and_load_cache(self.bot)
+
+        if await former_spriter_safeguard(selected_user, ctx):
+            return
 
         await selected_user.add_roles(spriter_role)
         await selected_user.remove_roles(applicant_role)
@@ -137,6 +151,9 @@ class Klefki(Cog):
     async def applicant(self, ctx: Context, name: User = None):
         selected_user = ctx.guild.get_member(name.id)
 
+        if await former_spriter_safeguard(selected_user, ctx):
+            return
+        
         applicant_role = utils.get(ctx.guild.roles,id=SPRITER_APPLICANT_ID)
         await selected_user.add_roles(applicant_role)
 
@@ -166,6 +183,9 @@ class Klefki(Cog):
     async def givespriter(self, ctx: Context, name: User = None):
         selected_user = ctx.guild.get_member(name.id)
 
+        if await former_spriter_safeguard(selected_user, ctx):
+            return
+
         applicant_role = utils.get(ctx.guild.roles,id=SPRITER_APPLICANT_ID)
         spriter_role = utils.get(ctx.guild.roles,id=SPRITER_ID)
         
@@ -175,6 +195,13 @@ class Klefki(Cog):
         await ctx.message.delete(delay=2)
         await ctx.send(f"Gave {selected_user.name} applicant role", ephemeral=True, delete_after=60)
         return
+
+
+async def former_spriter_safeguard(user, ctx: Context):
+    if is_former_spriter(user):
+        await ctx.send(f"{user.name} is marked as a former spriter and cannot be given the spriter role. Please contact a sprite manager if you believe this is an error.", ephemeral=True, delete_after=120)
+        return True
+    return False
 
 async def setup(bot:Bot):
     await bot.add_cog(Klefki(bot))

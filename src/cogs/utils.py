@@ -3,7 +3,11 @@ import json
 import re
 import os
 
+from discord import Member
 
+FILEPACK_DIR = "datadir/"
+FORMER_SPRITERS = []
+FORMER_SPRITER_ROLE_ID = None
 
 JSON_FILE = os.path.join(os.getcwd(), "src", "data", "NamesToNumbers.json" ) 
 MULTI_NAME_FILE = os.path.join(os.path.dirname(os.getcwd()), "data", "MultiWordNames.json" ) 
@@ -67,6 +71,28 @@ def print_typo_list():
         typos_list = [item["display_name"]+ ": "+ str(item["typos"]) for item in data["pokemon"]]
         for poke in typos_list:
             print(poke)
+
+def is_former_spriter(user: Member, is_prod = True):
+    # Fill cache if needed
+    if len(FORMER_SPRITERS) == 0:
+        former_spriters_fd = open(os.path.join(FILEPACK_DIR, "former-spriters.txt"), "r")
+        for line in former_spriters_fd:
+            FORMER_SPRITERS.append(line.strip('\n'))
+    
+    global FORMER_SPRITER_ROLE_ID
+    if FORMER_SPRITER_ROLE_ID is None:
+        FORMER_SPRITER_ROLE_ID = os.environ.get("FORMER_SPRITER_ROLE_ID") if is_prod else os.environ.get("FORMER_SPRITER_ROLE_ID")
+        FORMER_SPRITER_ROLE_ID = int(FORMER_SPRITER_ROLE_ID)
+    
+    return (user.id in FORMER_SPRITERS) or (FORMER_SPRITER_ROLE_ID in [role.id for role in user.roles])
+
+def update_former_spriter_cache():
+    # Fill it first in case we haven't hit it
+    global FORMER_SPRITERS
+    former_spriters_fd = open(os.path.join(FILEPACK_DIR, "former-spriters.txt"), "r")
+    for line in former_spriters_fd:
+        FORMER_SPRITERS.append(line.strip('\n'))        
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
