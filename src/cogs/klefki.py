@@ -151,6 +151,8 @@ class Klefki(Cog):
     async def applicant(self, ctx: Context, name: User = None):
         selected_user = ctx.guild.get_member(name.id)
 
+        await ctx.defer(ephemeral=True)
+
         if await former_spriter_safeguard(selected_user, ctx):
             return
         
@@ -167,6 +169,8 @@ class Klefki(Cog):
                 brief = "Removes the spriter applicant role (silent)")
     async def remove(self, ctx: Context, name: User = None):
         selected_user = ctx.guild.get_member(name.id)
+        
+        await ctx.defer(ephemeral=True)
 
         applicant_role = utils.get(ctx.guild.roles,id=SPRITER_APPLICANT_ID)
         

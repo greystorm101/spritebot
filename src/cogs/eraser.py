@@ -26,6 +26,8 @@ class Eraser(Cog):
     async def former_spriter(self, ctx: Context, name: User = None):
         former_spriter = ctx.guild.get_member(name.id)
         
+        await ctx.defer()
+
         global ROLES_TO_RM
         if ROLES_TO_RM == []:
             for id in ROLES_TO_RM_IDS:
@@ -52,6 +54,8 @@ class Eraser(Cog):
     async def undo_former_spriter(self, ctx: Context, name: User = None):
         former_spriter = ctx.guild.get_member(name.id)
         
+        await ctx.defer()
+
         with open(os.path.join(FILEPACK_DIR, "former-spriters.txt"), "r+") as fd:
             new_names_list = [line for line in fd.readlines() if line.rstrip() != str(former_spriter.id)]
             new_names = "".join(new_names_list)
@@ -65,7 +69,7 @@ class Eraser(Cog):
         await former_spriter.remove_roles(utils.get(ctx.guild.roles,id=int(FORMER_SPRITER_ROLE_ID)))
 
         await ctx.message.delete(delay=2)
-        await ctx.send(f"Undid {former_spriter.name}'s former spriter status")
+        await ctx.send(f"Undid {former_spriter.mention}'s former spriter status")
         return
     
     @has_any_role("Sprite Manager", "Bot Manager", "Creator")
@@ -74,6 +78,8 @@ class Eraser(Cog):
                 brief = "(Debugging) removed former spriter")
     async def former_spriter_by_id(self, ctx: Context, id: str):
         
+        await ctx.defer()
+
         former_spriters_fd = open(os.path.join(FILEPACK_DIR, "former-spriters.txt"), "a")
         former_spriters_fd.write(f"{id}\n")
         former_spriters_fd.close()
@@ -88,7 +94,7 @@ class Eraser(Cog):
         """
         Listen for if a former spriter re-joins
         """
-        await asyncio.sleep(2) # We run into an error sometimes if we read or send the message too fast after thread was created
+        # await asyncio.sleep(2) # We run into an error sometimes if we read or send the message too fast after thread was created
 
         if is_former_spriter(member):
             await member.add_roles(member.guild.get_role(FORMER_SPRITER_ROLE_ID))
@@ -96,14 +102,14 @@ class Eraser(Cog):
             message = f"{member.mention} has rejoined the server.\n\nThis user is flagged as a former spriter and may need to former spriter role re-added to them."
             await zigzag_chat_channel.send(content=message)
 
-    @Cog.listener()
-    async def on_message(self, message: Message):
-        if is_former_spriter(message.author):
-            if message.channel.id in FORMER_SPRITER_RESTRICTED_CHANNEL_IDS:
-                await message.delete()
-                reply = f"Hey {message.author.mention}, looks like you are a withdrawn artist and therefore you cannot"\
-                        "send messages in this restricted channel. If you believe this is an error, please contact a sprite manager"
-                await message.channel.send(reply, delete_after=30)
+    # @Cog.listener()
+    # async def on_message(self, message: Message):
+    #     if is_former_spriter(message.author):
+    #         if message.channel.id in FORMER_SPRITER_RESTRICTED_CHANNEL_IDS:
+    #             await message.delete()
+    #             reply = f"Hey {message.author.mention}, looks like you are a withdrawn artist and therefore you cannot"\
+    #                     "send messages in this restricted channel. If you believe this is an error, please contact a sprite manager"
+    #             await message.channel.send(reply, delete_after=30)
 
 
     # @Cog.listener()

@@ -91,6 +91,8 @@ class ZigZag(Cog):
 
         mark_user_stats(ctx.author, ZigzagStats.DIG)
 
+        await ctx.defer()
+
         # Parse args and determine start date
         if start_args is not None:
             if len(start_args.split('/')) == 3:
@@ -241,7 +243,8 @@ class PostOptions(ui.Select):
         super().__init__(placeholder='Choose action...', min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
-
+        
+        await interaction.response.defer()
         choice = self.values[0]
         if choice == 'Post':
             gal_tag = spritepost_tags["gallery"]
@@ -292,7 +295,6 @@ class PostOptions(ui.Select):
             message = "How did you do this???? Your choice was {}".format(choice)
 
         await interaction.message.edit(content = message)
-        await interaction.response.defer()
         return True
 
 
@@ -607,11 +609,11 @@ def is_user_immune(user: Member):
 
 def is_user_post_immune(user: Member):
     """Determines if a user has yanmega/posting immunity"""
-    if is_former_spriter(user):
-        return True
-    
     if user is None or type(user) == User:
         return False
+
+    if is_former_spriter(user):
+        return True
     
     role_ids = [role.id for role in user.roles]
     if (POST_IMMUNITY_ID in role_ids):
@@ -620,11 +622,11 @@ def is_user_post_immune(user: Member):
 
 def is_user_harvest_immune(user: Member):
     """Determines if a user has yanmega/posting immunity"""
-    if is_former_spriter(user):
-        return True
-
     if user is None or type(user) == User:
         return False
+    
+    if is_former_spriter(user):
+        return True
     
     role_ids = [role.id for role in user.roles]
     if (HARVEST_IMMUNITY_ID in role_ids):

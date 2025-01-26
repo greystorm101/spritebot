@@ -75,16 +75,14 @@ def print_typo_list():
 def is_former_spriter(user: Member, is_prod = True):
     # Fill cache if needed
     if len(FORMER_SPRITERS) == 0:
-        former_spriters_fd = open(os.path.join(FILEPACK_DIR, "former-spriters.txt"), "r")
-        for line in former_spriters_fd:
-            FORMER_SPRITERS.append(line.strip('\n'))
+       update_former_spriter_cache()
     
     global FORMER_SPRITER_ROLE_ID
     if FORMER_SPRITER_ROLE_ID is None:
         FORMER_SPRITER_ROLE_ID = os.environ.get("FORMER_SPRITER_ROLE_ID") if is_prod else os.environ.get("FORMER_SPRITER_ROLE_ID")
         FORMER_SPRITER_ROLE_ID = int(FORMER_SPRITER_ROLE_ID)
     
-    return (user.id in FORMER_SPRITERS) or (FORMER_SPRITER_ROLE_ID in [role.id for role in user.roles])
+    return (user.id in FORMER_SPRITERS) or (FORMER_SPRITER_ROLE_ID in [role.id for role in user.roles if hasattr(user, "roles")])
 
 def update_former_spriter_cache():
     # Fill it first in case we haven't hit it
