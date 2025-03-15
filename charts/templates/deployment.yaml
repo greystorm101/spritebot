@@ -44,6 +44,8 @@ spec:
           - name: env-volume
             mountPath: "/config"
             readOnly: true
+          - name: data-storage
+            mountPath: /datadir
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -52,17 +54,12 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
+      - name: data-storage
+        persistentVolumeClaim:
+          claimName: {{ .Release.Namespace }}-spritebot-data-pvc
       - name: env-volume
         configMap:
           name: spritebot-configmap

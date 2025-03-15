@@ -8,7 +8,7 @@ from cogs.utils import is_former_spriter, update_former_spriter_cache
 
 FORMER_SPRITER_ROLE_ID = None
 
-FILEPACK_DIR = "datadir/"
+FILEPACK_DIR = "/datadir/"
 
 ROLES_TO_RM_IDS = []
 ROLES_TO_RM = []

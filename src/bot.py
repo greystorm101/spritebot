@@ -13,6 +13,7 @@ There are a number of utility commands being showcased here.'''
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", '--prod', dest='prod', action='store_true')
+parser.add_argument("-l", '--local', dest='local', action='store_true')
 
 global args
 args = parser.parse_args()
@@ -42,15 +43,19 @@ class SpriteBot(Bot):
             await self.load_extension(extension)
         await self.tree.sync()
 
+# If running locally, select the correct config file to run with
+if args.local:
+    if args.prod:
+        dotenv_path = join(dirname(__file__), '/config', '.env.prod')
+    else:
+        dotenv_path = join(dirname(__file__), '/config', '.env.dev')
+# Cluster always runs with mount at /config/.env
+else:
+    dotenv_path = join('/config', '.env')
 
-dotenv_path = join('/config', '.env')
 load_dotenv(dotenv_path)
 
-if args.prod:
-    bot_key = os.environ.get("BOT_SECRET_PROD")
-else:
-    bot_key = os.environ.get("BOT_SECRET_DEV")
-
+bot_key = os.environ.get("BOT_SECRET")
 
 this_bot = SpriteBot(command_prefix='!',
                      description=description,

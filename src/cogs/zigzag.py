@@ -34,7 +34,7 @@ MAX_LOOKAHEAD_THEAD_TIME = 21 # Amount of time, in days, that we will check in t
 MAX_NUM_FEEDBACK_THREADS = 10 # Amount of feedback threads to find
 
 ZIGZAG_STATS_NAME = "zigzagstats.pckl"
-ZIGZAG_STATS_DIR = "./datadir/"
+ZIGZAG_STATS_DIR = "/datadir/"
 
 class ZigzagStats(Enum):
     DIG = "dig"
@@ -193,10 +193,10 @@ class ZigZag(Cog):
         message = ""
 
         if alltime:
-            filename = f"{ZIGZAG_STATS_DIR}{ZIGZAG_STATS_NAME}"
+            filename = os.path.join(ZIGZAG_STATS_DIR, ZIGZAG_STATS_NAME)
             message += "## Stats for Zigzag usage\n"
         else:
-            filename = f"{ZIGZAG_STATS_DIR}/{datetime.now().month}-{datetime.now().year}-stats.pckl"
+            filename = os.path.join(ZIGZAG_STATS_DIR, f"{datetime.now().month}-{datetime.now().year}-stats.pckl")
             message += f"## Stats for {datetime.now().month}/{datetime.now().year}\n"
 
         f = open(filename, "rb")
@@ -1015,8 +1015,8 @@ def clean_names_or_ids(fusions):
     return fusion_lst
 
 def mark_user_stats(user:  User | Member , action : ZigzagStats):
-    cur_month_file = f"{ZIGZAG_STATS_DIR}/{datetime.now().month}-{datetime.now().year}-stats.pckl"
-    total_file = f"{ZIGZAG_STATS_DIR}{ZIGZAG_STATS_NAME}"
+    cur_month_file = os.path.join(ZIGZAG_STATS_DIR, f"{datetime.now().month}-{datetime.now().year}-stats.pckl")
+    total_file = os.path.join(ZIGZAG_STATS_DIR, ZIGZAG_STATS_NAME)
     
     def open_and_append_stats(fname):
         try:

@@ -5,7 +5,7 @@ import os
 
 from discord import Member
 
-FILEPACK_DIR = "datadir/"
+FILEPACK_DIR = "/datadir/"
 FORMER_SPRITERS = []
 FORMER_SPRITER_ROLE_ID = None
 

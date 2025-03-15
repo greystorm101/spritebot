@@ -72,7 +72,7 @@ class Chansey(Cog):
     async def pack(self, ctx: Context):
         return_url = ctx.channel.jump_url
         # f = open("/datadir/curpack.txt", "a")
-        f = open(f"{FILEPACK_DIR}{FILEPACK_NAME}", "a")
+        f = open(os.path.join(FILEPACK_DIR,FILEPACK_NAME), "a")
 
         f.write(f"{return_url}\n")
         f.close()
@@ -86,7 +86,7 @@ class Chansey(Cog):
              brief = "Returns packed threads")
     async def release(self, ctx: Context):
         try:
-            f = open(f"{FILEPACK_DIR}{FILEPACK_NAME}", "r")
+            f = open(os.path.join(FILEPACK_DIR,FILEPACK_NAME), "r")
         except FileNotFoundError:
             await ctx.send("No threads were saved for this pack!")
             return
@@ -103,7 +103,7 @@ class Chansey(Cog):
         # Cleanup the file and save it off for archiving 
         now = datetime.now()
         date_time = now.strftime("%m-%d-%Y-%H-%M-%S")
-        os.rename(f"{FILEPACK_DIR}{FILEPACK_NAME}", f"{FILEPACK_DIR}{date_time}.txt")
+        os.rename(os.path.join(FILEPACK_DIR,FILEPACK_NAME), os.path.join(FILEPACK_DIR, f"{date_time}.txt"))
 
         return
     

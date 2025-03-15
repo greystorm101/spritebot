@@ -13,7 +13,7 @@ from PIL.Image import Resampling
 from discord import Message
 from discord.ext.commands import Bot, Cog, Context, command
 
-from cogs.utils import id_to_name_map
+from cogs.utils import id_to_name_map, fusion_is_valid
 #
 # @Author: WiseNat, Greystorm101
 #
@@ -52,6 +52,12 @@ class Smeargle(Cog):
             body_id = self._determine_body_id_from_filename(filename)
             if body_id == 0:
                 error_message = "Cannot parse pokemon id from filename. Please make sure filename is in format `###.###.png` for a fusion or `###.png` for a custom base"
+                await ctx.send(error_message, ephemeral=True, delete_after=30)
+                await ctx.message.delete(delay=2)
+                return
+
+            if not fusion_is_valid(body_id):
+                error_message = f"Invalid dex id: {body_id}"
                 await ctx.send(error_message, ephemeral=True, delete_after=30)
                 await ctx.message.delete(delay=2)
                 return
