@@ -28,7 +28,7 @@ jobs:
           }
 
     - name: Build Docker image
-      run: docker build --platform linux/arm64. --file Dockerfile --tag zigzag-spritebot
+      run: docker build --platform linux/arm64,linux/amd64 . --file Dockerfile --tag zigzag-spritebot
 
     - name: Log in to registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
