@@ -43,7 +43,7 @@ class SpriteBot(Bot):
         await self.tree.sync()
 
 
-dotenv_path = join(dirname(__file__), '.env')
+dotenv_path = join('/config', '.env')
 load_dotenv(dotenv_path)
 
 if args.prod:
@@ -56,5 +56,5 @@ this_bot = SpriteBot(command_prefix='!',
                      description=description,
                      intents=intents,
                      is_prod=args.prod,
-                     initial_extensions=["cogs.chansey", "cogs.contest",  "cogs.eraser", "cogs.klefki", "cogs.smeargle", "cogs.zigzag"])
+                     initial_extensions=["cogs.chansey", "cogs.contest",  "cogs.eraser", "cogs.klefki", "cogs.smeargle","cogs.unown", "cogs.zigzag"])
 this_bot.run(bot_key)
