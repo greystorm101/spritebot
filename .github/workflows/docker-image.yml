@@ -15,6 +15,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Set up Docker
+      uses: docker/setup-docker-action@v4
+      with:
+        daemon-config: |
+          {
+            "debug": true,
+            "features": {
+              "containerd-snapshotter": true
+            }
+          }
 
     - name: Build Docker image
       run: docker build --platform linux/arm64,linux/amd64 . --file Dockerfile --tag zigzag-spritebot
