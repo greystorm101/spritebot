@@ -14,8 +14,8 @@ RUN touch README.md
 
 RUN poetry install --no-root && rm -rf $POETRY_CACHE_DIR
 
+FROM build
 COPY src ./src
-
 RUN poetry install
 
 ENTRYPOINT ["poetry", "run", "python", "src/bot.py"]
