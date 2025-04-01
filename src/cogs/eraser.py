@@ -29,6 +29,7 @@ class Eraser(Cog):
         await ctx.defer()
 
         global ROLES_TO_RM
+        print(ROLES_TO_RM_IDS)
         if ROLES_TO_RM == []:
             for id in ROLES_TO_RM_IDS:
                 role = utils.get(ctx.guild.roles,id=int(id))
@@ -147,6 +148,7 @@ class Eraser(Cog):
 def load_env_vars(env: str):
     global ROLES_TO_RM_IDS
     role_ids = os.environ.get("ROLES_TO_RM")
+    print(role_ids)
     ROLES_TO_RM_IDS = [role.strip() for role in role_ids.split(',')]
 
     global FORMER_SPRITER_ROLE_ID
