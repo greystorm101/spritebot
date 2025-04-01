@@ -55,6 +55,7 @@ if args.local:
 else:
     dotenv_path = join('/config', '.env')
 
+print("Runnuing bot")
 print(dotenv_path)
 load_dotenv(dotenv_path)
 
