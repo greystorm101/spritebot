@@ -5,15 +5,18 @@ from discord.ext.commands import Bot
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
+import logging
 
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
 
 There are a number of utility commands being showcased here.'''
 
+logger = logging.getLogger(__name__)
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", '--prod', dest='prod', action='store_true')
-parser.add_argument("-l", '--local', dest='local', action='store_true')
+parser.add_argument("-l", '--local', dest='local', action=' store_true')
 
 global args
 args = parser.parse_args()
@@ -55,8 +58,11 @@ if args.local:
 else:
     dotenv_path = join('/config', '.env')
 
-print("Runnuing bot")
+
+print("Running bot\n")
+logger.info("Logging")
 print(dotenv_path)
+logger.info(dotenv_path)
 load_dotenv(dotenv_path)
 
 bot_key = os.environ.get("BOT_SECRET")
