@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", '--prod', dest='prod', action='store_true')
-parser.add_argument("-l", '--local', dest='local', action=' store_true')
+parser.add_argument("-l", '--local', dest='local', action='store_true')
 
 global args
 args = parser.parse_args()
@@ -58,10 +58,9 @@ if args.local:
 else:
     dotenv_path = join('/config', '.env')
 
-
 print("Running bot\n")
-logger.info("Logging")
 print(dotenv_path)
+logger.info("aaah")
 logger.info(dotenv_path)
 load_dotenv(dotenv_path)
 
