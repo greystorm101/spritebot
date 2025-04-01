@@ -27,7 +27,7 @@ deny_reasons = {"alt": "One or more of sprites do not follow the criteria for a 
               "missing spritework": "Your sprites have not gone through ⁠<#1050404143807873157> before applying for spriter. You may re-apply once you create posts for your sprites.",
               "24 hours": "The ⁠<#1050404143807873157> thread for one or more of your sprites was opened too recently (less that 24 hours ago). In order to ensure quality, it's best for an applicant to leave their sprites open for feedback "\
                            "for at least 24 hours before applying for the role. That way, more people can see your work and give you feedback. If you have not gotten feedback on your sprites and would like some, you can use the /feedbackpls "\
-                           "command and the <#882011946801569802> channel to get more eyes on your work. Feel free to reapply once all three of your sprites have been on the gallery for 24 hours or more."}
+                           "command and the <#882011946801569802> channel to get more eyes on your work. Feel free to reapply once all three of your sprites have been in the gallery for 24 hours or more."}
 
 deny_names = [*deny_reasons.keys()]
 
@@ -63,7 +63,7 @@ class Klefki(Cog):
 
             message = f"Welcome {thread.owner.mention}!\n\n## Please post three fusion sprites you've made here if you haven't already! <:smilemeowth:763742948860887050> Please also "\
                       f"*link your Spritework posts* for each of those sprites! And only post 3 sprites please, not more.\n\n"\
-                      f"A Sprite Manager will come evaluate them as soon as possible! This may take a few hours or days since"\
+                      f"A Klefki or Sprite Manager will come evaluate them as soon as possible! This may take a few hours or days since"\
                       f" there are usually dozens of open applications at the same time. Please be patient! In the meantime, spriters may come give you feedback too!\n\n"\
                       f"Feel free to ask any questions you have as well!"
         
@@ -219,24 +219,17 @@ async def check_and_load_cache(bot: Bot):
 
 def load_env_vars(env: str):
     """ Loads in env vars based on dev or prod. Makes me cry."""
-    is_dev = env == "dev"
-
     global SPRITER_APPLICANT_ID
-    SPRITER_APPLICANT_ID = os.environ.get("DEV_SPRITER_APPLICANT_ID") if is_dev else os.environ.get("SPRITER_APPLICANT_ID")
-    SPRITER_APPLICANT_ID = int(SPRITER_APPLICANT_ID)
+    SPRITER_APPLICANT_ID = int(os.environ.get("SPRITER_APPLICANT_ID"))
 
     global SPRITER_ID
-    SPRITER_ID = os.environ.get("DEV_SPRITER_ID") if is_dev else os.environ.get("SPRITER_ID")
-    SPRITER_ID = int(SPRITER_ID)
+    SPRITER_ID = int(os.environ.get("SPRITER_ID"))
 
     global SPRITE_APP_CHANNEL_ID
-    SPRITE_APP_CHANNEL_ID = os.environ.get("DEV_SPRITE_APP_CHANNEL_ID") if is_dev else os.environ.get("SPRITE_APP_CHANNEL_ID")
-    SPRITE_APP_CHANNEL_ID = int(SPRITE_APP_CHANNEL_ID)
+    SPRITE_APP_CHANNEL_ID = int(os.environ.get("SPRITE_APP_CHANNEL_ID"))
 
     global APPLICANT_ABANDONED_ID
-    APPLICANT_ABANDONED_ID = os.environ.get("DEV_APPLICANT_ABANDONED_ID") if is_dev else os.environ.get("APPLICANT_ABANDONED_ID")
-    APPLICANT_ABANDONED_ID = int(APPLICANT_ABANDONED_ID)
+    APPLICANT_ABANDONED_ID = int(os.environ.get("APPLICANT_ABANDONED_ID"))
 
     global APPLICANT_ROLE_GIVEN_ID
-    APPLICANT_ROLE_GIVEN_ID = os.environ.get("DEV_APPLICANT_ROLE_GIVEN_ID") if is_dev else os.environ.get("APPLICANT_ROLE_GIVEN_ID")
-    APPLICANT_ROLE_GIVEN_ID = int(APPLICANT_ROLE_GIVEN_ID)
+    APPLICANT_ROLE_GIVEN_ID = int(os.environ.get("APPLICANT_ROLE_GIVEN_ID"))

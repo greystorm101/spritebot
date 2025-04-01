@@ -79,8 +79,7 @@ def is_former_spriter(user: Member, is_prod = True):
     
     global FORMER_SPRITER_ROLE_ID
     if FORMER_SPRITER_ROLE_ID is None:
-        FORMER_SPRITER_ROLE_ID = os.environ.get("FORMER_SPRITER_ROLE_ID") if is_prod else os.environ.get("FORMER_SPRITER_ROLE_ID")
-        FORMER_SPRITER_ROLE_ID = int(FORMER_SPRITER_ROLE_ID)
+        FORMER_SPRITER_ROLE_ID = int(os.environ.get("FORMER_SPRITER_ROLE_ID"))
     
     return (user.id in FORMER_SPRITERS) or (FORMER_SPRITER_ROLE_ID in [role.id for role in user.roles if hasattr(user, "roles")])
 

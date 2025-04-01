@@ -45,12 +45,8 @@ class Contest(Cog):
         return
 
 def load_env_vars(env: str):
-
-    is_dev = env == "dev"
-
     global MIME_JR_ID
-    MIME_JR_ID = os.environ.get("DEV_MIME_JR_ID") if is_dev else os.environ.get("MIME_JR_ID")
-    MIME_JR_ID = int(MIME_JR_ID)
+    MIME_JR_ID = int(os.environ.get("MIME_JR_ID"))
 
 
 async def setup(bot:Bot):

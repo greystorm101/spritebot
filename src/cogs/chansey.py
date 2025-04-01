@@ -328,17 +328,11 @@ def ids_to_add_to_title(thread: Thread):
 
 def load_env_vars(bot: Bot):
     """ Loads in env vars based on dev or prod. Makes me cry."""
-    env = bot.env
-    is_dev = env == "dev"
-
     global ERROR_CHANNEL_ID
-    ERROR_CHANNEL_ID = os.environ.get("DEV_ERROR_CHANNEL_ID") if is_dev else os.environ.get("ERROR_CHANNEL_ID")
-    ERROR_CHANNEL_ID = int(ERROR_CHANNEL_ID)
+    ERROR_CHANNEL_ID = int(os.environ.get("ERROR_CHANNEL_ID"))
 
     global GUIDELINES_THREAD_ID
-    GUIDELINES_THREAD_ID = os.environ.get("DEV_GUIDELINES_THREAD_ID") if is_dev else os.environ.get("GUIDELINES_THREAD_ID")
-    GUIDELINES_THREAD_ID = int(GUIDELINES_THREAD_ID)
-
+    GUIDELINES_THREAD_ID = int(os.environ.get("GUIDELINES_THREAD_ID"))
 
 def _pretty_formatted_message(thread: Thread, 
                             candidate_image:Attachment,

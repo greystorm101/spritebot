@@ -32,7 +32,8 @@ class Eraser(Cog):
         if ROLES_TO_RM == []:
             for id in ROLES_TO_RM_IDS:
                 role = utils.get(ctx.guild.roles,id=int(id))
-                ROLES_TO_RM.append(role)
+                if role is not None:
+                    ROLES_TO_RM.append(role)
 
         former_spriters_fd = open(os.path.join(FILEPACK_DIR, "former-spriters.txt"), "a")
         former_spriters_fd.write(f"{former_spriter.id}\n")
@@ -40,6 +41,7 @@ class Eraser(Cog):
 
         update_former_spriter_cache()
 
+        print(ROLES_TO_RM)
         await former_spriter.remove_roles(*ROLES_TO_RM)
         await former_spriter.add_roles(utils.get(ctx.guild.roles,id=int(FORMER_SPRITER_ROLE_ID)))
 
@@ -143,23 +145,18 @@ class Eraser(Cog):
 
 
 def load_env_vars(env: str):
-
-    is_dev = env == "dev"
-
     global ROLES_TO_RM_IDS
-    role_ids = os.environ.get("DEV_ROLES_TO_RM") if is_dev else os.environ.get("ROLES_TO_RM")
+    role_ids = os.environ.get("ROLES_TO_RM")
     ROLES_TO_RM_IDS = [role.strip() for role in role_ids.split(',')]
 
     global FORMER_SPRITER_ROLE_ID
-    FORMER_SPRITER_ROLE_ID = os.environ.get("DEV_FORMER_SPRITER_ROLE_ID") if is_dev else os.environ.get("FORMER_SPRITER_ROLE_ID")
-    FORMER_SPRITER_ROLE_ID = int(FORMER_SPRITER_ROLE_ID)
+    FORMER_SPRITER_ROLE_ID = int( os.environ.get("FORMER_SPRITER_ROLE_ID"))
 
     global ZIGZAG_CHATTER_CHANNEL_ID
-    ZIGZAG_CHATTER_CHANNEL_ID = os.environ.get("DEV_ZIGZAG_CHATTER_CHANNEL_ID") if is_dev else os.environ.get("ZIGZAG_CHATTER_CHANNEL_ID")
-    ZIGZAG_CHATTER_CHANNEL_ID = int(ZIGZAG_CHATTER_CHANNEL_ID)
+    ZIGZAG_CHATTER_CHANNEL_ID = int(os.environ.get("ZIGZAG_CHATTER_CHANNEL_ID"))
 
     global FORMER_SPRITER_RESTRICTED_CHANNEL_IDS
-    channel_ids = os.environ.get("DEV_FORMER_SPRITER_RESTRICTED_CHANNELS") if is_dev else os.environ.get("FORMER_SPRITER_RESTRICTED_CHANNELS")
+    channel_ids = os.environ.get("FORMER_SPRITER_RESTRICTED_CHANNELS")
     FORMER_SPRITER_RESTRICTED_CHANNEL_IDS = [int(channel.strip()) for channel in channel_ids.split(',')]
 
 

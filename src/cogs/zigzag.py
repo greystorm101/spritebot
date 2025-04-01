@@ -412,52 +412,41 @@ def load_env_vars(env: str):
     is_dev = env == "dev"
 
     global SPRITEWORK_CHANNEL_ID
-    SPRITEWORK_CHANNEL_ID = os.environ.get("DEV_SPRITEWORK_CHANNEL_ID") if is_dev else os.environ.get("SPRITEWORK_CHANNEL_ID")
-    SPRITEWORK_CHANNEL_ID = int(SPRITEWORK_CHANNEL_ID)
+    SPRITEWORK_CHANNEL_ID = int(os.environ.get("SPRITEWORK_CHANNEL_ID"))
 
     global SPRITEGALLERY_CHANNEL_ID
-    SPRITEGALLERY_CHANNEL_ID = os.environ.get("DEV_SPRITEGALLERY_CHANNEL_ID") if is_dev else os.environ.get("SPRITEGALLERY_CHANNEL_ID")
-    SPRITEGALLERY_CHANNEL_ID = int(SPRITEGALLERY_CHANNEL_ID)
+    SPRITEGALLERY_CHANNEL_ID = int(os.environ.get("SPRITEGALLERY_CHANNEL_ID"))
 
     global ASSETGALLERY_CHANNEL_ID
-    ASSETGALLERY_CHANNEL_ID = os.environ.get("DEV_ASSETGALLERY_CHANNEL_ID") if is_dev else os.environ.get("ASSETGALLERY_CHANNEL_ID")
-    ASSETGALLERY_CHANNEL_ID = int(ASSETGALLERY_CHANNEL_ID)
+    ASSETGALLERY_CHANNEL_ID = int(os.environ.get("ASSETGALLERY_CHANNEL_ID"))
 
     global NOQA_CHANNEL_ID
-    NOQA_CHANNEL_ID = os.environ.get("DEV_NOQA_CHANNEL_ID") if is_dev else os.environ.get("NOQA_CHANNEL_ID")
-    NOQA_CHANNEL_ID = int(NOQA_CHANNEL_ID)
+    NOQA_CHANNEL_ID = int(os.environ.get("NOQA_CHANNEL_ID"))
 
     global NEEDSFEEDBACK_TAG_ID
-    NEEDSFEEDBACK_TAG_ID = os.environ.get("DEV_NEEDSFEEDBACK_TAG_ID") if is_dev else os.environ.get("NEEDSFEEDBACK_TAG_ID")
-    NEEDSFEEDBACK_TAG_ID = int(NEEDSFEEDBACK_TAG_ID)
+    NEEDSFEEDBACK_TAG_ID = int(os.environ.get("NEEDSFEEDBACK_TAG_ID"))
 
     global ADDEDTOGAL_TAG_ID
-    ADDEDTOGAL_TAG_ID = os.environ.get("DEV_ADDEDTOGAL_TAG_ID") if is_dev else os.environ.get("ADDEDTOGAL_TAG_ID")
-    ADDEDTOGAL_TAG_ID = int(ADDEDTOGAL_TAG_ID)
+    ADDEDTOGAL_TAG_ID = int(os.environ.get("ADDEDTOGAL_TAG_ID"))
 
     global HARVESTED_TAG_ID
-    HARVESTED_TAG_ID = os.environ.get("DEV_HARVESTED_TAG_ID") if is_dev else os.environ.get("HARVESTED_TAG_ID")
-    HARVESTED_TAG_ID = int(HARVESTED_TAG_ID)
+    HARVESTED_TAG_ID = int(os.environ.get("HARVESTED_TAG_ID"))
 
     global OTHER_TAG_ID
     OTHER_TAG_ID = 0 if is_dev else os.environ.get("OTHER_TAG_ID")
     OTHER_TAG_ID = int(OTHER_TAG_ID)
 
     global NONIF_TAG_ID
-    NONIF_TAG_ID = os.environ.get("DEV_NONIF_TAG_ID") if is_dev else os.environ.get("NONIF_TAG_ID")
-    NONIF_TAG_ID = int(NONIF_TAG_ID)
+    NONIF_TAG_ID = int(os.environ.get("NONIF_TAG_ID"))
 
     global HARVEST_IMMUNITY_ID
-    HARVEST_IMMUNITY_ID = os.environ.get("DEV_HARVEST_IMMUNITY_ID") if is_dev else os.environ.get("HARVEST_IMMUNITY_ID")
-    HARVEST_IMMUNITY_ID = int(HARVEST_IMMUNITY_ID)
+    HARVEST_IMMUNITY_ID = int(os.environ.get("HARVEST_IMMUNITY_ID"))
 
     global POST_IMMUNITY_ID
-    POST_IMMUNITY_ID = os.environ.get("DEV_POST_IMMUNITY_ID") if is_dev else os.environ.get("POST_IMMUNITY_ID")
-    POST_IMMUNITY_ID = int(POST_IMMUNITY_ID)
+    POST_IMMUNITY_ID = int(os.environ.get("POST_IMMUNITY_ID"))
 
     global DM_IMMUNITY_ID
-    DM_IMMUNITY_ID = os.environ.get("DEV_DM_IMMUNITY_ID") if is_dev else os.environ.get("DM_IMMUNITY_ID")
-    DM_IMMUNITY_ID = int(DM_IMMUNITY_ID)
+    DM_IMMUNITY_ID = int(os.environ.get("DM_IMMUNITY_ID"))
 
 
 async def check_and_load_cache(bot: Bot):

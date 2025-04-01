@@ -30,16 +30,11 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           env:
-            - name: BOT_SECRET_PROD
+            - name: BOT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: bot-secret
-                  key: BOT_SECRET_PROD
-            - name: BOT_SECRET_DEV
-              valueFrom:
-                secretKeyRef:
-                  name: bot-secret
-                  key: BOT_SECRET_DEV
+                  name: bot-secret-{{ .Release.Namespace }}
+                  key: BOT_SECRET
           volumeMounts:
           - name: env-volume
             mountPath: "/config"
@@ -49,6 +44,7 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["poetry", "run", "python", "src/bot.py", "-p"]
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
