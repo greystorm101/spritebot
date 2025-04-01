@@ -45,14 +45,17 @@ class SpriteBot(Bot):
 
 # If running locally, select the correct config file to run with
 if args.local:
+    print("Running with local config")
     if args.prod:
-        dotenv_path = join(dirname(__file__), '/config', '.env.prod')
+        dotenv_path = join(dirname(__file__), 'config', '.env.prod')
+        
     else:
-        dotenv_path = join(dirname(__file__), '/config', '.env.dev')
+        dotenv_path = join(dirname(__file__), 'config', '.env.dev')
 # Cluster always runs with mount at /config/.env
 else:
     dotenv_path = join('/config', '.env')
 
+print(dotenv_path)
 load_dotenv(dotenv_path)
 
 bot_key = os.environ.get("BOT_SECRET")
