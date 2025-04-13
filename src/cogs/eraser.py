@@ -106,14 +106,10 @@ class Eraser(Cog):
             message = f"{member.mention} has rejoined the server.\n\nThis user is flagged as a former spriter and may need to former spriter role re-added to them."
             await zigzag_chat_channel.send(content=message)
 
-    # @Cog.listener()
-    # async def on_message(self, message: Message):
-    #     if is_former_spriter(message.author):
-    #         if message.channel.id in FORMER_SPRITER_RESTRICTED_CHANNEL_IDS:
-    #             await message.delete()
-    #             reply = f"Hey {message.author.mention}, looks like you are a withdrawn artist and therefore you cannot"\
-    #                     "send messages in this restricted channel. If you believe this is an error, please contact a sprite manager"
-    #             await message.channel.send(reply, delete_after=30)
+    @Cog.listener()
+    async def on_message(self, message: Message):
+        if "galactic" in message.content.lower():
+            print("galactic")
 
 
     # @Cog.listener()
