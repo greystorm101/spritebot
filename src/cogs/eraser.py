@@ -3,7 +3,9 @@ import os
 from discord.ext.commands import Bot, Cog, Context, has_any_role, hybrid_command
 from discord import Message, Thread, User, utils, Member
 import discord
+import logging
 
+logger = logging.getLogger(__name__)
 from cogs.utils import is_former_spriter, update_former_spriter_cache
 
 FORMER_SPRITER_ROLE_ID = None
@@ -24,12 +26,11 @@ class Eraser(Cog):
                 help ="Adds a spriter to the former spriter tracker and updates their roles",
                 brief = "Makes former spriter")
     async def former_spriter(self, ctx: Context, name: User = None):
+        await ctx.defer()
         former_spriter = ctx.guild.get_member(name.id)
         
-        await ctx.defer()
-
         global ROLES_TO_RM
-        print(ROLES_TO_RM_IDS)
+        logger.info(ROLES_TO_RM_IDS)
         if ROLES_TO_RM == []:
             for id in ROLES_TO_RM_IDS:
                 role = utils.get(ctx.guild.roles,id=int(id))
@@ -42,12 +43,12 @@ class Eraser(Cog):
 
         update_former_spriter_cache()
 
-        print(ROLES_TO_RM)
+        logger.info(ROLES_TO_RM)
         await former_spriter.remove_roles(*ROLES_TO_RM)
         await former_spriter.add_roles(utils.get(ctx.guild.roles,id=int(FORMER_SPRITER_ROLE_ID)))
 
-        await ctx.message.delete(delay=2)
         await ctx.send(f"Made {former_spriter.name} a former spriter.")
+        await ctx.message.delete(delay=2)
         return
     
     @has_any_role("Sprite Manager", "Bot Manager", "Creator")
@@ -148,7 +149,7 @@ class Eraser(Cog):
 def load_env_vars(env: str):
     global ROLES_TO_RM_IDS
     role_ids = os.environ.get("ROLES_TO_RM")
-    print(role_ids)
+    logger.info(role_ids)
     ROLES_TO_RM_IDS = [role.strip() for role in role_ids.split(',')]
 
     global FORMER_SPRITER_ROLE_ID

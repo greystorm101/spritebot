@@ -58,7 +58,7 @@ if args.local:
 else:
     dotenv_path = join('/config', '.env')
 
-print("Running bot\n")
+print("Running bot")
 print(dotenv_path)
 logger.info("aaah")
 logger.info(dotenv_path)
