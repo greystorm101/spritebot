@@ -14,6 +14,7 @@ from discord import Message
 from discord.ext.commands import Bot, Cog, Context, command
 
 from cogs.utils import id_to_name_map, fusion_is_valid
+from cogs.galactic import is_team_galactic
 #
 # @Author: WiseNat, Greystorm101
 #
@@ -62,7 +63,8 @@ class Smeargle(Cog):
                 await ctx.message.delete(delay=2)
                 return
 
-            battle_image, area = self.battleImageCreator.generate_battle_image(body_id, image, areas)
+            is_galactic = is_team_galactic(ctx.author)
+            battle_image, area = self.battleImageCreator.generate_battle_image(body_id, image, areas, is_galactic)
 
             if battle_image is None:
                 await self._send_invalid_id(image, attachment.filename, msg)
@@ -81,8 +83,8 @@ class Smeargle(Cog):
         embed = discord.Embed()
         embed.set_image(url=f"attachment://{filename}")
         embed.set_footer(text=f"{body_mon} body fighting in '{area}'")
-
-        await message.channel.send(file=file, embed=embed)
+        propoganda = "-# By the way, you should `/join-team-galactic`"
+        await message.channel.send(propoganda, file=file, embed=embed)
 
     @staticmethod
     async def _send_invalid_id(image: Image, filename: str, message: Message):
@@ -136,11 +138,11 @@ class BattleImageCreator:
         self.spriteShadows = self._generate_sprite_shadows()
 
     def generate_battle_image(
-            self, body_id: str, image: Image, areas: Iterable[str]
+            self, body_id: str, image: Image, areas: Iterable[str], is_galactic: bool = False 
     ) -> Image:
         image = image.convert("RGBA")
 
-        area = self._get_area(areas)
+        area = self._get_area(areas, is_galactic)
         battle = copy.deepcopy(self.battles[area])
 
         self._add_player_sprite(
@@ -353,10 +355,13 @@ class BattleImageCreator:
 
         battle.image.alpha_composite(foe_healthbar, dest=foe_position)
 
-    def _get_area(self, areas):
+    def _get_area(self, areas, is_galactic: bool = False):
         for area in areas:
             if area in self.battles.keys():
                 return area
+
+        if is_galactic:
+            pass
 
         return random.choice(list(self.battles.keys()))
 
