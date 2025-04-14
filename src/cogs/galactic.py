@@ -36,35 +36,57 @@ class Galactic(Cog):
 
     @hybrid_command(name="leave-team-galactic", pass_context=True,
                 help ="Hey, wait! You can't leave team galactic!",
-                brief = "Leaves? team galactic")
+                brief = "Leaves(???) team galactic")
     async def leave_team_galactic(self, ctx: Context):
         users_id = ctx.author.id
         if is_team_galactic(users_id):
-            await ctx.send(f"Hey, no one leaves Team Galactic! Not without Cyrus' permission!")
+            await ctx.send("Hey, no one leaves Team Galactic! Not without Cyrus' permission!")
         else:
-            await ctx.send(f"Hey, you need to join Team Galactic first!")
+            await ctx.send("Hey, you need to join Team Galactic first!")
 
     @hybrid_command(name="join-team-galactic",  pass_context=True,
                 help ="Join the nobel cause of Team Galactic!",
-                brief = "Joins team galactic")
-    async def join_team_galactic(self, ctx: Context, referer_grunt: discord.User = parameter(default=None, description="(Optional) name of the grunt that recruited you")):
+                brief = "Join team galactic (optionally specify a recruiter)")
+    async def join_team_galactic(self, ctx: Context, referrer_grunt: discord.User = parameter(default=None, description="(Optional) name of the grunt that recruited you")):
         users_id = ctx.author.id
         if is_team_galactic(users_id):
             await ctx.send(f"You are already a proud member of Team Galactic, {ctx.author.mention}! Now, go recruit more grunts!")
             return
+        
+        message_prefix = ""
+        if referrer_grunt is not None:
+            referer_id = referrer_grunt.id
+            if not is_team_galactic(int(referer_id)):
+                await ctx.send(f"{referrer_grunt.name} is not a Team Galactic grunt. Maybe you should join Team Galactic (without specifying a referrer) and recruit *them* to our cause.")
+                return
+            else:
+                update_members_referal(referer_id)
+                message_prefix = f"I see our loyal grunt {referrer_grunt.mention} has recruited you. "
+
         try:
             update_galactic_members(int(users_id))
         except BaseException as e:
             print(e)
             await ctx.send("Something went wrong with joining.")
             return
-        if referer_grunt is not None:
-            referer_grunt.id
+
         file = discord.File(os.path.join(os.getcwd(), "src", "data", "Team_galactic_logo.png"))
-        message = f"Welcome to Team Galactic, {ctx.author.mention}!\n\nOur leader GreyCyrus wishes to "\
+        message = message_prefix + f"**Welcome to Team Galactic, {ctx.author.mention}!**\n\nOur leader GreyCyrus wishes to "\
                     "create a new world, free of strife. Every grunt and fusion joining to the cause will help fix this "\
                     "incomplete world. Our dream is on the verge of becoming reality! May our hearts beat as one!"
         await ctx.send(message, file=file)
+
+
+    @hybrid_command(name="galactic-grunt-stats", pass_context=True,
+                help ="Check your grunt stats for Team Galactic",
+                brief = "Check your Team Galactic stats")
+    async def check_grunt_stats(self, ctx: Context):
+        users_id = ctx.author.id
+        if is_team_galactic(users_id):
+            
+            await ctx.send(f"You've recruited {TEAM_GALACTIC_MEMBERS[str(users_id)]} other grunt(s) to Team Galactic.")
+        else:
+            await ctx.send("Hang on, you're not a Team Galactic grunt! Get out of here, kid!")
 
     @Cog.listener()
     async def on_message(self, message: Message):
@@ -82,20 +104,36 @@ class Galactic(Cog):
         former_grunt = name.id
         remove_from_galactic(former_grunt)
         await ctx.send(f"{name} is no longer a grunt", ephemeral=True)
+
+
+    @has_any_role(MIME_JR_ID, "Sprite Manager", "Bot Manager", "Creator")
+    @hybrid_command(name="cyrus-lookup", pass_context=True,
+                help ="Lets Cyrus see grunt stats",
+                brief = "Stats for Cyrus")
+    async def cyrus_stats(self, ctx: Context):
+        await ctx.send(f"{TEAM_GALACTIC_MEMBERS}", ephemeral=True)
         
         
 def is_team_galactic(id:int):
-    return id in TEAM_GALACTIC_MEMBERS
+    return str(id) in TEAM_GALACTIC_MEMBERS
 
 def update_galactic_members(id: int):
     global TEAM_GALACTIC_MEMBERS
-    TEAM_GALACTIC_MEMBERS[id] = 0
+    TEAM_GALACTIC_MEMBERS[str(id)] = 0
+    with open(galactic_member_file, "w") as f:
+        f.write(json.dumps(TEAM_GALACTIC_MEMBERS))
+
+def update_members_referal(id: int):
+    global TEAM_GALACTIC_MEMBERS
+    if str(id) not in TEAM_GALACTIC_MEMBERS:
+        return
+    TEAM_GALACTIC_MEMBERS[str(id)] = TEAM_GALACTIC_MEMBERS[str(id)] + 1
     with open(galactic_member_file, "w") as f:
         f.write(json.dumps(TEAM_GALACTIC_MEMBERS))
 
 def remove_from_galactic(id:int):
     global TEAM_GALACTIC_MEMBERS
-    del TEAM_GALACTIC_MEMBERS[id]
+    del TEAM_GALACTIC_MEMBERS[str(id)]
     with open(galactic_member_file, "w") as f:
         f.write(json.dumps(TEAM_GALACTIC_MEMBERS))
 
