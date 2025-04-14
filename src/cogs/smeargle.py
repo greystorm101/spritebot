@@ -14,7 +14,7 @@ from discord import Message
 from discord.ext.commands import Bot, Cog, Context, command
 
 from cogs.utils import id_to_name_map, fusion_is_valid
-from cogs.galactic import TEAM_GALACTIC_MEMBERS
+
 #
 # @Author: WiseNat, Greystorm101
 #
@@ -424,7 +424,7 @@ class BattleImageCreator:
 
 def is_team_galactic(id:int):
     from cogs.galactic import TEAM_GALACTIC_MEMBERS    
-    return id in TEAM_GALACTIC_MEMBERS
+    return str(id) in TEAM_GALACTIC_MEMBERS
 
 async def setup(bot: Bot):
     await bot.add_cog(Smeargle(bot))
