@@ -61,6 +61,7 @@ else:
 print("Running bot")
 print(dotenv_path)
 load_dotenv(dotenv_path)
+print("RUNNING WITH TEAM GALACTIC UPDATE")
 
 bot_key = os.environ.get("BOT_SECRET")
 
