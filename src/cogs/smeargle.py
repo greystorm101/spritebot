@@ -14,10 +14,21 @@ from discord import Message
 from discord.ext.commands import Bot, Cog, Context, command
 
 from cogs.utils import id_to_name_map, fusion_is_valid
-from cogs.galactic import is_team_galactic
+from cogs.galactic import TEAM_GALACTIC_MEMBERS
 #
 # @Author: WiseNat, Greystorm101
 #
+
+galactic_backgrounds = {
+                        "cyber": "the distortion world",
+                        "cosmic": "Cyrus' new world",
+                        "elitea": "Commander Saturn's office",
+                        "eliteb": "Commander Mars' office",
+                        "elited": "Commander Jupiter's office",
+                        "peak2": "Mt Coronet peak",
+                        "indoora": "Team Galactic HQ",
+                        "tower": "spear pillar"
+                        }
 
 class Smeargle(Cog):
     def __init__(self, bot: Bot) -> None:
@@ -63,17 +74,18 @@ class Smeargle(Cog):
                 await ctx.message.delete(delay=2)
                 return
 
-            is_galactic = is_team_galactic(ctx.author)
+            is_galactic = is_team_galactic(ctx.author.id)
+
             battle_image, area = self.battleImageCreator.generate_battle_image(body_id, image, areas, is_galactic)
 
             if battle_image is None:
                 await self._send_invalid_id(image, attachment.filename, msg)
             else:
                 body_mon = id_to_name_map()[body_id]
-                await self._send_battle_image(battle_image, attachment.filename, body_mon, area, msg)
+                await self._send_battle_image(battle_image, attachment.filename, body_mon, area, msg, is_galactic)
 
     @staticmethod
-    async def _send_battle_image(image: Image, filename: str, body_mon: str, area: str, message: Message):
+    async def _send_battle_image(image: Image, filename: str, body_mon: str, area: str, message: Message, is_galactic=False):
         buffer = io.BytesIO()
         image.save(buffer, "png")
         buffer.seek(0)
@@ -82,8 +94,13 @@ class Smeargle(Cog):
 
         embed = discord.Embed()
         embed.set_image(url=f"attachment://{filename}")
-        embed.set_footer(text=f"{body_mon} body fighting in '{area}'")
+
         propoganda = "-# By the way, you should `/join-team-galactic`"
+        if is_galactic:
+            area = galactic_backgrounds[area] if area in galactic_backgrounds else area
+            propoganda = ""
+
+        embed.set_footer(text=f"{body_mon} body fighting in '{area}'")
         await message.channel.send(propoganda, file=file, embed=embed)
 
     @staticmethod
@@ -361,7 +378,7 @@ class BattleImageCreator:
                 return area
 
         if is_galactic:
-            pass
+            return random.choice(list(galactic_backgrounds.keys()))
 
         return random.choice(list(self.battles.keys()))
 
@@ -405,6 +422,9 @@ class BattleImageCreator:
             round((background.height * 3 / 4) - 112 + 8),
         )
 
+def is_team_galactic(id:int):
+    from cogs.galactic import TEAM_GALACTIC_MEMBERS    
+    return id in TEAM_GALACTIC_MEMBERS
 
 async def setup(bot: Bot):
     await bot.add_cog(Smeargle(bot))
