@@ -12,7 +12,7 @@ from cogs.utils import is_former_spriter, update_former_spriter_cache
 
 FORMER_SPRITER_ROLE_ID = None
 
-FILEPACK_DIR = "./datadir/"
+FILEPACK_DIR = "/datadir/"
 galactic_member_file = os.path.join(FILEPACK_DIR, "galactic-members.txt")
 MIME_JR_ID = 641801785618726956
 GRUNT_ROLE_ID = 1362222401068208238
