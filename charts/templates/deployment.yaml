@@ -30,6 +30,8 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
             - name: BOT_SECRET
               valueFrom:
                 secretKeyRef:
