@@ -15,8 +15,8 @@ FORMER_SPRITER_ROLE_ID = None
 FILEPACK_DIR = "/datadir/"
 galactic_member_file = os.path.join(FILEPACK_DIR, "galactic-members.txt")
 MIME_JR_ID = 641801785618726956
-GRUNT_ROLE_ID = 1362222401068208238
-EVIL_LEADER_ROLE_ID = 1362221836087197809
+GRUNT_ROLE_ID = 1361797020578480369
+EVIL_LEADER_ROLE_ID = 1361787890052501525
 
 galactic_quotes = ["Everything is for everyone, and for the good of Team Galactic!",
                 "We're trying to create a new world that's better than this one.",
