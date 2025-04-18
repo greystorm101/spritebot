@@ -10,7 +10,7 @@ from typing import Any, Iterable
 import discord
 from PIL import Image
 from PIL.Image import Resampling
-from discord import Message
+from discord import Message, User, Member
 from discord.ext.commands import Bot, Cog, Context, command
 
 from cogs.utils import id_to_name_map, fusion_is_valid
@@ -74,7 +74,7 @@ class Smeargle(Cog):
                 await ctx.message.delete(delay=2)
                 return
 
-            is_galactic = is_team_galactic(ctx.author.id)
+            is_galactic = is_team_galactic(ctx.author)
 
             battle_image, area = self.battleImageCreator.generate_battle_image(body_id, image, areas, is_galactic)
 
@@ -422,9 +422,11 @@ class BattleImageCreator:
             round((background.height * 3 / 4) - 112 + 8),
         )
 
-def is_team_galactic(id:int):
-    from cogs.galactic import TEAM_GALACTIC_MEMBERS    
-    return str(id) in TEAM_GALACTIC_MEMBERS
+def is_team_galactic(user: User | Member):
+    from cogs.galactic import TEAM_GALACTIC_MEMBERS
+    from cogs.galactic import GRUNT_ROLE_ID
+    return str(user.id) in TEAM_GALACTIC_MEMBERS or any([role.id == GRUNT_ROLE_ID for role in user.roles]) 
+ 
 
 async def setup(bot: Bot):
     await bot.add_cog(Smeargle(bot))
