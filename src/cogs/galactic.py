@@ -90,12 +90,6 @@ class Galactic(Cog):
         else:
             await ctx.send("Hang on, you're not a Team Galactic grunt! Get out of here, kid!")
 
-    @Cog.listener()
-    async def on_message(self, message: Message):
-        if "galactic" in message.content.lower() and not message.author.bot:
-            if is_team_galactic(message.author.id):
-                quote = get_random_galactic_quote()
-                await message.reply(quote)
 
     @has_any_role(EVIL_LEADER_ROLE_ID, "Sprite Manager", "Bot Manager", "Creator")
     @hybrid_command(name="cyrus-remove-grunt", pass_context=True,
