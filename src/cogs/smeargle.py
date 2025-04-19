@@ -20,11 +20,17 @@ from cogs.utils import id_to_name_map, fusion_is_valid
 #
 
 galactic_backgrounds = {
+                        "blaine": "Lysander Lab",
+                        'chuck': "Team Aqua's lair",
                         "cyber": "the distortion world",
                         "cosmic": "Cyrus' new world",
                         "elitea": "Commander Saturn's office",
                         "eliteb": "Commander Mars' office",
+                        "ghostgym": "Giovonni's lair",
+                        "surge": "N's castle",
                         "elited": "Commander Jupiter's office",
+                        "water_eve": "Team Aqua hideout",
+                        "lava": "Team Magma's lair",
                         "peak2": "Mt Coronet peak",
                         "indoora": "Team Galactic HQ",
                         "tower": "spear pillar"
