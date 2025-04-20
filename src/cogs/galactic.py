@@ -129,6 +129,7 @@ class Galactic(Cog):
     async def cyrus_stats(self, ctx: Context, grunt: discord.User=None):
         if not grunt:
             await ctx.defer()
+            await ctx.send("Gathering stats...", ephemeral=True, delete_after=5)
             message = ""
             for member_id in TEAM_GALACTIC_MEMBERS:
                 try:
