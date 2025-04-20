@@ -128,8 +128,21 @@ class Galactic(Cog):
                 brief = "Stats for Cyrus")
     async def cyrus_stats(self, ctx: Context, grunt: discord.User=None):
         if not grunt:
-            await ctx.send(f"{TEAM_GALACTIC_MEMBERS}", ephemeral=True)
+            await ctx.defer()
+            message = ""
+            for member_id in TEAM_GALACTIC_MEMBERS:
+                try:
+                    member = ctx.guild.get_member(int(member_id))
+                    message += f"{member.mention}:\t{TEAM_GALACTIC_MEMBERS[str(member_id)]['points']}\n"
+                except BaseException as e:
+                    message += f"{TEAM_GALACTIC_MEMBERS[str(member_id)]['name']}:\t{TEAM_GALACTIC_MEMBERS[str(member_id)]['points']}\n"
+                if len(message) > 1500:
+                    await ctx.send(message, ephemeral=True)
+                    message = ""
+
+            await ctx.send(message, ephemeral=True)
             return
+        
         if is_team_galactic(grunt):
             await ctx.send(f"{TEAM_GALACTIC_MEMBERS[str(grunt.id)]}", ephemeral=True)
         else:
