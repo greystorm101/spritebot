@@ -3006,6 +3006,390 @@
         "name": "luvdisc",
         "typos": ["luvdisk"],
         "display_name": "Luvdisc"
+    },
+    {
+        "id":"502",
+        "name": "poochyena",
+        "typos": ["poochena"],
+        "display_name":"Poochyena"
+    },
+    {
+        "id":"503",
+        "name": "mightyena",
+        "typos": ["mightena"],
+        "display_name":"Mightyena"
+    },
+    {
+        "id":"504",
+        "name": "zigzagoon",
+        "typos": [],
+        "display_name":"Zigzagoon"
+    },
+    {
+        "id":"505",
+        "name": "linoone",
+        "typos": ["linone"],
+        "display_name":"Linoone"
+    },
+    {
+        "id":"506",
+        "name": "wurmple",
+        "typos": ["wurmpel"],
+        "display_name":"Wurmple"
+    },
+    {
+        "id":"507",
+        "name": "silcoon",
+        "typos": ["silcon"],
+        "display_name":"Silcoon"
+    },
+    {
+        "id":"508",
+        "name": "beautifly",
+        "typos": [],
+        "display_name":"Beautifly"
+    },
+    {
+        "id":"509",
+        "name": "cascoon",
+        "typos": ["casctoon", "cascon"],
+        "display_name":"Cascoon"
+    },
+    {
+        "id":"510",
+        "name": "dustox",
+        "typos": ["dusktox"],
+        "display_name":"Dustox"
+    },
+    {
+        "id":"511",
+        "name": "seedot",
+        "typos": ["sedot"],
+        "display_name":"Seedot"
+    },
+    {
+        "id":"512",
+        "name": "nuzleaf",
+        "typos": [],
+        "display_name":"Nuzleaf"
+    },
+    {
+        "id":"513",
+        "name": "shiftry",
+        "typos": ["shiftree"],
+        "display_name":"Shiftry"
+    },
+    {
+        "id":"514",
+        "name": "taillow",
+        "typos": ["tailow"],
+        "display_name":"Taillow"
+    },
+    {
+        "id":"515",
+        "name": "swellow",
+        "typos": ["swelow"],
+        "display_name":"Swellow"
+    },
+    {
+        "id":"516",
+        "name": "wingull",
+        "typos": ["wingul"],
+        "display_name":"Wingull"
+    },
+    {
+        "id":"517",
+        "name": "pelipper",
+        "typos": ["peliper"],
+        "display_name":"Pelipper"
+    },
+    {
+        "id":"518",
+        "name": "surskit",
+        "typos": ["surscit"],
+        "display_name":"Surskit"
+    },
+    {
+        "id":"519",
+        "name": "masquerain",
+        "typos": ["masquerane"],
+        "display_name":"Masquerain"
+    },
+    {
+        "id":"520",
+        "name": "whismur",
+        "typos": [],
+        "display_name":"Whismur"
+    },
+    {
+        "id":"521",
+        "name": "loudred",
+        "typos": [],
+        "display_name":"Loudred"
+    },
+    {
+        "id":"522",
+        "name": "exploud",
+        "typos": [],
+        "display_name":"Exploud"
+    },
+    {
+        "id":"523",
+        "name": "makuhita",
+        "typos": [],
+        "display_name":"Makuhita"
+    },
+    {
+        "id":"524",
+        "name": "hariyama",
+        "typos": ["hariama"],
+        "display_name":"Hariyama"
+    },
+    {
+        "id":"525",
+        "name": "skitty",
+        "typos": [],
+        "display_name":"Skitty"
+    },
+    {
+        "id":"526",
+        "name": "delcatty",
+        "typos": ["delcaty"],
+        "display_name":"Delcatty"
+    },
+    {
+        "id":"527",
+        "name": "meditite",
+        "typos": [],
+        "display_name":"Meditite"
+    },
+    {
+        "id":"528",
+        "name": "medicham",
+        "typos": ["medicharm"],
+        "display_name":"Medicham"
+    },
+    {
+        "id":"529",
+        "name": "electrike",
+        "typos": ["electrice"],
+        "display_name":"Electrike"
+    },
+    {
+        "id":"530",
+        "name": "manectric",
+        "typos": ["manectrik"],
+        "display_name":"Manectric"
+    },
+    {
+        "id":"531",
+        "name": "plusle",
+        "typos": [],
+        "display_name":"Plusle"
+    },
+    {
+        "id":"532",
+        "name": "minun",
+        "typos": [],
+        "display_name":"Minun"
+    },
+    {
+        "id":"533",
+        "name": "volbeat",
+        "typos": [],
+        "display_name":"Volbeat"
+    },
+    {
+        "id":"534",
+        "name": "illumise",
+        "typos": [],
+        "display_name":"Illumise"
+    },
+    {
+        "id":"535",
+        "name": "gulpin",
+        "typos": [],
+        "display_name":"Gulpin"
+    },
+    {
+        "id":"536",
+        "name": "swalot",
+        "typos": [],
+        "display_name":"Swalot"
+    },
+    {
+        "id":"537",
+        "name": "numel",
+        "typos": [],
+        "display_name":"Numel"
+    },
+    {
+        "id":"538",
+        "name": "camerupt",
+        "typos": [],
+        "display_name":"Camerupt"
+    },
+    {
+        "id":"539",
+        "name": "spoink",
+        "typos": [],
+        "display_name":"Spoink"
+    },
+    {
+        "id":"540",
+        "name": "grumpig",
+        "typos": [],
+        "display_name":"Grumpig"
+    },
+    {
+        "id":"541",
+        "name": "spinda",
+        "typos": [],
+        "display_name":"Spinda"
+    },
+    {
+        "id":"542",
+        "name": "zangoose",
+        "typos": ["zangose"],
+        "display_name":"Zangoose"
+    },
+    {
+        "id":"543",
+        "name": "seviper",
+        "typos": ["serviper"],
+        "display_name":"Seviper"
+    },
+    {
+        "id":"544",
+        "name": "lunatone",
+        "typos": [],
+        "display_name":"Lunatone"
+    },
+    {
+        "id":"545",
+        "name": "solrock",
+        "typos": ["solroc"],
+        "display_name":"Solrock"
+    },
+    {
+        "id":"546",
+        "name": "barboach",
+        "typos": [],
+        "display_name":"Barboach"
+    },
+    {
+        "id":"547",
+        "name": "whiscash",
+        "typos": ["wiscash"],
+        "display_name":"Whiscash"
+    },
+    {
+        "id":"548",
+        "name": "corphish",
+        "typos": ["corphis"],
+        "display_name":"Corphish"
+    },
+    {
+        "id":"549",
+        "name": "crawdaught",
+        "typos": ["crawdaugt"],
+        "display_name":"Crawdaught"
+    },
+    {
+        "id":"550",
+        "name": "baltoy",
+        "typos": ["batoy"],
+        "display_name":"Baltoy"
+    },
+    {
+        "id":"551",
+        "name": "claydol",
+        "typos": [],
+        "display_name":"Claydol"
+    },
+    {
+        "id":"552",
+        "name": "castform",
+        "typos": ["casform"],
+        "display_name":"Castform"
+    },
+    {
+        "id":"553",
+        "name": "castformsunny",
+        "typos": ["castformsun", "castformsunn", "castforms"],
+        "display_name":"Castform(Sunny)"
+    },
+    {
+        "id":"554",
+        "name": "castformrainy",
+        "typos": ["castformrain", "castformr"],
+        "display_name":"Castform(Rainy)"
+    },
+    {
+        "id":"555",
+        "name": "castformsnowy",
+        "typos": ["castformsnow", "castformsn"],
+        "display_name":"Castform(Snowy)"
+    },
+    {
+        "id":"556",
+        "name": "tropius",
+        "typos": [],
+        "display_name":"Tropius"
+    },
+    {
+        "id":"557",
+        "name": "chingling",
+        "typos": [],
+        "display_name":"Chingling"
+    },
+    {
+        "id":"558",
+        "name": "chimecho",
+        "typos": [],
+        "display_name":"Chimecho"
+    },
+    {
+        "id":"559",
+        "name": "spheal",
+        "typos": [],
+        "display_name":"Spheal"
+    },
+    {
+        "id":"560",
+        "name": "sealeo",
+        "typos": [],
+        "display_name":"Sealeo"
+    },
+    {
+        "id":"561",
+        "name": "walrein",
+        "typos": [],
+        "display_name":"Walrein"
+    },
+    {
+        "id":"562",
+        "name": "clamperl",
+        "typos": [],
+        "display_name":"Clamperl"
+    },
+    {
+        "id":"563",
+        "name": "huntail",
+        "typos": [],
+        "display_name":"Huntail"
+    },
+    {
+        "id":"564",
+        "name": "gorebyss",
+        "typos": [],
+        "display_name":"Gorebyss"
+    },
+    {
+        "id":"565",
+        "name": "relicanth",
+        "typos": [],
+        "display_name":"Relicanth"
     }
     
     ]
