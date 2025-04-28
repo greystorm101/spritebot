@@ -118,6 +118,26 @@ class Galactic(Cog):
         update_members_points(grunt, points)
         await ctx.send(f"{ctx.author.mention} has awarded {grunt.mention} {points} grunt points!")
 
+    @Cog.listener()
+    async def on_message(self, message: Message):
+        if message.channel.id == ZIGZAG_CHATTER_CHANNEL_ID:
+            command_contents = message.content.split(" ")
+            if command_contents[0] != "!cyrus-grant-points":
+                return
+
+            user_id = command_contents[1]
+            grunt = self.bot.get_user(int(user_id))
+            points = command_contents[2]
+
+            try:
+                if is_team_galactic(grunt):
+                    update_members_points(grunt, int(points))
+                    await message.reply("Added points")
+                    return
+            except BaseException as e:
+                pass
+            await message.reply("Could not award points. User may not a grunt, or something else went wrong.")
+
     @grant_grunt_points.error
     async def help_grunt_error(_, ctx, __):
         await ctx.send("This command is for Cyrus!", ephemeral=True)
@@ -130,8 +150,9 @@ class Galactic(Cog):
         if not grunt:
             await ctx.defer()
             await ctx.send("Gathering stats...", ephemeral=True, delete_after=5)
-            message = ""
-            for member_id in TEAM_GALACTIC_MEMBERS:
+            message = f"Members: {len(TEAM_GALACTIC_MEMBERS)}\n-------\n"
+            copied_members = TEAM_GALACTIC_MEMBERS.copy()
+            for member_id in copied_members:
                 try:
                     member = ctx.guild.get_member(int(member_id))
                     message += f"{member.mention}:\t{TEAM_GALACTIC_MEMBERS[str(member_id)]['points']}\n"
@@ -201,6 +222,8 @@ def load_env_vars(env: str):
         fd = open(galactic_member_file, "w")
         fd.write("{}")
         fd.close()
+    global ZIGZAG_CHATTER_CHANNEL_ID
+    ZIGZAG_CHATTER_CHANNEL_ID = int(os.environ.get("ZIGZAG_CHATTER_CHANNEL_ID"))
 
     with open(galactic_member_file, "r") as f:
         data = json.loads(f.read())
