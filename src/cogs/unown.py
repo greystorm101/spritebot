@@ -75,7 +75,7 @@ class Unown(Cog):
             # await thread.send(content = message)
 
     @has_any_role("Sprite Manager", "Bot Manager", "Creator")
-    @hybrid_command(name="entries", pass_context=True,
+    @hybrid_command(name="scrape", pass_context=True,
              help ="Run with `MM/YY` to start at a certain date. Run with `reset` to start with 2 weeks ago",
              brief = "Finds old threads")
     @app_commands.describe(start_message_id="Message to start with (non-inclusive)", end_message_id= "Message to end with (non-inclusive)")
@@ -91,6 +91,9 @@ class Unown(Cog):
 
         start_time = start_message.created_at
         end_time = end_message.created_at
+
+        gallery_data = await scrape_gallery(gallery_channel, start_time, end_time)
+        sheet_formatted_data = format_for_sheet(gallery_data)
 
         flow = Flow.from_client_secrets_file(
         os.path.join(FILEPACK_DIR, "credentials.json"),
@@ -123,37 +126,6 @@ class Unown(Cog):
         # await ctx.channel.send(dex_entries)
         return 
 
-    async def google_auth(self, ctx: Context):
-        flow = Flow.from_client_secrets_file(
-        os.path.join(FILEPACK_DIR, "credentials.json"),
-        scopes = ["https://www.googleapis.com/auth/spreadsheets"],
-        redirect_uri='urn:ietf:wg:oauth:2.0:oob')
-
-        # Tell the user to go to the authorization URL.
-        auth_url, _ = flow.authorization_url(prompt='consent')
-        msg = await ctx.channel.send('**This command requires authorization to make edits to google sheets.** You will need to sign in with an account that has access to the credits/dex sheets."\
-                             "\nPlease go the following URL: {}\Once you have clicked the link, **click the checkmark reaction** to continue'.format(auth_url),
-                            delete_after=30)
-        # TODO: When modals are less useless we can do this https://github.com/discord/discord-api-docs/discussions/4607
-        
-
-        def check(reaction, user):
-            return user == ctx.author
-
-        await msg.add_reaction("✅")
-        x = await self.bot.wait_for('reaction_add')
-        await msg.delete()
-        
-        wait_modal = GoogleAuthModal()
-        await ctx.interaction.response.send_modal(wait_modal)
-        val = await wait_modal.wait()
-        print(val)
-
-        code = input('Enter the authorization code: ')
-        flow.fetch_token(code=code)
-        session = flow.authorized_session()
-        print(session.get('https://www.googleapis.com/userinfo/v2/me').json())
-
 async def setup(bot:Bot):
     await bot.add_cog(Unown(bot))
 
@@ -174,15 +146,9 @@ class AuthCodeEnter(discord.ui.Button):
         super().__init__(label="Enter Authorization Code")
     
     async def callback(self, interaction: discord.Interaction):
-        # print(self.value)
-        # pass
-        # print("ok")
-        wait_modal = GoogleAuthModal()
+        wait_modal = GoogleAuthModal(self.flow)
         await interaction.response.send_modal(wait_modal)
         val = await wait_modal.wait()
-
-        # self.flow.fetch_token(code=code)
-        # session = flow.authorized_session()
 
 async def scrape_gallery(gallery_channel: TextChannel, start:datetime, end: datetime):
     """
@@ -190,41 +156,36 @@ async def scrape_gallery(gallery_channel: TextChannel, start:datetime, end: date
     """
     print("Requested Start:{} Requested End:{} ".format(start, end))
 
-    return [message async for message in gallery_channel.history(after=start, before=end, oldest_first=True, limit=None)]
+    return [find_dex_text(message.text) async for message in gallery_channel.history(after=start, before=end, oldest_first=True, limit=None)]
 
-async def google_auth(ctx: Context):
-    flow = Flow.from_client_secrets_file(
-    os.path.join(FILEPACK_DIR, "credentials.json"),
-    scopes = ["https://www.googleapis.com/auth/spreadsheets"],
-    redirect_uri='urn:ietf:wg:oauth:2.0:oob')
-
-    # Tell the user to go to the authorization URL.
-    auth_url, _ = flow.authorization_url(prompt='consent')
-    msg = await ctx.send('Please go to this URL: {}\n'.format(auth_url), ephemeral=True)
-    # TODO: When modals are less useless we can do this https://github.com/discord/discord-api-docs/discussions/4607
-    # wait_modal = GoogleAuthModal()
-    # await interaction.response.send_modal(wait_modal)
-    # await wait_modal.wait()
-
-    await msg.add_reaction(":white_check_mark:")
-    
-    code = input('Enter the authorization code: ')
-    flow.fetch_token(code=code)
-    session = flow.authorized_session()
-    print(session.get('https://www.googleapis.com/userinfo/v2/me').json())
 
 class GoogleAuthModal(Modal, title = "Google Sheets Authorization"):
 
-    name = discord.ui.TextInput(
+    def __init__(self, flow, *args, **kwargs):
+        self.flow = flow
+        super().__init__(*args, **kwargs)
+
+    auth_code = discord.ui.TextInput(
         label=f'Enter Google Authorization Code',
         placeholder='Auth Code...',
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.send_message(f'Thanks for your feedback, {self.name.value}!', ephemeral=True)
-        self.value = self.name.value
-        self.stop()
+        # Verify auth
+        try:
+            self.flow.fetch_token(code=self.auth_code.value)
+        except BaseException as e:
+            print(e)
+            await interaction.response.send_message('Sorry, there was an error authenticating you.', ephemeral=True)
+            return
+        
+        creds = self.flow.credentials
+        print(creds)
+        await interaction.response.send_message(f'Thanks for your feedback, {self.auth_code.value}!', ephemeral=True)
+        
+        # Fetch dex entries from range
 
+        
     async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
         await interaction.response.send_message('Oops! Something went wrong.', ephemeral=True)
 

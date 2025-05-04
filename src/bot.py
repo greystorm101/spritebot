@@ -70,5 +70,5 @@ this_bot = SpriteBot(command_prefix='!',
                      description=description,
                      intents=intents,
                      is_prod=args.prod,
-                     initial_extensions=["cogs.chansey", "cogs.contest",  "cogs.eraser", "cogs.klefki", "cogs.smeargle", "cogs.zigzag"])
+                     initial_extensions=["cogs.chansey", "cogs.contest",  "cogs.eraser", "cogs.klefki", "cogs.smeargle", "cogs.zigzag", "cogs.unown"])
 this_bot.run(bot_key)
