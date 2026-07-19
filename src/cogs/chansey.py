@@ -35,9 +35,11 @@ class Chansey(Cog):
 
             error_channel = self.bot.get_channel(ERROR_CHANNEL_ID)
             GUIDELINES_THREAD = error_channel.get_thread(GUIDELINES_THREAD_ID)
+            jump_url = GUIDELINES_THREAD.jump_url if GUIDELINES_THREAD is not None else "the Sprite Error Guidelines pinned in this channel"
+
             tags = [tag.name for tag in thread.applied_tags]
             message = f"Hey {thread.owner.mention},\nThanks for your sprite error submission. While you wait for a Chansey to start reviewing this ticket, "\
-                      f"please make sure you've read through {GUIDELINES_THREAD.jump_url}."
+                      f"please make sure you've read through {jump_url}."
 
             if ("float" in thread.name) or ("align" in thread.name) or ("off center" in thread.name):
                 message += "\n\nA reminder that floating sprites in-game are **not** sprite errors"
