@@ -226,13 +226,18 @@ class PostOptions(ui.Select):
 
         # Set the options that will be presented inside the dropdown
         options = [
-            discord.SelectOption(label='Post', description='Post the candidate image to sprite gallery', emoji='📮'),
-            discord.SelectOption(label='Harvest', description='Post candidate image to noqa', emoji='🖌'),
             discord.SelectOption(label='Clean', description='Remove Needs Feedback tag adds Added to Gallery tag', emoji='🧺'),
             discord.SelectOption(label='Non-IF', description='Remove Needs Feedback tag adds Non-if tag', emoji='🙃'),
             discord.SelectOption(label='Other', description='Remove Needs Feedback tag adds other tag', emoji='🤔'),
             discord.SelectOption(label='Manual', description="Don't do anything", emoji='🧀'),
         ]
+
+        if not is_user_harvest_immune(thread_owner):
+            options.append(discord.SelectOption(label='Harvest', description='Post candidate image to noqa', emoji='🖌'))
+
+        if not is_user_harvest_immune(thread_owner):
+            options.append(discord.SelectOption(label='Post', description='Post the candidate image to sprite gallery', emoji='📮'))
+
 
         self.thread = thread
         self.thread_owner = thread_owner
@@ -396,11 +401,8 @@ class PostOptionsView(discord.ui.View):
         """
         super().__init__(timeout=None)
 
-        # Adds the dropdown to our view object.
-        if is_user_immune(thread.owner):
-            self.add_item(ImmuneOptions(thread, thread_owner))
-        
-        elif fusion is False:
+
+        if fusion is False:
             self.add_item(UnidentifiedOptions(thread, thread_owner))
         else:
             self.add_item(PostOptions(thread, thread_owner, fusion, image))
@@ -818,8 +820,11 @@ def _pretty_formatted_message(thread: Thread,
 
     full_message = "~~~~~~~~~~~~~~\n"+header+activity+candidate_info+gallery_info
 
-    if is_user_immune(thread.owner):
+    if is_user_post_immune(thread.owner):
         full_message += "\n *User Has Posting Immunity*"
+
+    if is_user_harvest_immune(thread.owner):
+        full_message += "\n *User Has Harvesting Immunity*"
     return full_message
 
 
