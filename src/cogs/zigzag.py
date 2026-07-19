@@ -154,7 +154,7 @@ class ZigZag(Cog):
                                thread.archive_timestamp))
             self.most_recent_date = thread.archive_timestamp
 
-        await ctx.send("Digging Complete!")
+        await ctx.send(f"💎 Digging Complete! Come dig again soon, {ctx.author.mention}! 💎")
         
     @has_any_role("Zigzagoon (abandoned sprite poster)", "Sprite Manager", "Bot Manager")
     @command(name="galpost", pass_context=True,
