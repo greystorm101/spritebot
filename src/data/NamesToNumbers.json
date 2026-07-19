@@ -3436,26 +3436,26 @@
     {
         "id":"573",
         "name": "shelloseast",
-        "typos": ["shellose", "sheloseast", "shelose"],
-        "display_name":"Shellos-East"
+        "typos": ["shelloseast", "shellose", "sheloseast", "shelose", "shellosblue", "shellosb", "shelosblue", "shelosb"],
+        "display_name":"Shellos East Sea"
     },
     {
         "id":"574",
         "name": "gastrodoneast",
-        "typos": ["gastrodoneast", "gastrodone"],
-        "display_name":"Gastrodon-East"
+        "typos": ["gastrodoneast", "gastrodone", "gastrodonblue", "gastrodonb"],
+        "display_name":"Gastrodon East Sea"
     },
     {
         "id":"575",
-        "name": "shelloswest",
-        "typos": ["shellosw", "sheloswest", "shelosw"],
-        "display_name":"Shellos-West"
+        "name": "shelloswestsea",
+        "typos": ["shelloswest", "shellosw", "sheloswest", "shelosw", "shellospink", "shellosp", "shelospink", "shelosp"],
+        "display_name":"Shellos West Sea"
     },
     {
         "id":"576",
         "name": "gastrodonwest",
-        "typos": ["gastrodonwest", "gastrodonw"],
-        "display_name":"Gastrodon-West"
+        "typos": ["gastrodonwest", "gastrodonw", "gastrodonpink", "gastrodonp"],
+        "display_name":"Gastrodon West Sea"
     }
 
     ]

@@ -307,7 +307,7 @@ class UnidentifiedOptions(ui.Select):
 
         # Set the options that will be presented inside the dropdown
         options = [
-            discord.SelectOption(label='Clean', description='Remove Needs Feedback tag and add Other tag', emoji='🧺'),
+            discord.SelectOption(label='Clean', description='Remove Needs Feedback tag and add Added to Gallery tag', emoji='🧺'),
             discord.SelectOption(label='Non-IF', description='Remove Needs Feedback tag adds Non-if tag', emoji='🙃'),
             discord.SelectOption(label='Other', description='Remove Needs Feedback tag adds other tag', emoji='🤔'),
             discord.SelectOption(label='Manual', description="Don't do anything", emoji='🧀'),
