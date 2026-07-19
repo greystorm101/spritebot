@@ -83,6 +83,14 @@ def is_former_spriter(user: Member, is_prod = True):
     
     return (user.id in FORMER_SPRITERS) or (FORMER_SPRITER_ROLE_ID in [role.id for role in user.roles if hasattr(user, "roles")])
 
+def is_spriternt(user: Member, is_prod = True):
+
+    global SPRITERNT_ROLE_ID
+    if SPRITERNT_ROLE_ID is None:
+        SPRITERNT_ROLE_ID = int(os.environ.get("SPRITERNT_ROLE_ID"))
+    
+    return (SPRITERNT_ROLE_ID in [role.id for role in user.roles if hasattr(user, "roles")])
+
 def update_former_spriter_cache():
     # Fill it first in case we haven't hit it
     global FORMER_SPRITERS

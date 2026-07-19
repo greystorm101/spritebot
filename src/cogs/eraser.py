@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 from cogs.utils import is_former_spriter, update_former_spriter_cache
 
 FORMER_SPRITER_ROLE_ID = None
+SPRITERNT_ROLE_ID = None
 
 FILEPACK_DIR = "/datadir/"
 
@@ -151,6 +152,9 @@ def load_env_vars(env: str):
     global FORMER_SPRITER_ROLE_ID
     FORMER_SPRITER_ROLE_ID = int( os.environ.get("FORMER_SPRITER_ROLE_ID"))
 
+    global SPRITERNT_ROLE_ID
+    SPRITERNT_ROLE_ID = int( os.environ.get("SPRITERNT_ROLE_ID"))
+    
     global ZIGZAG_CHATTER_CHANNEL_ID
     ZIGZAG_CHATTER_CHANNEL_ID = int(os.environ.get("ZIGZAG_CHATTER_CHANNEL_ID"))
 

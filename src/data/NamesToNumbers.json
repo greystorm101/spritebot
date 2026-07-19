@@ -3291,9 +3291,9 @@
     },
     {
         "id":"549",
-        "name": "crawdaught",
-        "typos": ["crawdaugt"],
-        "display_name":"Crawdaught"
+        "name": "crawdaunt",
+        "typos": ["crawdaugt", "crawdaught"],
+        "display_name":"Crawdaunt"
     },
     {
         "id":"550",
@@ -3390,7 +3390,73 @@
         "name": "relicanth",
         "typos": [],
         "display_name":"Relicanth"
+    },
+    {
+        "id":"565",
+        "name": "woobat",
+        "typos": ["wobat"],
+        "display_name":"Woobat"
+    },
+    {
+        "id":"567",
+        "name": "swoobat",
+        "typos": ["swoobat"],
+        "display_name":"Swoobat"
+    },
+    {
+        "id":"568",
+        "name": "tynamo",
+        "typos": [],
+        "display_name":"Tynamo"
+    },
+    {
+        "id":"569",
+        "name": "eelektrik",
+        "typos": ["elektrik", "elektric", "eelektric", "eelectrik"],
+        "display_name":"Eelektrik"
+    },
+    {
+        "id":"570",
+        "name": "eelektross",
+        "typos": ["electros", "eelectros", "electross", "elektross", "eelektros", "eelectross"],
+        "display_name":"Eelektross"
+    },
+    {
+        "id":"571",
+        "name": "skrelp",
+        "typos": [],
+        "display_name":"Skrelp"
+    },
+    {
+        "id":"572",
+        "name": "dragalge",
+        "typos": ["dragalgea"],
+        "display_name":"Dragalge"
+    },
+    {
+        "id":"573",
+        "name": "shelloseast",
+        "typos": ["shellose", "sheloseast", "shelose"],
+        "display_name":"Shellos-East"
+    },
+    {
+        "id":"574",
+        "name": "gastrodoneast",
+        "typos": ["gastrodoneast", "gastrodone"],
+        "display_name":"Gastrodon-East"
+    },
+    {
+        "id":"575",
+        "name": "shelloswest",
+        "typos": ["shellosw", "sheloswest", "shelosw"],
+        "display_name":"Shellos-West"
+    },
+    {
+        "id":"576",
+        "name": "gastrodonwest",
+        "typos": ["gastrodonwest", "gastrodonw"],
+        "display_name":"Gastrodon-West"
     }
-    
+
     ]
 }   

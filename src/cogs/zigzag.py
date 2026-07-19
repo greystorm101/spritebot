@@ -13,7 +13,7 @@ import discord
 from dateutil.relativedelta import *
 from discord.channel import TextChannel
 
-from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map, fusion_is_valid, name_to_id_map, is_former_spriter
+from cogs.utils import clean_pokemon_string, raw_pokemon_name_to_id, id_to_name_map, fusion_is_valid, name_to_id_map, is_former_spriter, is_spriternt
 
 # Defining globals
 SPRITEWORK_CHANNEL_ID = None
@@ -45,8 +45,7 @@ class ZigzagStats(Enum):
     NONIF = "non-if"
     OTHER = "other"
 
-GALLERY_FOOTER = "Note: This sprite was posted by a sprite manager or zigzagoon because it had gone unposted in spritework for over two weeks."\
-                     "It may have an incorrect size, file name or other small issue. This will be fixed in the sprite pack!"
+GALLERY_FOOTER = "Note: This sprite was posted by a sprite manager or zigzagoon because it had gone unposted in spritework for over two weeks."
 
 spritepost_tags = {}
 sprite_channels = {}
@@ -560,7 +559,7 @@ async def send_galpost_notification(thread: Thread, thread_owner: User, galleryP
               f"been automatically posted to the gallery for you here: {galleryPost.jump_url} <:ohyes:686653537911832661> . You can expect to see "\
               f"it included in an upcoming sprite pack release. **You should not post this sprite to the gallery, or it will cause a duplicate**\n"\
               f"## If you would like to remove this sprite from the gallery:\n- Ping `Zigzagoon (abandoned sprite poster)`"\
-              f"or a sprite manager in this thread.\n- Let them know you would like the sprite removed from the gallery."\
+              f"in this thread.\n- Let them know you would like the sprite removed from the gallery."\
               f"\n*Make sure to remove the “Needs Feedback” tag on your spritework posts once they’re added to the gallery* <:happo:1058708428425535559> \n{galleryPost.embeds[0].image.url}"
     
     await thread.send(content = message)
@@ -569,7 +568,7 @@ async def send_galpost_notification(thread: Thread, thread_owner: User, galleryP
         return
     dm_message = f"Hey {thread_owner.mention}, this Pokemon Infinite Fusion sprite has been posted to the sprite gallery by "\
               f"a sprite manager or zigzagoon. You can see the gallery post here: {galleryPost.jump_url}\n"\
-              f"If you have any questions or would like to remove the post, please ping a sprite manager or zigzagoon in this thread:{thread.jump_url}.\n{galleryPost.embeds[0].image.url}"
+              f"If you have any questions or would like to remove the post, please ping a zigzagoon in this thread:{thread.jump_url}.\n{galleryPost.embeds[0].image.url}"
     await thread_owner.send(content=dm_message)
     await thread.edit(archived=True)
 
@@ -578,7 +577,7 @@ async def send_noqa_notification(thread: Thread, thread_owner: User, noqaPost: M
     message = f"### Hey {thread_owner.mention}!\nDue to inactivity, this sprite has been archived by a Zigzagoon or Sprite Manager. "\
               f"After a certain amount of time, it will be made available for other spriters to edit so it can be added to the game (you will still be credited) <:ohyes:686653537911832661>\n"\
               f"## If you would like to remove this sprite from the archive:\n- Ping `Zigzagoon (abandoned sprite poster)`"\
-              f"or a sprite manager in this thread.\n- Let them know you would like the sprite removed from the archive.\n- You may "\
+              f"in this thread.\n- Let them know you would like the sprite removed from the archive.\n- You may "\
               f"continue working on this sprite (in this thread or a new thread), or you can chose to leave it abandoned."\
               f"\n*Make sure to remove the “Needs Feedback” tag on your spritework posts once you're done with your sprite* <:happo:1058708428425535559> \n{noqaPost.embeds[0].image.url}"
 
@@ -589,7 +588,7 @@ async def send_noqa_notification(thread: Thread, thread_owner: User, noqaPost: M
     
     dm_message = f"Hey {thread_owner.mention}, due to inactivity this Pokemon Infinite Fusion sprite has been archived by "\
               f"a sprite manager or zigzagoon.\n"\
-              f"If you have any questions or would like to remove the post, please ping a sprite manager in this thread: {thread.jump_url}.\n{noqaPost.embeds[0].image.url}"
+              f"If you have any questions or would like to remove the post, please ping a zigzagoon in this thread: {thread.jump_url}.\n{noqaPost.embeds[0].image.url}"
     await thread_owner.send(content=dm_message)
     await thread.edit(archived=True)
 
@@ -604,6 +603,9 @@ def is_user_post_immune(user: Member):
     if is_former_spriter(user):
         return True
     
+    if is_spriternt(user):
+        return True
+
     role_ids = [role.id for role in user.roles]
     if (POST_IMMUNITY_ID in role_ids):
         return True
@@ -615,6 +617,9 @@ def is_user_harvest_immune(user: Member):
         return False
     
     if is_former_spriter(user):
+        return True
+    
+    if is_spriternt(user):
         return True
     
     role_ids = [role.id for role in user.roles]
