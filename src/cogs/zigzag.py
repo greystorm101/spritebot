@@ -127,7 +127,7 @@ class ZigZag(Cog):
                 num_found_threads += 1
 
                 start = time.time()
-                thread_owner = await self.bot.fetch_user(thread.owner_id)
+                thread_owner = await thread.guild.fetch_member(thread.owner_id)
                 candidate_image, canidate_ids, gal_post = await scrape_thread_and_gallery(thread, sprite_channels["gallery"], self.bot)
                 archive_time = time.time() - start; print(f"Scraping Time: {archive_time}")
 
@@ -235,7 +235,7 @@ class PostOptions(ui.Select):
         if not is_user_harvest_immune(thread_owner):
             options.append(discord.SelectOption(label='Harvest', description='Post candidate image to noqa', emoji='🖌'))
 
-        if not is_user_harvest_immune(thread_owner):
+        if not is_user_post_immune(thread_owner):
             options.append(discord.SelectOption(label='Post', description='Post the candidate image to sprite gallery', emoji='📮'))
 
 
