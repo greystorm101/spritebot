@@ -576,7 +576,8 @@ async def send_noqa_notification(thread: Thread, thread_owner: User, noqaPost: M
 
     message = f"### Hey {thread_owner.mention}!\nDue to inactivity, this sprite has been archived by a Zigzagoon or Sprite Manager. "\
               f"After a certain amount of time, it will be made available for other spriters to edit so it can be added to the game (you will still be credited) <:ohyes:686653537911832661>\n"\
-              f"## If you would like to remove this sprite from the archive:\n- Ping `Zigzagoon (abandoned sprite poster)`"\
+              f"## **You should not post this sprite to the gallery, or it will cause a duplicate** If you would like to remove this sprite "\
+              f"from the archive:\n- Ping `Zigzagoon (abandoned sprite poster)`"\
               f"in this thread.\n- Let them know you would like the sprite removed from the archive.\n- You may "\
               f"continue working on this sprite (in this thread or a new thread), or you can chose to leave it abandoned."\
               f"\n*Make sure to remove the “Needs Feedback” tag on your spritework posts once you're done with your sprite* <:happo:1058708428425535559> \n{noqaPost.embeds[0].image.url}"

@@ -8,6 +8,7 @@ from discord import Member
 FILEPACK_DIR = "/datadir/"
 FORMER_SPRITERS = []
 FORMER_SPRITER_ROLE_ID = None
+SPRITERNT_ROLE_ID = None
 
 JSON_FILE = os.path.join(os.getcwd(), "src", "data", "NamesToNumbers.json" ) 
 MULTI_NAME_FILE = os.path.join(os.path.dirname(os.getcwd()), "data", "MultiWordNames.json" ) 
