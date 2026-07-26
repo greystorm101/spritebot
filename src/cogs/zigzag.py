@@ -127,7 +127,10 @@ class ZigZag(Cog):
                 num_found_threads += 1
 
                 start = time.time()
-                thread_owner = await thread.guild.fetch_member(thread.owner_id)
+                try:
+                    thread_owner = await thread.guild.fetch_member(thread.owner_id)
+                except discord.NotFound:
+                    thread_owner = await self.bot.fetch_user(thread.owner_id)
                 candidate_image, canidate_ids, gal_post = await scrape_thread_and_gallery(thread, sprite_channels["gallery"], self.bot)
                 archive_time = time.time() - start; print(f"Scraping Time: {archive_time}")
 
