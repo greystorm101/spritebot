@@ -63,7 +63,7 @@ class Chansey(Cog):
             if ("Visual error" in tags) or ("Needs fixing!" in tags):
                 if len(thread.starter_message.mentions) == 0:
                     problem = True
-                    message+="\n\n### Remember to tag the original fusion artist if you are reporting an error on a sprite that is not yours."
+                    message+="\n\n### If the sprite is not yours, please **do not ping the original spriter**. Once a Chansey reviews the report, they will ping the spriter if necessary."
         
             await thread.send(content = message)
 
